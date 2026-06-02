@@ -217,6 +217,59 @@ tr.editing td{background:#fffbf0!important}
   padding:4px 2px;margin:18px 0 6px;letter-spacing:.5px}
 .cat-group-title:first-child{margin-top:0}
 
+/* DASHBOARD — TODAY BANNER */
+.today-banner{background:linear-gradient(135deg,var(--wood),var(--wood2));color:#f4e7c5;
+  border-radius:6px;padding:16px 20px;margin-bottom:18px;
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  box-shadow:0 4px 14px rgba(40,25,12,.2);border:1px solid var(--gold)}
+.today-banner .tb-title{font-family:'Rye',serif;font-size:15px;color:var(--gold);
+  letter-spacing:.5px;white-space:nowrap}
+.today-banner .tb-kpis{display:flex;gap:22px;flex-wrap:wrap;flex:1}
+.today-banner .tb-k{display:flex;flex-direction:column;gap:2px}
+.today-banner .tb-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;
+  color:rgba(244,231,197,.7)}
+.today-banner .tb-val{font-family:'Rye',serif;font-size:20px;color:#f4e7c5}
+.today-banner .tb-marge-ok{color:#8fd48a}
+.today-banner .tb-marge-bad{color:#f1a0a0}
+
+/* DASHBOARD — ALERTS */
+.alerts-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.alert-row{display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:14px}
+.alert-row.a-bad{border-left:4px solid var(--red)}
+.alert-row.a-warn{border-left:4px solid #c9960a}
+.alert-icon{font-size:16px;flex-shrink:0}
+.alert-label{color:var(--ink2);font-size:13px}
+
+/* DASHBOARD — TOP PRODUITS */
+.top-table{width:100%;border-collapse:collapse;font-size:14px}
+.top-table td{padding:6px 10px;border-top:1px solid #e2d3b0}
+.top-table tr:first-child td{border-top:none}
+.top-table .rank{color:var(--gold);font-family:'Rye',serif;font-size:13px;width:28px}
+.top-table .bar-wrap{background:#e6ddc7;border-radius:3px;height:6px;overflow:hidden;
+  min-width:60px;flex:1}
+.top-table .bar-fill{height:6px;border-radius:3px;background:var(--wine)}
+.top-row{display:flex;align-items:center;gap:8px}
+
+/* TUTORIAL */
+.tuto-section{background:var(--card);border:1px solid var(--line);border-radius:6px;
+  padding:20px 24px;margin-bottom:16px;box-shadow:0 3px 10px rgba(40,25,12,.07)}
+.tuto-section h3{font-family:'Rye',serif;color:var(--wine);font-size:17px;margin:0 0 12px;
+  padding-bottom:8px;border-bottom:1px solid var(--line)}
+.tuto-section p,.tuto-section li{line-height:1.7;color:var(--ink);font-size:15px}
+.tuto-section ul{margin:8px 0;padding-left:20px}
+.tuto-section li{margin-bottom:4px}
+.tuto-pill{display:inline-block;padding:1px 8px;border-radius:12px;font-size:13px;
+  font-family:'EB Garamond',serif;white-space:nowrap}
+.tuto-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.tuto-item{background:rgba(91,65,48,.05);border:1px solid var(--line);border-radius:4px;
+  padding:12px 14px}
+.tuto-item strong{font-family:'Rye',serif;font-size:14px;color:var(--wood);
+  display:block;margin-bottom:4px}
+.tuto-item p{margin:0;font-size:14px;color:var(--ink2)}
+.tuto-formula{background:var(--wood2);color:#f4e7c5;border-radius:4px;padding:10px 14px;
+  font-size:13.5px;margin:10px 0;font-family:monospace;line-height:1.6}
+
 @media(max-width:600px){
   .htop h1{font-size:20px}
   .tab{padding:9px 10px;font-size:14px}
@@ -261,6 +314,7 @@ tr.editing td{background:#fffbf0!important}
       <button class="tab" data-v="recettes">Recettes</button>
       <button class="tab" data-v="matieres">Matières premières</button>
       <button class="tab" data-v="stock">Stock</button>
+      <button class="tab" data-v="tuto">Aide</button>
     </div>
   </header>
   <div class="wrap" id="view"></div>
@@ -378,7 +432,7 @@ async function refresh() { STOCK_DATA = undefined; await loadAll(); render(); }
 function render() {
   destroyCharts();
   const fns = { dash:renderDash, journees:renderJournees, produits:renderProduits,
-    recettes:renderRecettes, matieres:renderMatieres, stock:renderStock };
+    recettes:renderRecettes, matieres:renderMatieres, stock:renderStock, tuto:renderTuto };
   (fns[VIEW] || renderDash)();
 }
 function destroyCharts() { CHARTS.forEach(c => c.destroy()); CHARTS = []; }
@@ -402,46 +456,92 @@ function chartOpts() {
 
 // ── TABLEAU DE BORD ────────────────────────────────────────────
 function renderDash() {
+  const td = today();
+
+  // Totaux globaux
   let ca=0, cout=0, unites=0;
-  VEN.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; unites += Number(v.qte_vendue) || 0; });
+  VEN.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; unites += Number(v.qte_vendue)||0; });
   const marge = ca - cout;
-  const kpi = [
-    ["Chiffre d'affaires", fmt(ca)],
-    ['Coût de production', fmt(cout)],
-    ['Marge (bénéfice)', fmt(marge)],
-    ['Marge %', ca ? pct(marge / ca) : '0 %'],
-    ['Unités vendues', unites.toLocaleString('fr-FR')]
-  ];
-  $('#view').innerHTML = head('Tableau de bord') +
-    `<div class="kpis">${kpi.map(k => `<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('')}</div>
-     <div class="charts">
-       <div class="chartbox"><h3>Coût de production vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
+
+  // Résumé du jour
+  const todaySales = VEN.filter(v => v.date === td);
+  let tCa=0, tCout=0, tUnites=0;
+  todaySales.forEach(v => { const c = venteCalc(v); tCa += c.ca; tCout += c.cout; tUnites += Number(v.qte_vendue)||0; });
+  const tMarge = tCa - tCout;
+  const tMargeClass = tMarge < 0 ? 'tb-marge-bad' : 'tb-marge-ok';
+  const todayHtml = `<div class="today-banner">
+    <div class="tb-title">★ Aujourd'hui</div>
+    <div class="tb-kpis">
+      <div class="tb-k"><div class="tb-label">CA</div><div class="tb-val">${fmt(tCa)}</div></div>
+      <div class="tb-k"><div class="tb-label">Marge</div><div class="tb-val ${tMargeClass}">${fmt(tMarge)}</div></div>
+      <div class="tb-k"><div class="tb-label">Marge %</div><div class="tb-val ${tMargeClass}">${tCa ? pct(tMarge/tCa) : '—'}</div></div>
+      <div class="tb-k"><div class="tb-label">Ventes</div><div class="tb-val">${todaySales.length}</div></div>
+    </div>
+  </div>`;
+
+  // Alertes produits
+  const real = PRD.filter(p => !(p.categorie||'').startsWith('Inter') && !String(p.nom).startsWith('Ajustement'));
+  const alertLines = [];
+  real.forEach(p => {
+    const prix = Number(p.prix_vente)||0, cout2 = coutProduit(p.nom);
+    if (prix === 0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — prix de vente à définir</span></div>`);
+    else if (cout2 === 0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — coût de production inconnu</span></div>`);
+    else if (prix - cout2 < 0) alertLines.push(`<div class="alert-row a-bad"><span class="alert-icon">❌</span><b>${esc(p.nom)}</b><span class="alert-label"> — vendu à perte (coût ${fmt(cout2)} &gt; prix ${fmt(prix)})</span></div>`);
+  });
+  const alertsHtml = alertLines.length
+    ? `<div class="secttl" style="margin-top:18px"><h2>Alertes (${alertLines.length})</h2><div class="rule"></div></div><div class="alerts-grid">${alertLines.join('')}</div>`
+    : `<div style="margin:14px 0 18px;font-size:14px;color:var(--green)">✅ Aucune alerte — tous les produits sont configurés.</div>`;
+
+  // Top 5 produits par CA
+  const byP = {};
+  VEN.forEach(v => { const c = venteCalc(v); if (!byP[v.produit]) byP[v.produit]={ca:0,marge:0,qte:0}; byP[v.produit].ca+=c.ca; byP[v.produit].marge+=c.marge; byP[v.produit].qte+=Number(v.qte_vendue)||0; });
+  const topCA = Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement')).sort((a,b)=>b[1].ca-a[1].ca).slice(0,5);
+  const maxCA = topCA[0] ? topCA[0][1].ca : 1;
+  const topHtml = topCA.length ? `<div class="card" style="overflow:hidden">
+    <table class="top-table"><tbody>${topCA.map(([nom,d],i)=>`<tr>
+      <td class="rank">${i+1}</td>
+      <td><b>${esc(nom)}</b></td>
+      <td class="num" style="color:var(--wine)">${fmt(d.ca)}</td>
+      <td class="num" style="color:${d.marge<0?'var(--red)':'var(--green)'}">${fmt(d.marge)}</td>
+      <td style="width:120px;padding-right:14px">
+        <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(d.ca/maxCA*100)}%"></div></div>
+      </td>
+    </tr>`).join('')}</tbody></table></div>` : '';
+
+  // Meilleure journée
+  const byD = {};
+  VEN.forEach(v => { const c=venteCalc(v); const d=v.date||'?'; if(!byD[d])byD[d]={ca:0,m:0}; byD[d].ca+=c.ca; byD[d].m+=c.marge; });
+  const bestDay = Object.entries(byD).sort((a,b)=>b[1].ca-a[1].ca)[0];
+  const bestDayHtml = bestDay
+    ? `<div style="font-size:13.5px;color:var(--ink2);margin-top:10px">🏆 Meilleure journée : <b>${fmtDate(bestDay[0])}</b> — ${fmt(bestDay[1].ca)} de CA, ${fmt(bestDay[1].m)} de marge</div>`
+    : '';
+
+  const kpi = [["Chiffre d'affaires",fmt(ca)],['Coût de production',fmt(cout)],['Marge totale',fmt(marge)],['Marge %',ca?pct(marge/ca):'0 %'],['Unités vendues',unites.toLocaleString('fr-FR')]];
+
+  $('#view').innerHTML = todayHtml +
+    head('Résultats globaux') +
+    `<div class="kpis">${kpi.map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('')}</div>` +
+    bestDayHtml + alertsHtml +
+    `<div class="secttl" style="margin-top:20px"><h2>Top 5 produits par CA</h2><div class="rule"></div></div>` +
+    topHtml +
+    `<div class="charts" style="margin-top:20px">
+       <div class="chartbox"><h3>Coût vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
        <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="200"></canvas></div>
-       <div class="chartbox"><h3>Répartition du CA</h3><canvas id="c3" height="200"></canvas></div>
-       <div class="chartbox"><h3>Comparaison jour par jour</h3><canvas id="c4" height="200"></canvas></div>
+       <div class="chartbox"><h3>Répartition du CA par catégorie</h3><canvas id="c3" height="200"></canvas></div>
+       <div class="chartbox"><h3>CA et marge jour par jour</h3><canvas id="c4" height="200"></canvas></div>
      </div>`;
-  const real = PRD.filter(p => !String(p.nom).startsWith('Ajustement'));
-  CHARTS.push(new Chart($('#c1'), { type:'bar', data:{ labels:real.map(p => p.nom),
-    datasets:[{ label:'Coût', data:real.map(p => coutProduit(p.nom)), backgroundColor:'#7b2d26' },
-              { label:'Prix', data:real.map(p => Number(p.prix_vente) || 0), backgroundColor:'#9c7b2f' }] },
-    options:chartOpts() }));
-  const byP = {}; VEN.forEach(v => { const c = venteCalc(v); byP[v.produit] = (byP[v.produit] || 0) + c.marge; });
-  const pe = Object.entries(byP).filter(([n]) => !n.startsWith('Ajustement'));
-  CHARTS.push(new Chart($('#c2'), { type:'bar', data:{ labels:pe.map(e => e[0]),
-    datasets:[{ label:'Marge', data:pe.map(e => e[1]), backgroundColor:'#3f6b3a' }] },
-    options:{ ...chartOpts(), indexAxis:'y' } }));
-  const byC = {}; VEN.forEach(v => { const c = venteCalc(v); const cat = catProduit(v.produit) || 'Autre'; byC[cat] = (byC[cat] || 0) + c.ca; });
-  const ce = Object.entries(byC).filter(e => e[1] > 0);
-  CHARTS.push(new Chart($('#c3'), { type:'doughnut', data:{ labels:ce.map(e => e[0]),
-    datasets:[{ data:ce.map(e => e[1]), backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130'] }] },
-    options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } } }));
-  const byD = {}; VEN.forEach(v => { const c = venteCalc(v); const d = v.date || '?'; if (!byD[d]) byD[d] = { ca:0, m:0 }; byD[d].ca += c.ca; byD[d].m += c.marge; });
-  const ds = Object.keys(byD).sort();
-  const lab = ds.map(d => { const p = d.split('-'); return p.length === 3 ? p[2]+'/'+p[1] : d; });
-  CHARTS.push(new Chart($('#c4'), { type:'bar', data:{ labels:lab,
-    datasets:[{ label:'CA', data:ds.map(d => byD[d].ca), backgroundColor:'#9c7b2f' },
-              { label:'Marge', data:ds.map(d => byD[d].m), backgroundColor:'#3f6b3a' }] },
-    options:chartOpts() }));
+
+  CHARTS.push(new Chart($('#c1'),{type:'bar',data:{labels:real.map(p=>p.nom),
+    datasets:[{label:'Coût',data:real.map(p=>coutProduit(p.nom)),backgroundColor:'rgba(123,45,38,.8)'},{label:'Prix',data:real.map(p=>Number(p.prix_vente)||0),backgroundColor:'rgba(156,123,47,.8)'}]},options:chartOpts()}));
+  const pe=Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement')).sort((a,b)=>b[1].marge-a[1].marge);
+  CHARTS.push(new Chart($('#c2'),{type:'bar',data:{labels:pe.map(e=>e[0]),
+    datasets:[{label:'Marge',data:pe.map(e=>e[1].marge),backgroundColor:pe.map(e=>e[1].marge<0?'rgba(155,44,44,.8)':'rgba(63,107,58,.8)')}]},options:{...chartOpts(),indexAxis:'y'}}));
+  const byC={};VEN.forEach(v=>{const c=venteCalc(v);const cat=catProduit(v.produit)||'Autre';byC[cat]=(byC[cat]||0)+c.ca;});
+  const ce=Object.entries(byC).filter(e=>e[1]>0);
+  CHARTS.push(new Chart($('#c3'),{type:'doughnut',data:{labels:ce.map(e=>e[0]),datasets:[{data:ce.map(e=>e[1]),backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130','#8b6914']}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}}));
+  const ds=Object.keys(byD).sort();
+  const lab=ds.map(d=>{const p=d.split('-');return p.length===3?p[2]+'/'+p[1]:d;});
+  CHARTS.push(new Chart($('#c4'),{type:'bar',data:{labels:lab,datasets:[{label:'CA',data:ds.map(d=>byD[d].ca),backgroundColor:'rgba(156,123,47,.8)'},{label:'Marge',data:ds.map(d=>byD[d].m),backgroundColor:'rgba(63,107,58,.8)'}]},options:chartOpts()}));
 }
 
 // ── JOURNÉES ───────────────────────────────────────────────────
@@ -641,8 +741,8 @@ function renderProduits() {
   const cats = [...new Set(PRD.map(p => p.categorie || '—'))];
   const filtered = FILTER_CAT ? PRD.filter(p => p.categorie === FILTER_CAT) : PRD;
   const filterHtml = `<div class="filter-group">
-    <span class="fpill${!FILTER_CAT?' active':''}" onclick="FILTER_CAT=null;renderProduits()">Tous</span>
-    ${cats.map(c => `<span class="fpill${FILTER_CAT===c?' active':''}" onclick="FILTER_CAT=${JSON.stringify(c)};renderProduits()">${esc(c)}</span>`).join('')}
+    <span class="fpill${!FILTER_CAT?' active':''}" onclick="setFilter(null)">Tous</span>
+    ${cats.map(c => `<span class="fpill${FILTER_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="setFilter(this.dataset.cat)">${esc(c)}</span>`).join('')}
   </div>`;
   const rows = filtered.map(p => {
     const cout = coutProduit(p.nom), prix = Number(p.prix_vente) || 0, marge = prix - cout;
@@ -673,6 +773,7 @@ function renderProduits() {
        <button class="btn sm" onclick="addProduit()">+ Ajouter</button>
      </div></div>`;
 }
+function setFilter(cat) { FILTER_CAT = cat || null; renderProduits(); }
 async function updProduit(id, f, val) {
   const ok = await dbUpd('produits', id, { [f]: Number(val) || 0 });
   if (ok) { toast('Prix mis à jour'); await refresh(); }
@@ -908,7 +1009,7 @@ CREATE POLICY "auth_only" ON stock
         <td><b>${esc(p.nom)}</b></td>
         <td class="num">
           <input type="number" min="0" value="${qty}"
-            onchange="updStock(${JSON.stringify(esc(p.nom))},this.value)"
+            data-prod="${esc(p.nom)}" onchange="updStock(this.dataset.prod,this.value)"
             style="width:75px;text-align:right">
         </td>
         <td>${badge(qty)}</td>
@@ -943,6 +1044,100 @@ async function updStock(produit, valeur) {
     else STOCK_DATA.push(entry);
   }
   renderStock();
+}
+
+// ── AIDE / TUTORIEL ────────────────────────────────────────────
+function renderTuto() {
+  const ind = [
+    ['✅ OK','ok','Marge ≥ 20 % — produit rentable'],
+    ['⚠ Marge faible','warn','Marge entre 0 et 20 % — à surveiller'],
+    ['❌ Perte','bad','Le produit coûte plus cher à produire qu\'il ne se vend'],
+    ['⚠ Prix à définir','warn','Prix de vente encore à 0 dans la base'],
+    ['⚠ Coût à définir','warn','Aucune recette ou coût inconnu'],
+    ['—','muted','Intermédiaire ou Ajustement — non affiché dans les alertes'],
+  ];
+  $('#view').innerHTML = head('Guide du registre') +
+  `<div class="tuto-section">
+    <h3>★ Bienvenue au Silver Pine</h3>
+    <p>Ce registre permet à toute l'équipe de suivre les ventes, les marges et le stock du saloon en temps réel.
+    Toute personne connectée peut consulter et modifier les données — les changements sont instantanément visibles par tous.</p>
+  </div>
+
+  <div class="tuto-section">
+    <h3>Les onglets</h3>
+    <div class="tuto-cols">
+      <div class="tuto-item"><strong>Tableau de bord</strong><p>Vue d'ensemble : résumé du jour, alertes, top produits et graphiques. Point de départ de chaque séance.</p></div>
+      <div class="tuto-item"><strong>Journées</strong><p>Une carte par journée avec CA, coût et marge. Cliquer ouvre le détail complet — modifier ou ajouter des ventes directement.</p></div>
+      <div class="tuto-item"><strong>Produits & marges</strong><p>Liste de tout ce qui se vend, avec le coût calculé automatiquement et le prix de vente éditable.</p></div>
+      <div class="tuto-item"><strong>Recettes</strong><p>Les crafts : ingrédients, quantités et coût calculé en cascade. Modifier ici met à jour toutes les marges.</p></div>
+      <div class="tuto-item"><strong>Matières premières</strong><p>Tous les ingrédients de base avec leur prix d'achat. Changer un prix recalcule tout automatiquement.</p></div>
+      <div class="tuto-item"><strong>Stock</strong><p>Quantités disponibles de chaque produit fini. Mise à jour manuelle après chaque craft ou vente de lot.</p></div>
+    </div>
+  </div>
+
+  <div class="tuto-section">
+    <h3>Saisir une vente</h3>
+    <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:15px">
+      <li>Aller dans l'onglet <b>Journées</b> et cliquer sur la carte du jour, ou sur <b>+ Vente aujourd'hui</b></li>
+      <li>Choisir le produit vendu dans la liste déroulante</li>
+      <li>Entrer la quantité vendue (<i>Qté</i>) et les éventuelles unités offertes (<i>Off.</i> — comptées en coût mais pas en CA)</li>
+      <li>Laisser <i>Prix</i> vide pour utiliser le prix de base ; entrer un montant pour une vente spéciale (exportateur, promo)</li>
+      <li>Indiquer le canal : <b>Comptoir</b>, <b>Exportateur</b>, <b>Promo 2+1</b>, etc.</li>
+      <li>Valider avec <b>+ Ajouter</b> — la marge se calcule instantanément</li>
+    </ol>
+  </div>
+
+  <div class="tuto-section">
+    <h3>La logique des coûts (cascade)</h3>
+    <p>Le coût d'un produit se calcule automatiquement à partir de sa recette :</p>
+    <div class="tuto-formula">
+Coût ingrédient = prix dans « Matières premières »
+                  (ou coût unitaire d'un autre craft si l'ingrédient est lui-même un craft)
+
+Coût total recette = Σ (qté × coût) de chaque ingrédient
+Coût unitaire      = Coût total ÷ Qté produite par craft
+
+Coût produit = cout_manuel  (si défini)
+             = Coût unitaire de la recette du même nom  (sinon)
+
+Marge vente  = (qté vendue × prix) − (qté vendue + offerts) × coût
+    </div>
+    <p><b>Exemple :</b> La Bière utilise du Moût, qui utilise lui-même de l'Orge. Changer le prix de l'Orge
+    recalcule automatiquement le Moût, puis la Bière, puis la marge sur toutes les ventes de Bière.</p>
+  </div>
+
+  <div class="tuto-section">
+    <h3>Les indicateurs de marge</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      ${ind.map(([label,cls,desc])=>`
+      <div style="display:flex;align-items:center;gap:12px;font-size:14px">
+        <span class="pill ${cls}" style="min-width:130px;text-align:center">${label}</span>
+        <span style="color:var(--ink2)">${desc}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="tuto-section">
+    <h3>Canaux de vente</h3>
+    <div class="tuto-cols">
+      <div class="tuto-item"><strong>Comptoir</strong><p>Vente standard au prix affiché dans la salle.</p></div>
+      <div class="tuto-item"><strong>Exportateur</strong><p>Vente en gros à prix réduit — entrer le prix spécifique dans le champ Prix.</p></div>
+      <div class="tuto-item"><strong>Promo 2+1</strong><p>2 achetés, 1 offert. Saisir qté=2, offerts=1.</p></div>
+      <div class="tuto-item"><strong>Ajustement</strong><p>Correction comptable (perte, casse, erreur). Le produit « Ajustement » avec un coût manuel couvre les imprévus.</p></div>
+    </div>
+  </div>
+
+  <div class="tuto-section">
+    <h3>Conseils pratiques</h3>
+    <ul>
+      <li>Saisir les ventes <b>au fil de la journée</b> plutôt qu'en fin de soirée — moins d'oublis.</li>
+      <li>Vérifier le <b>Tableau de bord → Alertes</b> régulièrement pour détecter les produits non configurés.</li>
+      <li>Quand on rajoute un craft, créer d'abord la <b>Recette</b>, puis le <b>Produit</b> du même nom — le coût se lie automatiquement.</li>
+      <li>Le champ <b>Qté produite</b> d'une recette est crucial : sans lui, le coût unitaire est 0 et la marge semble fausse.</li>
+      <li>Pour les ingrédients de récolte gratuite, mettre le prix à <b>0 $</b> et cocher « Récolte gratuite ».</li>
+      <li>Utiliser les <b>Notes</b> sur les ventes pour tracer les événements spéciaux (soirée poker, fête, visiteur VIP).</li>
+    </ul>
+  </div>`;
 }
 
 // ── AUTH + NAVIGATION ──────────────────────────────────────────
