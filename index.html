@@ -278,7 +278,7 @@ const pct = n => (Number(n)||0).toLocaleString('fr-FR',{style:'percent',minimumF
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today = () => new Date().toISOString().slice(0,10);
 
-let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=null;
+let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=undefined;
 let CHARTS=[];
 let VIEW='dash';
 let EDIT_REC=null, ING_LIST=[];
@@ -336,8 +336,8 @@ function venteCalc(v) {
 
 // ── DATA ───────────────────────────────────────────────────────
 async function loadAll() {
-  loading(true);
   try {
+    loading(true);
     const [m, r, p, v] = await Promise.all([
       sb.from('matieres_premieres').select('*').order('id'),
       sb.from('recettes').select('*').order('id'),
@@ -345,10 +345,18 @@ async function loadAll() {
       sb.from('ventes').select('*').order('date', {ascending:false}).order('id', {ascending:false}),
     ]);
     MAT = m.data || []; REC = r.data || []; PRD = p.data || []; VEN = v.data || [];
-    const { data: sd, error: se } = await sb.from('stock').select('*').order('produit');
-    STOCK_DATA = se ? null : (sd || []);
+  } catch(e) {
+    console.error('loadAll error:', e);
   } finally {
     loading(false);
+  }
+}
+async function loadStock() {
+  try {
+    const { data, error } = await sb.from('stock').select('*').order('produit');
+    STOCK_DATA = error ? null : (data || []);
+  } catch {
+    STOCK_DATA = null;
   }
 }
 async function dbUpd(table, id, patch) {
@@ -363,7 +371,7 @@ async function dbDel(table, id) {
   toast('Supprimé');
   await refresh();
 }
-async function refresh() { await loadAll(); render(); }
+async function refresh() { STOCK_DATA = undefined; await loadAll(); render(); }
 
 // ── RENDER ─────────────────────────────────────────────────────
 function render() {
@@ -848,6 +856,12 @@ async function addMat() {
 
 // ── STOCK ──────────────────────────────────────────────────────
 function renderStock() {
+  if (STOCK_DATA === undefined) {
+    $('#view').innerHTML = head('Stock') +
+      `<p class="note" style="text-align:center;padding:20px">Chargement du stock…</p>`;
+    loadStock().then(() => { if (VIEW === 'stock') renderStock(); });
+    return;
+  }
   if (STOCK_DATA === null) {
     $('#view').innerHTML = head('Stock') + `<div class="setup-box">
       <p style="font-size:15px;margin:0 0 8px">La table <b>stock</b> n'existe pas encore dans Supabase.</p>
