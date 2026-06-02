@@ -298,16 +298,24 @@ function renderDash(){
 
   // Alertes
   const real=PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'));
+  const dismissed=getDismissed();
   const alertLines=[];
   real.forEach(p=>{
+    if(dismissed.has(p.nom)) return;
     const prix=Number(p.prix_vente)||0, c=coutProduit(p.nom);
-    if(prix===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — prix de vente à définir</span></div>`);
-    else if(c===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — coût de production inconnu (recette manquante ?)</span></div>`);
-    else if(prix-c<0) alertLines.push(`<div class="alert-row a-bad"><span class="alert-icon">❌</span><b>${esc(p.nom)}</b><span class="alert-label"> — vendu à perte · coût ${fmt(c)} › prix ${fmt(prix)}</span></div>`);
+    const db=`<button class="alert-dismiss" data-nom="${esc(p.nom)}" onclick="dismissAlert(this.dataset.nom)" title="Marquer comme traité">✓ Traité</button>`;
+    if(prix===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><span class="alert-body"><b>${esc(p.nom)}</b><span class="alert-label"> — prix de vente à définir</span></span>${db}</div>`);
+    else if(c===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><span class="alert-body"><b>${esc(p.nom)}</b><span class="alert-label"> — coût inconnu (recette manquante ?)</span></span>${db}</div>`);
+    else if(prix-c<0) alertLines.push(`<div class="alert-row a-bad"><span class="alert-icon">✕</span><span class="alert-body"><b>${esc(p.nom)}</b><span class="alert-label"> — vendu à perte · coût ${fmt(c)} › prix ${fmt(prix)}</span></span>${db}</div>`);
   });
+  const dismissedCount=[...dismissed].filter(nom=>real.some(p=>p.nom===nom)).length;
+  const dismissedBar=dismissedCount>0
+    ?`<div class="alerts-dismissed-bar">${dismissedCount} alerte${dismissedCount>1?'s':''} marquée${dismissedCount>1?'s':''} comme traitée${dismissedCount>1?'s':''}<button class="btn sm ghost" onclick="restoreAlerts()">Restaurer</button></div>`:'';
   const alertsHtml=alertLines.length
-    ?`<div class="alerts-grid">${alertLines.join('')}</div>`
-    :`<div class="alert-none">✅ Aucune alerte — tous les produits sont correctement configurés.</div>`;
+    ?`<div class="alerts-grid">${alertLines.join('')}</div>${dismissedBar}`
+    :dismissedCount>0
+      ?`<div class="alert-none">Toutes les alertes ont été traitées.</div>${dismissedBar}`
+      :`<div class="alert-none">Aucune alerte — tous les produits sont correctement configurés.</div>`;
 
   // Top 5
   const byP={};
@@ -507,6 +515,22 @@ function renderTarifs(){
       <button class="btn sm gold" onclick="window.print()">🖨 Imprimer la carte</button>
     </div>
     <div class="tarifs-grid">${grid}</div>`;
+}
+
+// ══════════════════════════════════
+//  ALERTES — MARQUAGE
+// ══════════════════════════════════
+function getDismissed(){
+  try{return new Set(JSON.parse(localStorage.getItem('sp_dismissed')||'[]'));}catch{return new Set();}
+}
+function dismissAlert(nom){
+  const d=getDismissed(); d.add(nom);
+  localStorage.setItem('sp_dismissed',JSON.stringify([...d]));
+  renderDash();
+}
+function restoreAlerts(){
+  localStorage.removeItem('sp_dismissed');
+  renderDash();
 }
 
 // ══════════════════════════════════
