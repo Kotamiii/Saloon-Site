@@ -3,127 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Silver Pine — Registre</title>
+<title>The Silver Pine — Registre du Saloon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rye&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
+/* ═══════════════════════════════════════════════════════
+   PALETTE & BASE
+═══════════════════════════════════════════════════════ */
 :root{
-  --ink:#2c1d12; --ink2:#5b4632; --parch:#e9ddc3; --parch2:#f1e8d4;
-  --card:#f6efdd; --line:#c9b48a; --wood:#3b2a1e; --wood2:#5a4130;
-  --gold:#9c7b2f; --wine:#7b2d26; --green:#3f6b3a; --red:#9b2c2c;
+  --ink:#2c1d12; --ink2:#5b4632; --ink3:#8a7460;
+  --parch:#e9ddc3; --parch2:#f1e8d4; --parch3:#faf4e6;
+  --card:#f7f1e1; --line:#c9b48a; --line2:#ddd0b0;
+  --wood:#3b2a1e; --wood2:#5a4130; --wood3:#7a5c44;
+  --gold:#9c7b2f; --gold2:#c9a84c; --gold3:#e8c96a;
+  --wine:#7b2d26; --wine2:#a03830;
+  --green:#3f6b3a; --green2:#5a9652;
+  --red:#9b2c2c;
+  --shadow:rgba(40,25,12,.12);
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{
+  margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);font-size:16px;
   background:
-    radial-gradient(900px 500px at 80% -10%,rgba(156,123,47,.10),transparent 60%),
-    radial-gradient(700px 500px at -10% 110%,rgba(123,45,38,.10),transparent 60%),
-    #e4d6b8;
-  font-size:16px}
+    repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(156,123,47,.04) 28px,rgba(156,123,47,.04) 29px),
+    radial-gradient(ellipse 90% 50% at 70% 0%,rgba(156,123,47,.09),transparent 60%),
+    radial-gradient(ellipse 70% 50% at 20% 100%,rgba(123,45,38,.07),transparent 60%),
+    #e6d8be;
+}
 .hidden{display:none!important}
-h1,h2,h3{font-family:'Rye',serif;font-weight:400;letter-spacing:.3px}
+h1,h2,h3,h4{font-family:'Rye',serif;font-weight:400;letter-spacing:.4px}
 button{font-family:'EB Garamond',serif;cursor:pointer}
-.wrap{max-width:1150px;margin:0 auto;padding:0 18px 60px}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px 80px}
 
-/* LOGIN */
-#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.lcard{background:var(--card);border:1px solid var(--wood2);border-radius:4px;
-  box-shadow:0 14px 40px rgba(40,25,12,.35);max-width:380px;width:100%;padding:34px 30px;
-  text-align:center;position:relative}
-.lcard::before{content:"";position:absolute;inset:6px;border:1px solid var(--gold);
-  border-radius:3px;pointer-events:none;opacity:.5}
-.lcard h1{color:var(--wine);font-size:30px;margin:.2em 0 0}
-.lcard .sub{font-style:italic;color:var(--ink2);margin:.2em 0 1.4em;letter-spacing:.5px}
-.lcard input{width:100%;padding:11px 12px;margin:7px 0;border:1px solid var(--wood2);
-  background:#fffdf6;border-radius:3px;font-size:15px;font-family:inherit}
-.btn{background:var(--wine);color:#f6e9c8;border:1px solid #5e201b;padding:11px 18px;
-  border-radius:3px;font-size:15px;letter-spacing:.5px;width:100%;margin-top:10px;transition:.15s}
-.btn:hover{background:#8c352d}
-.btn.sm{width:auto;padding:7px 14px;font-size:14px;margin:0}
-.btn.ghost{background:transparent;color:var(--wood);border:1px solid var(--wood2)}
-.btn.ghost:hover{background:rgba(91,65,48,.08)}
-.err{color:var(--red);font-size:14px;min-height:18px;margin-top:6px}
-.star{color:var(--gold);letter-spacing:6px;font-size:14px}
+/* ═══════════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════════ */
+#login{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:
+    radial-gradient(ellipse at 50% 40%,rgba(156,123,47,.08),transparent 70%),
+    #e0d0b0;
+}
+.lcard{
+  background:linear-gradient(160deg,#fdf8ef,#f3e9d4);
+  border:1px solid var(--wood2);border-radius:6px;
+  box-shadow:0 20px 60px rgba(40,25,12,.4),inset 0 1px 0 rgba(255,255,255,.5);
+  max-width:400px;width:100%;padding:40px 36px;text-align:center;position:relative;
+}
+.lcard::before{
+  content:"";position:absolute;inset:8px;
+  border:1px solid var(--gold);border-radius:4px;pointer-events:none;opacity:.45;
+}
+.lcard::after{
+  content:"";position:absolute;inset:12px;
+  border:1px solid var(--gold);border-radius:3px;pointer-events:none;opacity:.18;
+}
+.lcard-ornament{color:var(--gold);font-size:22px;letter-spacing:10px;margin-bottom:6px;display:block}
+.lcard h1{color:var(--wine);font-size:34px;margin:0 0 2px;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.lcard .sub{font-style:italic;color:var(--ink2);margin:0 0 6px;letter-spacing:.8px;font-size:15px}
+.lcard .sub2{font-size:13px;color:var(--ink3);margin:0 0 22px}
+.lcard input{
+  width:100%;padding:12px 14px;margin:6px 0;
+  border:1px solid var(--wood3);background:#fffef9;border-radius:4px;
+  font-size:15px;font-family:inherit;transition:border-color .15s;
+  box-shadow:inset 0 1px 3px rgba(40,25,12,.06);
+}
+.lcard input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(156,123,47,.12)}
+.lbtn{
+  background:linear-gradient(180deg,var(--wine2),var(--wine));
+  color:#f6e9c8;border:1px solid #5e201b;padding:13px 18px;
+  border-radius:4px;font-size:16px;letter-spacing:.6px;width:100%;margin-top:12px;
+  transition:.15s;box-shadow:0 3px 8px rgba(123,45,38,.35);
+}
+.lbtn:hover{background:linear-gradient(180deg,#c04540,#8c352d);transform:translateY(-1px);box-shadow:0 5px 12px rgba(123,45,38,.4)}
+.lbtn:active{transform:none}
+.err{color:var(--red);font-size:14px;min-height:18px;margin-top:8px}
 
-/* HEADER + TABS */
-header{background:linear-gradient(180deg,var(--wood),var(--wood2));color:#f2e6c9;
-  border-bottom:3px solid var(--gold)}
-.htop{max-width:1150px;margin:0 auto;padding:16px 18px;display:flex;align-items:center;
-  justify-content:space-between;gap:14px;flex-wrap:wrap}
-.htop h1{font-size:25px;color:#f4e7c5;margin:0;text-shadow:0 2px 0 rgba(0,0,0,.3)}
+/* ═══════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════ */
+header{
+  background:
+    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px),
+    linear-gradient(180deg,#4a3425 0%,var(--wood2) 60%,#4e3a28 100%);
+  border-bottom:3px solid var(--gold);
+  box-shadow:0 4px 20px rgba(0,0,0,.35);position:relative;
+}
+header::after{content:"";position:absolute;bottom:-6px;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold2),transparent)}
+.htop{max-width:1160px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.htop-brand{display:flex;flex-direction:column;gap:1px}
+.htop-brand h1{font-size:26px;color:#f4e7c5;margin:0;text-shadow:0 2px 4px rgba(0,0,0,.4);letter-spacing:.8px}
+.htop-brand .sub{font-size:12px;font-style:italic;color:var(--gold2);letter-spacing:1.5px;text-transform:uppercase}
 .htop .who{font-size:14px;font-style:italic;color:#d8c6a0;display:flex;gap:12px;align-items:center}
-.tabs{max-width:1150px;margin:0 auto;display:flex;gap:2px;padding:0 10px;flex-wrap:wrap}
-.tab{background:transparent;color:#e7d6ad;border:none;border-bottom:3px solid transparent;
-  padding:11px 16px;font-size:16px;letter-spacing:.4px}
+.tabs{max-width:1160px;margin:0 auto;display:flex;gap:0;padding:0 12px;flex-wrap:wrap}
+.tab{
+  background:transparent;color:rgba(231,214,173,.75);border:none;
+  border-bottom:3px solid transparent;padding:11px 16px;font-size:15.5px;letter-spacing:.4px;
+  transition:color .15s,border-color .15s;position:relative;
+}
 .tab:hover{color:#fff}
-.tab.active{color:#fff;border-bottom-color:var(--gold);font-weight:600}
+.tab.active{color:#fff;border-bottom-color:var(--gold2);font-weight:600}
+.tab.active::before{
+  content:"";position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+  border-bottom:6px solid #e6d8be;
+}
 
-/* CARDS / TABLES */
+/* HEADER BUTTONS */
+.btn{
+  background:linear-gradient(180deg,var(--wine2),var(--wine));
+  color:#f6e9c8;border:1px solid #5e201b;padding:9px 16px;
+  border-radius:4px;font-size:14.5px;letter-spacing:.4px;width:100%;
+  margin-top:8px;transition:.15s;box-shadow:0 2px 6px rgba(123,45,38,.3);
+}
+.btn:hover{background:linear-gradient(180deg,#c04540,#8c352d);transform:translateY(-1px);box-shadow:0 4px 10px rgba(123,45,38,.4)}
+.btn:active{transform:none;box-shadow:none}
+.btn.sm{width:auto;padding:6px 13px;font-size:13.5px;margin:0}
+.btn.ghost{background:transparent;color:var(--wood3);border:1px solid var(--wood3);box-shadow:none}
+.btn.ghost:hover{background:rgba(91,65,48,.1);transform:none}
+.btn.gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--wood);border-color:var(--gold);color:#2c1d12}
+.btn.gold:hover{background:linear-gradient(180deg,var(--gold3),var(--gold2))}
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT & SECTIONS
+═══════════════════════════════════════════════════════ */
 section{margin-top:26px}
-.secttl{display:flex;align-items:center;gap:12px;margin:0 0 14px}
-.secttl h2{color:var(--wine);font-size:23px;margin:0}
-.secttl .rule{flex:1;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:4px;
-  box-shadow:0 4px 14px rgba(40,25,12,.10);overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:15px}
-th{background:var(--wood2);color:#f1e3c4;font-family:'EB Garamond';font-weight:600;
-  text-align:left;padding:9px 11px;font-size:13.5px;letter-spacing:.3px;white-space:nowrap}
-td{padding:8px 11px;border-top:1px solid #e2d3b0;vertical-align:middle}
-tr:nth-child(even) td{background:rgba(201,180,138,.13)}
-td input,td select{width:100%;border:1px solid #d8c7a0;background:#fffdf6;padding:5px 6px;
-  border-radius:3px;font-family:inherit;font-size:14px}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
-.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12.5px;white-space:nowrap}
-.ok{background:#dcebd4;color:#345e2e}
-.warn{background:#f6e2bd;color:#7a5a17}
-.bad{background:#f1cfca;color:#8a2620}
-.muted{background:#e6ddc7;color:#6b5a3c}
-.del{color:var(--red);background:none;border:none;font-size:16px;padding:2px 6px;line-height:1}
-.del:hover{color:#000}
-.icobtn{color:var(--ink2);background:none;border:none;font-size:15px;padding:2px 7px;cursor:pointer;line-height:1;border-radius:3px}
-.icobtn:hover{background:rgba(91,65,48,.1);color:var(--wine)}
-.row-actions{display:flex;gap:2px;white-space:nowrap;align-items:center}
-.addbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;padding:14px;
-  background:rgba(91,65,48,.06);border-top:1px solid #e2d3b0}
-.addbar label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
-.addbar input,.addbar select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
-  background:#fffdf6;font-family:inherit;font-size:14px}
+.secttl{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding-bottom:4px}
+.secttl .orn{color:var(--gold);font-size:13px;flex-shrink:0;margin-top:2px}
+.secttl h2{color:var(--wine);font-size:22px;margin:0;white-space:nowrap}
+.secttl .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);margin-left:4px}
+.secttl .rule::before{content:"";display:block;height:3px;margin-top:-1px;background:linear-gradient(90deg,var(--gold2),transparent 40%);opacity:.4}
 .note{font-size:13.5px;color:var(--ink2);font-style:italic;margin:0 0 14px}
 
-/* KPIs / CHARTS */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:16px 18px;
-  position:relative;box-shadow:0 4px 14px rgba(40,25,12,.08)}
-.kpi::after{content:"";position:absolute;inset:5px;border:1px solid rgba(156,123,47,.35);
-  border-radius:3px;pointer-events:none}
-.kpi .k{font-size:13px;color:var(--ink2);text-transform:uppercase;letter-spacing:1px}
-.kpi .v{font-family:'Rye';font-size:25px;color:var(--wine);margin-top:6px}
-.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-top:18px}
-.chartbox{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:14px 16px 8px;
-  box-shadow:0 4px 14px rgba(40,25,12,.08)}
-.chartbox h3{margin:0 0 8px;color:var(--wood);font-size:16px}
+/* ═══════════════════════════════════════════════════════
+   CARDS & TABLES
+═══════════════════════════════════════════════════════ */
+.card{
+  background:linear-gradient(160deg,var(--parch3) 0%,var(--card) 100%);
+  border:1px solid var(--line2);border-radius:5px;
+  box-shadow:0 4px 16px var(--shadow);overflow:hidden;
+}
+.card-gold{border-color:rgba(156,123,47,.4);box-shadow:0 4px 20px rgba(156,123,47,.12)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{
+  background:linear-gradient(180deg,var(--wood2),#4a3425);
+  color:#f0e1c0;font-family:'EB Garamond';font-weight:600;
+  text-align:left;padding:10px 12px;font-size:13px;letter-spacing:.4px;white-space:nowrap;
+}
+td{padding:9px 12px;border-top:1px solid var(--line2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:rgba(201,180,138,.1)}
+tr:hover td{background:rgba(156,123,47,.05)}
+td input,td select{
+  width:100%;border:1px solid #d0be9a;background:#fffef8;padding:5px 7px;
+  border-radius:3px;font-family:inherit;font-size:14px;transition:border-color .12s;
+}
+td input:focus,td select:focus{outline:none;border-color:var(--gold)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12.5px;white-space:nowrap;font-family:'EB Garamond',serif}
+.ok{background:#dcebd4;color:#2d5428}.warn{background:#f6e2bd;color:#7a5a17}
+.bad{background:#f1cfca;color:#8a2620}.muted{background:#e6ddc7;color:#6b5a3c}
+.del{color:var(--red);background:none;border:none;font-size:16px;padding:3px 7px;line-height:1;border-radius:3px;transition:.1s}
+.del:hover{color:#fff;background:var(--red)}
+.icobtn{color:var(--ink2);background:none;border:none;font-size:15px;padding:3px 7px;cursor:pointer;line-height:1;border-radius:3px;transition:.1s}
+.icobtn:hover{background:rgba(91,65,48,.12);color:var(--wine)}
+.row-actions{display:flex;gap:2px;white-space:nowrap;align-items:center}
+.addbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;padding:14px 16px;
+  background:rgba(91,65,48,.05);border-top:1px solid var(--line2)}
+.addbar label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.addbar input,.addbar select{
+  padding:7px 9px;border:1px solid var(--line);border-radius:3px;
+  background:#fffef8;font-family:inherit;font-size:14px;
+}
 
-/* FILTER PILLS */
+/* ═══════════════════════════════════════════════════════
+   KPIs / CHARTS
+═══════════════════════════════════════════════════════ */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px;margin-bottom:4px}
+.kpi{
+  background:linear-gradient(160deg,#fdf8ef,#f3e8d4);
+  border:1px solid var(--line2);border-radius:5px;padding:16px 18px;
+  position:relative;box-shadow:0 4px 16px var(--shadow);
+  border-top:3px solid var(--gold);
+}
+.kpi::after{content:"";position:absolute;inset:6px;border:1px solid rgba(156,123,47,.25);border-radius:3px;pointer-events:none}
+.kpi .k{font-size:11.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:1.2px}
+.kpi .v{font-family:'Rye';font-size:24px;color:var(--wine);margin-top:8px;line-height:1}
+.kpi .v.pos{color:var(--green)}
+.kpi .v.neg{color:var(--red)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-top:20px}
+.chartbox{
+  background:linear-gradient(160deg,#fdf8ef,var(--card));
+  border:1px solid var(--line2);border-radius:5px;padding:16px 18px 10px;
+  box-shadow:0 4px 16px var(--shadow);
+}
+.chartbox h3{margin:0 0 10px;color:var(--wood);font-size:15.5px;font-family:'Rye',serif;
+  padding-bottom:8px;border-bottom:1px solid var(--line2)}
+
+/* ═══════════════════════════════════════════════════════
+   FILTER PILLS & PERIOD TABS
+═══════════════════════════════════════════════════════ */
 .filter-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.fpill{background:var(--parch2);border:1px solid var(--line);color:var(--ink2);
-  padding:4px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:.1s;user-select:none}
-.fpill:hover,.fpill.active{background:var(--wine);color:#f6e9c8;border-color:var(--wine)}
+.fpill{
+  background:var(--parch2);border:1px solid var(--line);color:var(--ink2);
+  padding:5px 13px;border-radius:20px;font-size:13px;cursor:pointer;
+  transition:.15s;user-select:none;
+}
+.fpill:hover{background:rgba(91,65,48,.12)}
+.fpill.active{background:var(--wine);color:#f6e9c8;border-color:var(--wine);box-shadow:0 2px 6px rgba(123,45,38,.25)}
+.period-bar{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--line);border-radius:4px;overflow:hidden;width:fit-content}
+.pbtab{background:transparent;border:none;padding:7px 16px;font-size:13.5px;color:var(--ink2);transition:.12s;border-right:1px solid var(--line)}
+.pbtab:last-child{border-right:none}
+.pbtab:hover{background:rgba(91,65,48,.08)}
+.pbtab.active{background:var(--wine);color:#f6e9c8;font-weight:600}
 
-/* JOURNÉES — DAY CARDS */
-.day-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.daygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:14px;margin-top:20px}
-.daycard{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px;
-  cursor:pointer;transition:transform .15s,box-shadow .15s;
-  box-shadow:0 3px 10px rgba(40,25,12,.08);position:relative;overflow:hidden}
-.daycard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(40,25,12,.15)}
-.daycard.selected{border-color:var(--gold);box-shadow:0 4px 18px rgba(156,123,47,.3)}
-.daycard.today-card{border-color:var(--gold)}
-.today-badge{position:absolute;top:0;right:0;background:var(--gold);color:#fff8e6;
-  font-size:10px;padding:2px 8px;border-radius:0 6px 0 6px;letter-spacing:.8px;
-  text-transform:uppercase;font-family:'EB Garamond',serif;font-weight:600}
-.daycard-date{font-family:'Rye',serif;font-size:13.5px;color:var(--wine);margin-bottom:10px;
-  text-transform:capitalize;padding-right:30px;line-height:1.3}
+/* ═══════════════════════════════════════════════════════
+   DAY CARDS (JOURNÉES)
+═══════════════════════════════════════════════════════ */
+.day-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:10px}
+.daygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px;margin-top:16px}
+.daycard{
+  background:linear-gradient(160deg,#fdf8ef,var(--card));
+  border:1px solid var(--line2);border-radius:6px;padding:14px 16px;
+  cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;
+  box-shadow:0 3px 12px var(--shadow);position:relative;overflow:hidden;
+}
+.daycard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(40,25,12,.18)}
+.daycard.selected{border-color:var(--gold2);box-shadow:0 4px 20px rgba(156,123,47,.3)}
+.daycard.today-card{border-top:3px solid var(--gold2)}
+.today-badge{
+  position:absolute;top:0;right:0;background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:#2c1d12;font-size:9px;padding:3px 9px;border-radius:0 6px 0 6px;
+  letter-spacing:1px;text-transform:uppercase;font-weight:700;
+}
+.daycard-date{font-family:'Rye',serif;font-size:13px;color:var(--wine);margin-bottom:10px;
+  text-transform:capitalize;padding-right:32px;line-height:1.3}
 .daycard-stats{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .daycard-stat{display:flex;justify-content:space-between;font-size:14px}
 .dc-label{color:var(--ink2)}
@@ -132,179 +249,219 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .dc-marge-warn .dc-val{color:#8a6020}
 .dc-marge-bad .dc-val{color:var(--red)}
 .daycard-footer{display:flex;justify-content:space-between;align-items:center;
-  border-top:1px solid var(--line);padding-top:8px;font-size:13px}
+  border-top:1px solid var(--line2);padding-top:8px;font-size:13px}
 .dc-count{color:var(--ink2)}
-.dc-toggle{color:var(--gold);font-weight:600;font-size:12px;letter-spacing:.5px}
+.dc-toggle{color:var(--gold);font-weight:600;font-size:11.5px;letter-spacing:.5px}
 
 /* DAY PANEL */
-.day-panel{background:var(--card);border:1px solid var(--gold);border-radius:6px;
-  padding:20px;box-shadow:0 6px 24px rgba(156,123,47,.18);
-  animation:fadeDown .2s ease}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.day-panel-head{display:flex;justify-content:space-between;align-items:flex-start;
-  margin-bottom:16px;gap:12px;flex-wrap:wrap}
-.day-panel-title{font-family:'Rye',serif;font-size:19px;color:var(--wine);margin-bottom:4px;
-  text-transform:capitalize}
-.day-panel-kpis{display:flex;gap:18px;flex-wrap:wrap}
+.day-panel{
+  background:linear-gradient(160deg,#fdf8ef,var(--card));
+  border:1px solid var(--gold);border-radius:6px;
+  padding:20px 22px;box-shadow:0 8px 30px rgba(156,123,47,.18);
+  animation:fadeDown .2s ease;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.day-panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.day-panel-title{font-family:'Rye',serif;font-size:19px;color:var(--wine);margin-bottom:4px;text-transform:capitalize}
+.day-panel-kpis{display:flex;gap:20px;flex-wrap:wrap}
 .dp-kpi{font-size:14px;color:var(--ink2)}
 .dp-kpi strong{color:var(--ink);font-size:15px}
-.day-panel-close{background:none;border:none;font-size:22px;color:var(--ink2);cursor:pointer;
-  padding:0 4px;line-height:1;flex-shrink:0}
+.day-panel-close{background:none;border:none;font-size:22px;color:var(--ink2);cursor:pointer;padding:0 4px;line-height:1}
 .day-panel-close:hover{color:var(--wine)}
-.addform{background:rgba(91,65,48,.06);border:1px solid var(--line);border-radius:4px;
-  padding:14px;margin-top:14px}
-.addform-title{font-size:13px;color:var(--ink2);font-weight:600;margin-bottom:10px}
+.addform{background:rgba(91,65,48,.05);border:1px solid var(--line2);border-radius:4px;padding:14px;margin-top:14px}
+.addform-title{font-size:13px;color:var(--ink2);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
 .addform-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .addform label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
-.addform input,.addform select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
-  background:#fffdf6;font-family:inherit;font-size:14px}
-tr.editing td{background:#fffbf0!important}
+.addform input,.addform select{padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fffef8;font-family:inherit;font-size:14px}
+tr.editing td{background:#fffbef!important}
 
-/* INGREDIENT EDITOR */
-.rec-form-card{background:var(--card);border:1px solid var(--line);border-radius:4px;
-  padding:18px;box-shadow:0 4px 14px rgba(40,25,12,.08)}
+/* ═══════════════════════════════════════════════════════
+   RECIPE EDITOR
+═══════════════════════════════════════════════════════ */
+.rec-form-card{background:linear-gradient(160deg,#fdf8ef,var(--card));border:1px solid var(--line2);border-radius:5px;padding:20px;box-shadow:0 4px 16px var(--shadow)}
 .rec-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
 .rec-meta label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
-.rec-meta input,.rec-meta select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
-  background:#fffdf6;font-family:inherit;font-size:14px}
-.ing-section-title{font-size:12.5px;color:var(--ink2);font-weight:600;margin:0 0 8px;
-  text-transform:uppercase;letter-spacing:.6px}
+.rec-meta input,.rec-meta select{padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fffef8;font-family:inherit;font-size:14px}
+.ing-section-title{font-size:12px;color:var(--ink2);font-weight:600;margin:0 0 8px;text-transform:uppercase;letter-spacing:.8px}
 .ing-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .ing-row{display:flex;gap:8px;align-items:center}
-.ing-row select{flex:1;min-width:0;padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
-  background:#fffdf6;font-family:inherit;font-size:14px}
-.ing-row input{width:85px;flex-shrink:0;padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
-  background:#fffdf6;font-family:inherit;font-size:14px}
-.ing-row .del-ing{background:none;border:none;color:var(--red);font-size:20px;
-  cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0}
-.ing-row .del-ing:hover{color:#000}
-.add-ing-btn{background:none;border:1px dashed var(--wood2);color:var(--wood);
-  padding:6px 14px;border-radius:3px;font-size:13.5px;cursor:pointer;transition:.1s;width:100%}
-.add-ing-btn:hover{background:rgba(91,65,48,.07);border-style:solid}
+.ing-row select{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fffef8;font-family:inherit;font-size:14px}
+.ing-row input{width:85px;flex-shrink:0;padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fffef8;font-family:inherit;font-size:14px}
+.ing-row .del-ing{background:none;border:none;color:var(--red);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;border-radius:3px;transition:.1s}
+.ing-row .del-ing:hover{background:var(--red);color:#fff}
+.add-ing-btn{background:none;border:1px dashed var(--wood3);color:var(--wood2);padding:7px 14px;border-radius:4px;font-size:14px;cursor:pointer;transition:.12s;width:100%}
+.add-ing-btn:hover{background:rgba(91,65,48,.08);border-style:solid}
 .rec-actions{display:flex;gap:8px;margin-top:16px}
 
-/* STOCK */
-.stock-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600}
-.s-ok{background:#dcebd4;color:#345e2e}
+/* ═══════════════════════════════════════════════════════
+   STOCK
+═══════════════════════════════════════════════════════ */
+.stock-badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:12px;font-weight:600}
+.s-ok{background:#dcebd4;color:#2d5428}
 .s-low{background:#f6e2bd;color:#7a5a17}
 .s-empty{background:#f1cfca;color:#8a2620}
-.setup-box{background:var(--card);border:2px dashed var(--line);border-radius:6px;
-  padding:24px;text-align:center;color:var(--ink2);line-height:1.7}
-.setup-box pre{background:var(--wood2);color:#f4e7c5;padding:14px;border-radius:4px;
-  text-align:left;font-size:12px;overflow-x:auto;margin:14px 0;white-space:pre-wrap}
+.setup-box{background:var(--card);border:2px dashed var(--line);border-radius:6px;padding:24px;text-align:center;color:var(--ink2);line-height:1.7}
+.setup-box pre{background:var(--wood2);color:#f4e7c5;padding:14px;border-radius:4px;text-align:left;font-size:12px;overflow-x:auto;margin:14px 0;white-space:pre-wrap}
 
-/* TOAST */
-#toastZone{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;
-  gap:8px;z-index:9999;pointer-events:none}
-.toast{background:var(--wood);color:#f4e7c5;padding:11px 16px;border-radius:4px;
-  font-size:14px;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.3);
-  transform:translateX(110%);transition:transform .25s ease;
-  border-left:4px solid var(--gold);pointer-events:auto}
-.toast.show{transform:none}
-.toast.t-err{background:var(--red);border-left-color:#f1cfca}
-.toast.t-ok{border-left-color:#3f6b3a}
+/* ═══════════════════════════════════════════════════════
+   DASHBOARD — TODAY BANNER
+═══════════════════════════════════════════════════════ */
+.today-banner{
+  background:
+    repeating-linear-gradient(90deg,transparent,transparent 4px,rgba(0,0,0,.02) 4px,rgba(0,0,0,.02) 5px),
+    linear-gradient(135deg,#4a3425,var(--wood2),#3b2a1e);
+  color:#f4e7c5;border-radius:6px;padding:18px 22px;margin-bottom:20px;
+  display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  box-shadow:0 6px 20px rgba(40,25,12,.25);border:1px solid rgba(200,168,76,.5);
+}
+.tb-title{font-family:'Rye',serif;font-size:15px;color:var(--gold2);letter-spacing:.8px;white-space:nowrap}
+.tb-kpis{display:flex;gap:28px;flex-wrap:wrap;flex:1}
+.tb-k{display:flex;flex-direction:column;gap:2px}
+.tb-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:rgba(244,231,197,.65)}
+.tb-val{font-family:'Rye',serif;font-size:21px;color:#f4e7c5}
+.tb-val.pos{color:#8fd48a}
+.tb-val.neg{color:#f1a0a0}
 
-/* LOADER — fine barre en haut, non bloquante */
-#loader{position:fixed;top:0;left:0;right:0;height:3px;z-index:9900;
-  background:linear-gradient(90deg,var(--gold) 0%,var(--wine) 50%,var(--gold) 100%);
-  background-size:200% 100%;animation:loadbar 1.4s linear infinite;
-  transform-origin:left;pointer-events:none}
-#loader.hidden{display:none}
-@keyframes loadbar{0%{background-position:100% 0}100%{background-position:-100% 0}}
+/* DASHBOARD — WEEK COMPARE */
+.week-cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.wc-box{
+  background:linear-gradient(160deg,#fdf8ef,var(--card));
+  border:1px solid var(--line2);border-radius:5px;padding:14px 18px;
+  box-shadow:0 3px 10px var(--shadow);
+}
+.wc-label{font-size:11.5px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);margin-bottom:8px}
+.wc-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.wc-name{font-size:14px;color:var(--ink)}
+.wc-val{font-family:'Rye',serif;font-size:16px;color:var(--wine)}
+.wc-diff{font-size:13px;font-weight:600}
+.wc-diff.up{color:var(--green)}
+.wc-diff.dn{color:var(--red)}
+.wc-diff.eq{color:var(--ink2)}
 
-/* CAT GROUP HEADERS */
-.cat-group-title{font-family:'Rye',serif;font-size:14px;color:var(--wood2);
-  padding:4px 2px;margin:18px 0 6px;letter-spacing:.5px}
-.cat-group-title:first-child{margin-top:0}
-
-/* DASHBOARD — TODAY BANNER */
-.today-banner{background:linear-gradient(135deg,var(--wood),var(--wood2));color:#f4e7c5;
-  border-radius:6px;padding:16px 20px;margin-bottom:18px;
-  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
-  box-shadow:0 4px 14px rgba(40,25,12,.2);border:1px solid var(--gold)}
-.today-banner .tb-title{font-family:'Rye',serif;font-size:15px;color:var(--gold);
-  letter-spacing:.5px;white-space:nowrap}
-.today-banner .tb-kpis{display:flex;gap:22px;flex-wrap:wrap;flex:1}
-.today-banner .tb-k{display:flex;flex-direction:column;gap:2px}
-.today-banner .tb-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;
-  color:rgba(244,231,197,.7)}
-.today-banner .tb-val{font-family:'Rye',serif;font-size:20px;color:#f4e7c5}
-.today-banner .tb-marge-ok{color:#8fd48a}
-.today-banner .tb-marge-bad{color:#f1a0a0}
+/* DASHBOARD — OBJECTIF */
+.objectif-box{
+  background:linear-gradient(160deg,#fdf8ef,var(--card));
+  border:1px solid var(--line2);border-radius:5px;padding:16px 18px;
+  margin-bottom:20px;box-shadow:0 3px 10px var(--shadow);
+}
+.obj-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.obj-title{font-family:'Rye',serif;font-size:15px;color:var(--wine)}
+.obj-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.obj-form input{padding:5px 8px;border:1px solid var(--line);border-radius:3px;background:#fffef8;font-family:inherit;font-size:14px;width:120px}
+.obj-form input:focus{outline:none;border-color:var(--gold)}
+.progress-track{background:#e6ddc7;border-radius:4px;height:10px;overflow:hidden;margin:6px 0 4px}
+.progress-fill{height:10px;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s ease}
+.progress-fill.over{background:linear-gradient(90deg,var(--green),var(--green2))}
+.obj-legend{font-size:13px;color:var(--ink2);display:flex;justify-content:space-between}
 
 /* DASHBOARD — ALERTS */
-.alerts-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
-.alert-row{display:flex;align-items:center;gap:10px;background:var(--card);
-  border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:14px}
+.alerts-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.alert-row{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#fdf8ef,var(--card));border:1px solid var(--line2);border-radius:4px;padding:8px 13px;font-size:14px}
 .alert-row.a-bad{border-left:4px solid var(--red)}
 .alert-row.a-warn{border-left:4px solid #c9960a}
-.alert-icon{font-size:16px;flex-shrink:0}
+.alert-icon{font-size:15px;flex-shrink:0}
 .alert-label{color:var(--ink2);font-size:13px}
+.alert-none{font-size:14px;color:var(--green);padding:6px 2px}
 
 /* DASHBOARD — TOP PRODUITS */
 .top-table{width:100%;border-collapse:collapse;font-size:14px}
-.top-table td{padding:6px 10px;border-top:1px solid #e2d3b0}
+.top-table td{padding:7px 12px;border-top:1px solid var(--line2)}
 .top-table tr:first-child td{border-top:none}
-.top-table .rank{color:var(--gold);font-family:'Rye',serif;font-size:13px;width:28px}
-.top-table .bar-wrap{background:#e6ddc7;border-radius:3px;height:6px;overflow:hidden;
-  min-width:60px;flex:1}
-.top-table .bar-fill{height:6px;border-radius:3px;background:var(--wine)}
-.top-row{display:flex;align-items:center;gap:8px}
+.top-table .rank{color:var(--gold);font-family:'Rye',serif;font-size:13px;width:28px;text-align:center}
+.bar-wrap{background:#e6ddc7;border-radius:3px;height:7px;overflow:hidden;min-width:50px;flex:1}
+.bar-fill{height:7px;border-radius:3px;background:linear-gradient(90deg,var(--wine),var(--wine2))}
+.top-row{display:flex;align-items:center;gap:10px}
 
-/* TUTORIAL */
-.tuto-section{background:var(--card);border:1px solid var(--line);border-radius:6px;
-  padding:20px 24px;margin-bottom:16px;box-shadow:0 3px 10px rgba(40,25,12,.07)}
-.tuto-section h3{font-family:'Rye',serif;color:var(--wine);font-size:17px;margin:0 0 12px;
-  padding-bottom:8px;border-bottom:1px solid var(--line)}
-.tuto-section p,.tuto-section li{line-height:1.7;color:var(--ink);font-size:15px}
-.tuto-section ul{margin:8px 0;padding-left:20px}
+/* ═══════════════════════════════════════════════════════
+   CAT GROUP TITLES
+═══════════════════════════════════════════════════════ */
+.cat-group-title{
+  font-family:'Rye',serif;font-size:13.5px;color:var(--wood2);
+  padding:4px 0;margin:18px 0 6px;letter-spacing:.6px;
+  display:flex;align-items:center;gap:8px;
+}
+.cat-group-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.cat-group-title:first-child{margin-top:0}
+
+/* ═══════════════════════════════════════════════════════
+   TOAST & LOADER
+═══════════════════════════════════════════════════════ */
+#toastZone{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none}
+.toast{
+  background:linear-gradient(135deg,#4a3425,var(--wood));
+  color:#f4e7c5;padding:11px 16px;border-radius:5px;font-size:14px;
+  max-width:310px;box-shadow:0 6px 20px rgba(0,0,0,.35);
+  transform:translateX(110%);transition:transform .25s ease;
+  border-left:4px solid var(--gold2);pointer-events:auto;
+}
+.toast.show{transform:none}
+.toast.t-err{background:linear-gradient(135deg,#7a1f1f,var(--red));border-left-color:#f1cfca}
+.toast.t-ok{border-left-color:#5a9652}
+#loader{position:fixed;top:0;left:0;right:0;height:3px;z-index:9900;
+  background:linear-gradient(90deg,var(--gold2),var(--wine),var(--gold2));
+  background-size:200% 100%;animation:loadbar 1.3s linear infinite;pointer-events:none}
+#loader.hidden{display:none}
+@keyframes loadbar{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+/* ═══════════════════════════════════════════════════════
+   TUTORIAL
+═══════════════════════════════════════════════════════ */
+.tuto-section{background:linear-gradient(160deg,#fdf8ef,var(--card));border:1px solid var(--line2);border-radius:6px;padding:20px 24px;margin-bottom:16px;box-shadow:0 3px 12px var(--shadow)}
+.tuto-section h3{font-family:'Rye',serif;color:var(--wine);font-size:17px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line2)}
+.tuto-section p,.tuto-section li{line-height:1.75;color:var(--ink);font-size:15px}
+.tuto-section ul,.tuto-section ol{margin:8px 0;padding-left:20px}
 .tuto-section li{margin-bottom:4px}
-.tuto-pill{display:inline-block;padding:1px 8px;border-radius:12px;font-size:13px;
-  font-family:'EB Garamond',serif;white-space:nowrap}
-.tuto-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.tuto-item{background:rgba(91,65,48,.05);border:1px solid var(--line);border-radius:4px;
-  padding:12px 14px}
-.tuto-item strong{font-family:'Rye',serif;font-size:14px;color:var(--wood);
-  display:block;margin-bottom:4px}
+.tuto-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px}
+.tuto-item{background:rgba(91,65,48,.05);border:1px solid var(--line2);border-radius:4px;padding:12px 15px}
+.tuto-item strong{font-family:'Rye',serif;font-size:13.5px;color:var(--wood);display:block;margin-bottom:4px}
 .tuto-item p{margin:0;font-size:14px;color:var(--ink2)}
-.tuto-formula{background:var(--wood2);color:#f4e7c5;border-radius:4px;padding:10px 14px;
-  font-size:13.5px;margin:10px 0;font-family:monospace;line-height:1.6}
+.tuto-formula{background:var(--wood2);color:#f4e7c5;border-radius:4px;padding:12px 16px;font-size:13.5px;margin:10px 0;font-family:monospace;line-height:1.7}
 
-@media(max-width:600px){
-  .htop h1{font-size:20px}
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media(max-width:700px){
+  .htop h1{font-size:21px}
   .tab{padding:9px 10px;font-size:14px}
-  .daygrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .daygrid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
   .day-panel-kpis{flex-direction:column;gap:4px}
+  .week-cmp{grid-template-columns:1fr}
   .rec-meta{flex-direction:column;align-items:stretch}
+  .kpi .v{font-size:20px}
+  .today-banner{flex-direction:column;gap:12px}
+  .tb-kpis{gap:16px}
 }
 </style>
 </head>
 <body>
-
 <div id="toastZone"></div>
 <div id="loader" class="hidden"></div>
 
-<!-- LOGIN -->
+<!-- ═══════════ LOGIN ═══════════ -->
 <div id="login">
   <div class="lcard">
-    <div class="star">★ ★ ★</div>
+    <span class="lcard-ornament">✦ ✦ ✦</span>
     <h1>The Silver Pine</h1>
-    <div class="sub">Registre du saloon · Strawberry, 1899</div>
+    <div class="sub">Saloon · Strawberry · 1899</div>
+    <div class="sub2">Accès réservé au personnel</div>
     <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username">
     <input id="pass" type="password" placeholder="Mot de passe" autocomplete="current-password">
-    <button class="btn" id="loginBtn">Entrer dans le saloon</button>
+    <button class="lbtn" id="loginBtn">Entrer dans le saloon</button>
     <div class="err" id="loginErr"></div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ═══════════ APP ═══════════ -->
 <div id="app" class="hidden">
   <header>
     <div class="htop">
-      <h1>🥃 The Silver Pine</h1>
+      <div class="htop-brand">
+        <h1>🥃 The Silver Pine</h1>
+        <div class="sub">Registre du saloon — Strawberry, 1899</div>
+      </div>
       <div class="who">
         <span id="userEmail"></span>
-        <button class="btn sm ghost" id="logoutBtn" style="color:#f0e3c4;border-color:#caa">Sortir</button>
+        <button class="btn sm ghost" id="logoutBtn" style="color:#d8c6a0;border-color:rgba(200,168,76,.4)">Sortir</button>
       </div>
     </div>
     <div class="tabs" id="tabs">
@@ -321,13 +478,14 @@ tr.editing td{background:#fffbf0!important}
 </div>
 
 <script>
-// ====== CONFIG ======
-const SUPABASE_URL = "https://tpzpqusflfqxcobsugal.supabase.co";
+// ══════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════
+const SUPABASE_URL  = "https://tpzpqusflfqxcobsugal.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_gmljcxE-XRvc9aEJ3ECpNA_X0iuf6Bm";
-// ====================
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const $ = s => document.querySelector(s);
+const sb  = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $   = s => document.querySelector(s);
 const fmt = n => (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' $';
 const pct = n => (Number(n)||0).toLocaleString('fr-FR',{style:'percent',minimumFractionDigits:1});
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -339,280 +497,393 @@ let VIEW='dash';
 let EDIT_REC=null, ING_LIST=[];
 let SELECTED_DAY=null, EDIT_VENTE=null;
 let FILTER_CAT=null;
+let PERIODE='all'; // today | week | month | all
 
-// ── TOAST ──────────────────────────────────────────────────────
+// ══════════════════════════════════
+//  TOAST & LOADER
+// ══════════════════════════════════
 function toast(msg, type='ok') {
-  const z = $('#toastZone');
-  const t = document.createElement('div');
-  t.className = 'toast t-' + type;
-  t.textContent = msg;
+  const z=$('#toastZone'), t=document.createElement('div');
+  t.className='toast t-'+type; t.textContent=msg;
   z.appendChild(t);
-  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
-  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3200);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3200);
 }
+function loading(on){ $('#loader').classList.toggle('hidden',!on); }
 
-// ── LOADER ─────────────────────────────────────────────────────
-function loading(on) { $('#loader').classList.toggle('hidden', !on); }
-
-// ── CALCULS ────────────────────────────────────────────────────
-function coutIngredient(nom, stack) {
-  const m = MAT.find(x => x.nom === nom);
-  if (m) return Number(m.prix) || 0;
-  return coutRecetteUnit(nom, stack);
+// ══════════════════════════════════
+//  CALCULS (logique métier)
+// ══════════════════════════════════
+function coutIngredient(nom,stack){
+  const m=MAT.find(x=>x.nom===nom);
+  if(m) return Number(m.prix)||0;
+  return coutRecetteUnit(nom,stack);
 }
-function coutRecetteUnit(nom, stack=[]) {
-  if (stack.includes(nom)) return 0;
-  const r = REC.find(x => x.nom === nom);
-  if (!r) return 0;
-  const ns = [...stack, nom];
-  let tot = 0;
-  for (const ing of (r.ingredients || [])) tot += coutIngredient(ing.nom, ns) * (Number(ing.qte) || 0);
-  const q = Number(r.qte_produite);
-  return q > 0 ? tot / q : 0;
+function coutRecetteUnit(nom,stack=[]){
+  if(stack.includes(nom)) return 0;
+  const r=REC.find(x=>x.nom===nom); if(!r) return 0;
+  const ns=[...stack,nom]; let tot=0;
+  for(const ing of(r.ingredients||[])) tot+=coutIngredient(ing.nom,ns)*(Number(ing.qte)||0);
+  const q=Number(r.qte_produite); return q>0?tot/q:0;
 }
-function coutTotalRecette(r) {
-  let tot = 0;
-  for (const ing of (r.ingredients || [])) tot += coutIngredient(ing.nom, [r.nom]) * (Number(ing.qte) || 0);
+function coutTotalRecette(r){
+  let tot=0;
+  for(const ing of(r.ingredients||[])) tot+=coutIngredient(ing.nom,[r.nom])*(Number(ing.qte)||0);
   return tot;
 }
-function coutProduit(nom) {
-  const p = PRD.find(x => x.nom === nom);
-  if (p && p.cout_manuel != null) return Number(p.cout_manuel);
+function coutProduit(nom){
+  const p=PRD.find(x=>x.nom===nom);
+  if(p&&p.cout_manuel!=null) return Number(p.cout_manuel);
   return coutRecetteUnit(nom);
 }
-function prixBase(nom) { const p = PRD.find(x => x.nom === nom); return p ? Number(p.prix_vente) || 0 : 0; }
-function catProduit(nom) { const p = PRD.find(x => x.nom === nom); return p ? p.categorie : ''; }
-function venteCalc(v) {
-  const prix = (v.prix_unit != null && v.prix_unit !== '') ? Number(v.prix_unit) : prixBase(v.produit);
-  const ca = (Number(v.qte_vendue) || 0) * prix;
-  const cout = ((Number(v.qte_vendue) || 0) + (Number(v.offerts) || 0)) * coutProduit(v.produit);
-  return { prix, ca, cout, marge: ca - cout };
+function prixBase(nom){ const p=PRD.find(x=>x.nom===nom); return p?Number(p.prix_vente)||0:0; }
+function catProduit(nom){ const p=PRD.find(x=>x.nom===nom); return p?p.categorie:''; }
+function venteCalc(v){
+  const prix=(v.prix_unit!=null&&v.prix_unit!=='')?Number(v.prix_unit):prixBase(v.produit);
+  const ca=(Number(v.qte_vendue)||0)*prix;
+  const cout=((Number(v.qte_vendue)||0)+(Number(v.offerts)||0))*coutProduit(v.produit);
+  return{prix,ca,cout,marge:ca-cout};
 }
 
-// ── DATA ───────────────────────────────────────────────────────
-async function loadAll() {
-  try {
+// ══════════════════════════════════
+//  DATES HELPERS
+// ══════════════════════════════════
+function weekBounds(offset=0){
+  const d=new Date(); d.setHours(0,0,0,0);
+  const dow=d.getDay()||7;
+  const mon=new Date(d); mon.setDate(d.getDate()-dow+1+offset*7);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  return[mon.toISOString().slice(0,10),sun.toISOString().slice(0,10)];
+}
+function monthBounds(offset=0){
+  const d=new Date();
+  const y=d.getFullYear(), m=d.getMonth()+offset;
+  const first=new Date(y,m,1), last=new Date(y,m+1,0);
+  return[first.toISOString().slice(0,10),last.toISOString().slice(0,10)];
+}
+function inPeriode(date){
+  if(PERIODE==='today') return date===today();
+  if(PERIODE==='week'){ const[a,b]=weekBounds(); return date>=a&&date<=b; }
+  if(PERIODE==='month'){ const[a,b]=monthBounds(); return date>=a&&date<=b; }
+  return true;
+}
+function fmtDate(s){
+  if(!s||s==='?') return '?';
+  const[y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+}
+
+// ══════════════════════════════════
+//  DATA
+// ══════════════════════════════════
+async function loadAll(){
+  try{
     loading(true);
-    const [m, r, p, v] = await Promise.all([
+    const[m,r,p,v]=await Promise.all([
       sb.from('matieres_premieres').select('*').order('id'),
       sb.from('recettes').select('*').order('id'),
       sb.from('produits').select('*').order('id'),
-      sb.from('ventes').select('*').order('date', {ascending:false}).order('id', {ascending:false}),
+      sb.from('ventes').select('*').order('date',{ascending:false}).order('id',{ascending:false}),
     ]);
-    MAT = m.data || []; REC = r.data || []; PRD = p.data || []; VEN = v.data || [];
-  } catch(e) {
-    console.error('loadAll error:', e);
-  } finally {
-    loading(false);
-  }
+    MAT=m.data||[]; REC=r.data||[]; PRD=p.data||[]; VEN=v.data||[];
+  }catch(e){ console.error('loadAll:',e); }
+  finally{ loading(false); }
 }
-async function loadStock() {
-  try {
-    const { data, error } = await sb.from('stock').select('*').order('produit');
-    STOCK_DATA = error ? null : (data || []);
-  } catch {
-    STOCK_DATA = null;
-  }
+async function loadStock(){
+  try{
+    const{data,error}=await sb.from('stock').select('*').order('produit');
+    STOCK_DATA=error?null:(data||[]);
+  }catch{ STOCK_DATA=null; }
 }
-async function dbUpd(table, id, patch) {
-  const { error } = await sb.from(table).update(patch).eq('id', id);
-  if (error) { toast('Erreur : ' + error.message, 'err'); return false; }
+async function dbUpd(table,id,patch){
+  const{error}=await sb.from(table).update(patch).eq('id',id);
+  if(error){toast('Erreur : '+error.message,'err');return false;}
   return true;
 }
-async function dbDel(table, id) {
-  if (!confirm('Supprimer cette ligne ?')) return;
-  const { error } = await sb.from(table).delete().eq('id', id);
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
-  toast('Supprimé');
-  await refresh();
+async function dbDel(table,id){
+  if(!confirm('Supprimer cette ligne ?')) return;
+  const{error}=await sb.from(table).delete().eq('id',id);
+  if(error){toast('Erreur : '+error.message,'err');return;}
+  toast('Supprimé'); await refresh();
 }
-async function refresh() { STOCK_DATA = undefined; await loadAll(); render(); }
+async function refresh(){ STOCK_DATA=undefined; await loadAll(); render(); }
 
-// ── RENDER ─────────────────────────────────────────────────────
-function render() {
+// ══════════════════════════════════
+//  RENDER CORE
+// ══════════════════════════════════
+function render(){
   destroyCharts();
-  const fns = { dash:renderDash, journees:renderJournees, produits:renderProduits,
-    recettes:renderRecettes, matieres:renderMatieres, stock:renderStock, tuto:renderTuto };
-  (fns[VIEW] || renderDash)();
+  const fns={dash:renderDash,journees:renderJournees,produits:renderProduits,
+    recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tuto:renderTuto};
+  (fns[VIEW]||renderDash)();
 }
-function destroyCharts() { CHARTS.forEach(c => c.destroy()); CHARTS = []; }
-function head(t) { return `<div class="secttl"><h2>${t}</h2><div class="rule"></div></div>`; }
-function indicateur(nom) {
-  const p = PRD.find(x => x.nom === nom); if (!p) return '';
-  if ((p.categorie || '').startsWith('Inter') || String(nom).startsWith('Ajustement'))
+function destroyCharts(){ CHARTS.forEach(c=>c.destroy()); CHARTS=[]; }
+function head(t){
+  return `<div class="secttl"><span class="orn">✦</span><h2>${t}</h2><div class="rule"></div></div>`;
+}
+function indicateur(nom){
+  const p=PRD.find(x=>x.nom===nom); if(!p) return '';
+  if((p.categorie||'').startsWith('Inter')||String(nom).startsWith('Ajustement'))
     return '<span class="pill muted">—</span>';
-  const prix = Number(p.prix_vente) || 0, cout = coutProduit(nom);
-  if (prix === 0) return '<span class="pill warn">⚠ Prix à définir</span>';
-  if (cout === 0) return '<span class="pill warn">⚠ Coût à définir</span>';
-  const mp = (prix - cout) / prix;
-  if (prix - cout < 0) return '<span class="pill bad">❌ Perte</span>';
-  if (mp < 0.2) return '<span class="pill warn">⚠ Marge faible</span>';
+  const prix=Number(p.prix_vente)||0, cout=coutProduit(nom);
+  if(prix===0) return '<span class="pill warn">⚠ Prix à définir</span>';
+  if(cout===0) return '<span class="pill warn">⚠ Coût à définir</span>';
+  const mp=(prix-cout)/prix;
+  if(prix-cout<0) return '<span class="pill bad">❌ Perte</span>';
+  if(mp<0.2) return '<span class="pill warn">⚠ Marge faible</span>';
   return '<span class="pill ok">✅ OK</span>';
 }
-function chartOpts() {
-  return { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ family:'EB Garamond', size:13 } } } },
-    scales:{ x:{ ticks:{ font:{ size:11 } } }, y:{ ticks:{ font:{ size:11 } } } } };
+function chartOpts(){
+  return{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'EB Garamond',size:13},color:'#5b4632'}}},
+    scales:{x:{ticks:{font:{size:11},color:'#5b4632'},grid:{color:'rgba(201,180,138,.3)'}},
+            y:{ticks:{font:{size:11},color:'#5b4632'},grid:{color:'rgba(201,180,138,.3)'}}}};
 }
 
-// ── TABLEAU DE BORD ────────────────────────────────────────────
-function renderDash() {
-  const td = today();
+// ══════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════
+function exportCSV(){
+  const ventes = PERIODE==='all' ? VEN : VEN.filter(v=>inPeriode(v.date));
+  if(!ventes.length){toast('Aucune vente à exporter','err');return;}
+  const h=['Date','Produit','Qté vendue','Offerts','Prix unitaire','CA','Coût','Marge','Canal','Note'];
+  const rows=ventes.map(v=>{
+    const c=venteCalc(v);
+    return[v.date,v.produit,v.qte_vendue,v.offerts,c.prix,c.ca.toFixed(2),c.cout.toFixed(2),c.marge.toFixed(2),v.canal||'',v.note||''];
+  });
+  const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const label={today:'aujourd-hui',week:'cette-semaine',month:'ce-mois',all:'tout'}[PERIODE];
+  a.download=`silver-pine-${label}-${today()}.csv`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast(`${rows.length} vente${rows.length>1?'s':''} exportée${rows.length>1?'s':''} en CSV`);
+}
+
+// ══════════════════════════════════
+//  OBJECTIF SEMAINE (localStorage)
+// ══════════════════════════════════
+function getObjectif(){ return Number(localStorage.getItem('sp_obj_sem'))||0; }
+function saveObjectif(v){ localStorage.setItem('sp_obj_sem',v); }
+
+// ══════════════════════════════════
+//  TABLEAU DE BORD
+// ══════════════════════════════════
+function renderDash(){
+  const td=today();
 
   // Totaux globaux
-  let ca=0, cout=0, unites=0;
-  VEN.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; unites += Number(v.qte_vendue)||0; });
-  const marge = ca - cout;
+  let ca=0,cout=0,unites=0;
+  VEN.forEach(v=>{const c=venteCalc(v);ca+=c.ca;cout+=c.cout;unites+=Number(v.qte_vendue)||0;});
+  const marge=ca-cout;
 
   // Résumé du jour
-  const todaySales = VEN.filter(v => v.date === td);
-  let tCa=0, tCout=0, tUnites=0;
-  todaySales.forEach(v => { const c = venteCalc(v); tCa += c.ca; tCout += c.cout; tUnites += Number(v.qte_vendue)||0; });
-  const tMarge = tCa - tCout;
-  const tMargeClass = tMarge < 0 ? 'tb-marge-bad' : 'tb-marge-ok';
-  const todayHtml = `<div class="today-banner">
-    <div class="tb-title">★ Aujourd'hui</div>
+  const todaySales=VEN.filter(v=>v.date===td);
+  let tCa=0,tCout=0;
+  todaySales.forEach(v=>{const c=venteCalc(v);tCa+=c.ca;tCout+=c.cout;});
+  const tMarge=tCa-tCout;
+  const todayHtml=`<div class="today-banner">
+    <div class="tb-title">✦ Aujourd'hui</div>
     <div class="tb-kpis">
       <div class="tb-k"><div class="tb-label">CA</div><div class="tb-val">${fmt(tCa)}</div></div>
-      <div class="tb-k"><div class="tb-label">Marge</div><div class="tb-val ${tMargeClass}">${fmt(tMarge)}</div></div>
-      <div class="tb-k"><div class="tb-label">Marge %</div><div class="tb-val ${tMargeClass}">${tCa ? pct(tMarge/tCa) : '—'}</div></div>
+      <div class="tb-k"><div class="tb-label">Marge</div><div class="tb-val ${tMarge<0?'neg':'pos'}">${fmt(tMarge)}</div></div>
+      <div class="tb-k"><div class="tb-label">Marge %</div><div class="tb-val ${tMarge<0?'neg':'pos'}">${tCa?pct(tMarge/tCa):'—'}</div></div>
       <div class="tb-k"><div class="tb-label">Ventes</div><div class="tb-val">${todaySales.length}</div></div>
     </div>
   </div>`;
 
-  // Alertes produits
-  const real = PRD.filter(p => !(p.categorie||'').startsWith('Inter') && !String(p.nom).startsWith('Ajustement'));
-  const alertLines = [];
-  real.forEach(p => {
-    const prix = Number(p.prix_vente)||0, cout2 = coutProduit(p.nom);
-    if (prix === 0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — prix de vente à définir</span></div>`);
-    else if (cout2 === 0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — coût de production inconnu</span></div>`);
-    else if (prix - cout2 < 0) alertLines.push(`<div class="alert-row a-bad"><span class="alert-icon">❌</span><b>${esc(p.nom)}</b><span class="alert-label"> — vendu à perte (coût ${fmt(cout2)} &gt; prix ${fmt(prix)})</span></div>`);
+  // Comparaison semaines
+  const[w0a,w0b]=weekBounds(0), [w1a,w1b]=weekBounds(-1);
+  let caCurr=0,mCurr=0,caPrev=0,mPrev=0;
+  VEN.forEach(v=>{
+    const c=venteCalc(v),d=v.date;
+    if(d>=w0a&&d<=w0b){caCurr+=c.ca;mCurr+=c.marge;}
+    if(d>=w1a&&d<=w1b){caPrev+=c.ca;mPrev+=c.marge;}
   });
-  const alertsHtml = alertLines.length
-    ? `<div class="secttl" style="margin-top:18px"><h2>Alertes (${alertLines.length})</h2><div class="rule"></div></div><div class="alerts-grid">${alertLines.join('')}</div>`
-    : `<div style="margin:14px 0 18px;font-size:14px;color:var(--green)">✅ Aucune alerte — tous les produits sont configurés.</div>`;
+  function diff(curr,prev){
+    if(!prev) return'';
+    const p=((curr-prev)/prev*100);
+    const cls=p>=0?'up':'dn', sym=p>=0?'▲':'▼';
+    return`<span class="wc-diff ${cls}">${sym} ${Math.abs(p).toFixed(0)} %</span>`;
+  }
+  const weekHtml=`<div class="week-cmp">
+    <div class="wc-box">
+      <div class="wc-label">✦ Cette semaine</div>
+      <div class="wc-row"><span class="wc-name">CA</span><span class="wc-val">${fmt(caCurr)}</span></div>
+      <div class="wc-row"><span class="wc-name">Marge</span><span class="wc-val" style="color:${mCurr<0?'var(--red)':'var(--green)'}">${fmt(mCurr)}</span></div>
+    </div>
+    <div class="wc-box">
+      <div class="wc-label">Semaine dernière ${diff(caCurr,caPrev)}</div>
+      <div class="wc-row"><span class="wc-name">CA</span><span class="wc-val">${fmt(caPrev)}</span></div>
+      <div class="wc-row"><span class="wc-name">Marge</span><span class="wc-val" style="color:${mPrev<0?'var(--red)':'var(--green)'}">${fmt(mPrev)}</span></div>
+    </div>
+  </div>`;
 
-  // Top 5 produits par CA
-  const byP = {};
-  VEN.forEach(v => { const c = venteCalc(v); if (!byP[v.produit]) byP[v.produit]={ca:0,marge:0,qte:0}; byP[v.produit].ca+=c.ca; byP[v.produit].marge+=c.marge; byP[v.produit].qte+=Number(v.qte_vendue)||0; });
-  const topCA = Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement')).sort((a,b)=>b[1].ca-a[1].ca).slice(0,5);
-  const maxCA = topCA[0] ? topCA[0][1].ca : 1;
-  const topHtml = topCA.length ? `<div class="card" style="overflow:hidden">
-    <table class="top-table"><tbody>${topCA.map(([nom,d],i)=>`<tr>
-      <td class="rank">${i+1}</td>
+  // Objectif
+  const obj=getObjectif();
+  const pctObj=obj>0?Math.min(caCurr/obj*100,120):0;
+  const over=pctObj>=100;
+  const objHtml=`<div class="objectif-box">
+    <div class="obj-head">
+      <div class="obj-title">✦ Objectif de la semaine</div>
+      <div class="obj-form">
+        <span style="font-size:13px;color:var(--ink2)">Cible CA :</span>
+        <input type="number" step="1" id="objInput" value="${obj||''}" placeholder="ex. 500">
+        <button class="btn sm" onclick="saveObjectif(Number($('#objInput').value)||0);renderDash()">Définir</button>
+      </div>
+    </div>
+    ${obj>0?`
+    <div class="progress-track"><div class="progress-fill${over?' over':''}" style="width:${Math.min(pctObj,100)}%"></div></div>
+    <div class="obj-legend">
+      <span>${fmt(caCurr)} réalisé</span>
+      <span style="color:${over?'var(--green)':'var(--ink2)'}">${pctObj.toFixed(0)} % ${over?'— Objectif dépassé ! ✦':''}</span>
+      <span>Cible : ${fmt(obj)}</span>
+    </div>`:'<div class="note" style="margin:0">Définis un objectif de CA pour suivre ta semaine.</div>'}
+  </div>`;
+
+  // Alertes
+  const real=PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'));
+  const alertLines=[];
+  real.forEach(p=>{
+    const prix=Number(p.prix_vente)||0, c=coutProduit(p.nom);
+    if(prix===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — prix de vente à définir</span></div>`);
+    else if(c===0) alertLines.push(`<div class="alert-row a-warn"><span class="alert-icon">⚠</span><b>${esc(p.nom)}</b><span class="alert-label"> — coût de production inconnu (recette manquante ?)</span></div>`);
+    else if(prix-c<0) alertLines.push(`<div class="alert-row a-bad"><span class="alert-icon">❌</span><b>${esc(p.nom)}</b><span class="alert-label"> — vendu à perte · coût ${fmt(c)} › prix ${fmt(prix)}</span></div>`);
+  });
+  const alertsHtml=alertLines.length
+    ?`<div class="alerts-grid">${alertLines.join('')}</div>`
+    :`<div class="alert-none">✅ Aucune alerte — tous les produits sont correctement configurés.</div>`;
+
+  // Top 5
+  const byP={};
+  VEN.forEach(v=>{const c=venteCalc(v);if(!byP[v.produit])byP[v.produit]={ca:0,marge:0};byP[v.produit].ca+=c.ca;byP[v.produit].marge+=c.marge;});
+  const top5=Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement')).sort((a,b)=>b[1].ca-a[1].ca).slice(0,5);
+  const maxCA=top5[0]?top5[0][1].ca:1;
+  const topHtml=top5.length?`<div class="card card-gold"><table class="top-table"><tbody>
+    ${top5.map(([nom,d],i)=>`<tr>
+      <td class="rank">${['①','②','③','④','⑤'][i]}</td>
       <td><b>${esc(nom)}</b></td>
       <td class="num" style="color:var(--wine)">${fmt(d.ca)}</td>
       <td class="num" style="color:${d.marge<0?'var(--red)':'var(--green)'}">${fmt(d.marge)}</td>
-      <td style="width:120px;padding-right:14px">
-        <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(d.ca/maxCA*100)}%"></div></div>
+      <td style="padding-right:16px">
+        <div class="top-row"><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(d.ca/maxCA*100)}%"></div></div></div>
       </td>
-    </tr>`).join('')}</tbody></table></div>` : '';
+    </tr>`).join('')}
+  </tbody></table></div>`:'<p class="note">Aucune vente enregistrée pour l\'instant.</p>';
 
   // Meilleure journée
-  const byD = {};
-  VEN.forEach(v => { const c=venteCalc(v); const d=v.date||'?'; if(!byD[d])byD[d]={ca:0,m:0}; byD[d].ca+=c.ca; byD[d].m+=c.marge; });
-  const bestDay = Object.entries(byD).sort((a,b)=>b[1].ca-a[1].ca)[0];
-  const bestDayHtml = bestDay
-    ? `<div style="font-size:13.5px;color:var(--ink2);margin-top:10px">🏆 Meilleure journée : <b>${fmtDate(bestDay[0])}</b> — ${fmt(bestDay[1].ca)} de CA, ${fmt(bestDay[1].m)} de marge</div>`
-    : '';
+  const byD={};
+  VEN.forEach(v=>{const c=venteCalc(v),d=v.date||'?';if(!byD[d])byD[d]={ca:0,m:0};byD[d].ca+=c.ca;byD[d].m+=c.marge;});
+  const best=Object.entries(byD).sort((a,b)=>b[1].ca-a[1].ca)[0];
+  const bestHtml=best?`<div style="font-size:13.5px;color:var(--ink2);margin:8px 0 20px">🏆 Meilleure journée : <b>${fmtDate(best[0])}</b> — ${fmt(best[1].ca)} de CA · ${fmt(best[1].m)} de marge</div>`:'';
 
-  const kpi = [["Chiffre d'affaires",fmt(ca)],['Coût de production',fmt(cout)],['Marge totale',fmt(marge)],['Marge %',ca?pct(marge/ca):'0 %'],['Unités vendues',unites.toLocaleString('fr-FR')]];
+  const kpis=[["Chiffre d'affaires",fmt(ca),''],['Coût de production',fmt(cout),''],
+    ['Marge totale',fmt(marge),marge<0?'neg':'pos'],['Marge %',ca?pct(marge/ca):'0 %',marge<0?'neg':''],
+    ['Unités vendues',unites.toLocaleString('fr-FR'),'']];
 
-  $('#view').innerHTML = todayHtml +
-    head('Résultats globaux') +
-    `<div class="kpis">${kpi.map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('')}</div>` +
-    bestDayHtml + alertsHtml +
-    `<div class="secttl" style="margin-top:20px"><h2>Top 5 produits par CA</h2><div class="rule"></div></div>` +
-    topHtml +
-    `<div class="charts" style="margin-top:20px">
-       <div class="chartbox"><h3>Coût vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
-       <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="200"></canvas></div>
-       <div class="chartbox"><h3>Répartition du CA par catégorie</h3><canvas id="c3" height="200"></canvas></div>
-       <div class="chartbox"><h3>CA et marge jour par jour</h3><canvas id="c4" height="200"></canvas></div>
-     </div>`;
+  $('#view').innerHTML=todayHtml+weekHtml+objHtml+
+    head('Résultats globaux')+
+    `<div class="kpis">${kpis.map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v ${k[2]}">${k[1]}</div></div>`).join('')}</div>`+
+    bestHtml+
+    head('Alertes ('+alertLines.length+')')+alertsHtml+
+    head('Top 5 produits par CA')+topHtml+
+    `<div class="charts" style="margin-top:24px">
+      <div class="chartbox"><h3>Coût vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
+      <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="200"></canvas></div>
+      <div class="chartbox"><h3>CA par catégorie</h3><canvas id="c3" height="200"></canvas></div>
+      <div class="chartbox"><h3>CA et marge jour par jour</h3><canvas id="c4" height="200"></canvas></div>
+    </div>`;
 
-  CHARTS.push(new Chart($('#c1'),{type:'bar',data:{labels:real.map(p=>p.nom),
-    datasets:[{label:'Coût',data:real.map(p=>coutProduit(p.nom)),backgroundColor:'rgba(123,45,38,.8)'},{label:'Prix',data:real.map(p=>Number(p.prix_vente)||0),backgroundColor:'rgba(156,123,47,.8)'}]},options:chartOpts()}));
+  const noAdj=PRD.filter(p=>!String(p.nom).startsWith('Ajustement'));
+  CHARTS.push(new Chart($('#c1'),{type:'bar',data:{labels:noAdj.map(p=>p.nom),datasets:[
+    {label:'Coût',data:noAdj.map(p=>coutProduit(p.nom)),backgroundColor:'rgba(123,45,38,.75)'},
+    {label:'Prix',data:noAdj.map(p=>Number(p.prix_vente)||0),backgroundColor:'rgba(156,123,47,.75)'}
+  ]},options:chartOpts()}));
   const pe=Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement')).sort((a,b)=>b[1].marge-a[1].marge);
-  CHARTS.push(new Chart($('#c2'),{type:'bar',data:{labels:pe.map(e=>e[0]),
-    datasets:[{label:'Marge',data:pe.map(e=>e[1].marge),backgroundColor:pe.map(e=>e[1].marge<0?'rgba(155,44,44,.8)':'rgba(63,107,58,.8)')}]},options:{...chartOpts(),indexAxis:'y'}}));
-  const byC={};VEN.forEach(v=>{const c=venteCalc(v);const cat=catProduit(v.produit)||'Autre';byC[cat]=(byC[cat]||0)+c.ca;});
+  CHARTS.push(new Chart($('#c2'),{type:'bar',data:{labels:pe.map(e=>e[0]),datasets:[
+    {label:'Marge',data:pe.map(e=>e[1].marge),backgroundColor:pe.map(e=>e[1].marge<0?'rgba(155,44,44,.75)':'rgba(63,107,58,.75)')}
+  ]},options:{...chartOpts(),indexAxis:'y'}}));
+  const byC={};VEN.forEach(v=>{const c=venteCalc(v),cat=catProduit(v.produit)||'Autre';byC[cat]=(byC[cat]||0)+c.ca;});
   const ce=Object.entries(byC).filter(e=>e[1]>0);
-  CHARTS.push(new Chart($('#c3'),{type:'doughnut',data:{labels:ce.map(e=>e[0]),datasets:[{data:ce.map(e=>e[1]),backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130','#8b6914']}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}}));
-  const ds=Object.keys(byD).sort();
-  const lab=ds.map(d=>{const p=d.split('-');return p.length===3?p[2]+'/'+p[1]:d;});
-  CHARTS.push(new Chart($('#c4'),{type:'bar',data:{labels:lab,datasets:[{label:'CA',data:ds.map(d=>byD[d].ca),backgroundColor:'rgba(156,123,47,.8)'},{label:'Marge',data:ds.map(d=>byD[d].m),backgroundColor:'rgba(63,107,58,.8)'}]},options:chartOpts()}));
+  CHARTS.push(new Chart($('#c3'),{type:'doughnut',data:{labels:ce.map(e=>e[0]),datasets:[{data:ce.map(e=>e[1]),backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130','#8b6914']}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'EB Garamond',size:13},color:'#5b4632'}}}}}));
+  const ds=Object.keys(byD).sort(),lab=ds.map(d=>{const p=d.split('-');return p.length===3?p[2]+'/'+p[1]:d;});
+  CHARTS.push(new Chart($('#c4'),{type:'bar',data:{labels:lab,datasets:[
+    {label:'CA',data:ds.map(d=>byD[d].ca),backgroundColor:'rgba(156,123,47,.75)'},
+    {label:'Marge',data:ds.map(d=>byD[d].m),backgroundColor:'rgba(63,107,58,.75)'}
+  ]},options:chartOpts()}));
 }
 
-// ── JOURNÉES ───────────────────────────────────────────────────
-function fmtDate(s) {
-  if (!s || s === '?') return '?';
-  const [y, m, d] = s.split('-').map(Number);
-  const dt = new Date(y, m-1, d);
-  return dt.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
-}
+// ══════════════════════════════════
+//  JOURNÉES
+// ══════════════════════════════════
+function renderJournees(){
+  const byDate={};
+  VEN.forEach(v=>{const d=v.date||'?';if(!byDate[d])byDate[d]=[];byDate[d].push(v);});
+  const td=today(); if(!byDate[td]) byDate[td]=[];
+  const filteredDates=Object.keys(byDate).filter(d=>inPeriode(d)).sort().reverse();
 
-function renderJournees() {
-  const byDate = {};
-  VEN.forEach(v => { const d = v.date || '?'; if (!byDate[d]) byDate[d] = []; byDate[d].push(v); });
-  const td = today();
-  if (!byDate[td]) byDate[td] = [];
-  const dates = Object.keys(byDate).sort().reverse();
+  const panelHtml=SELECTED_DAY?buildDayPanel(SELECTED_DAY,byDate[SELECTED_DAY]||[]):'';
 
-  const panelHtml = SELECTED_DAY
-    ? buildDayPanel(SELECTED_DAY, byDate[SELECTED_DAY] || [])
-    : '';
+  const periodLabels={today:"Aujourd'hui",week:'Cette semaine',month:'Ce mois',all:'Tout'};
+  const periodeBar=`<div class="period-bar">
+    ${Object.entries(periodLabels).map(([k,v])=>`<button class="pbtab${PERIODE===k?' active':''}" onclick="PERIODE='${k}';SELECTED_DAY=null;EDIT_VENTE=null;renderJournees()">${v}</button>`).join('')}
+  </div>`;
 
-  const cards = dates.map(date => {
-    const sales = byDate[date] || [];
-    let ca=0, cout=0;
-    sales.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; });
-    const marge = ca - cout;
-    const mp = ca ? marge / ca : 0;
-    const margeClass = marge < 0 ? 'dc-marge-bad' : mp < 0.2 ? 'dc-marge-warn' : 'dc-marge-ok';
-    const isToday = date === td;
-    const isSel = SELECTED_DAY === date;
-    return `<div class="daycard${isSel ? ' selected' : ''}${isToday ? ' today-card' : ''}" onclick="selectDay('${date}')">
-      ${isToday ? '<div class="today-badge">Aujourd\'hui</div>' : ''}
+  // Totaux de la période
+  let pCa=0,pMarge=0;
+  filteredDates.forEach(d=>{(byDate[d]||[]).forEach(v=>{const c=venteCalc(v);pCa+=c.ca;pMarge+=c.marge;});});
+
+  const cards=filteredDates.map(date=>{
+    const sales=byDate[date]||[];
+    let ca=0,cout=0;
+    sales.forEach(v=>{const c=venteCalc(v);ca+=c.ca;cout+=c.cout;});
+    const marge=ca-cout,mp=ca?marge/ca:0;
+    const mClass=marge<0?'dc-marge-bad':mp<0.2?'dc-marge-warn':'dc-marge-ok';
+    const isTd=date===td, isSel=SELECTED_DAY===date;
+    return`<div class="daycard${isSel?' selected':''}${isTd?' today-card':''}" onclick="selectDay('${date}')">
+      ${isTd?'<div class="today-badge">Aujourd\'hui</div>':''}
       <div class="daycard-date">${fmtDate(date)}</div>
       <div class="daycard-stats">
         <div class="daycard-stat"><span class="dc-label">CA</span><span class="dc-val">${fmt(ca)}</span></div>
         <div class="daycard-stat"><span class="dc-label">Coût</span><span class="dc-val">${fmt(cout)}</span></div>
-        <div class="daycard-stat ${margeClass}"><span class="dc-label">Marge</span><span class="dc-val">${fmt(marge)}</span></div>
-        <div class="daycard-stat"><span class="dc-label">Marge %</span><span class="dc-val">${ca ? pct(mp) : '—'}</span></div>
+        <div class="daycard-stat ${mClass}"><span class="dc-label">Marge</span><span class="dc-val">${fmt(marge)}</span></div>
+        <div class="daycard-stat"><span class="dc-label">Marge %</span><span class="dc-val">${ca?pct(mp):'—'}</span></div>
       </div>
       <div class="daycard-footer">
-        <span class="dc-count">${sales.length} vente${sales.length !== 1 ? 's' : ''}</span>
-        <span class="dc-toggle">${isSel ? '▲ Fermer' : '▼ Voir'}</span>
+        <span class="dc-count">${sales.length} vente${sales.length!==1?'s':''}</span>
+        <span class="dc-toggle">${isSel?'▲ Fermer':'▼ Voir'}</span>
       </div>
     </div>`;
   }).join('');
 
-  $('#view').innerHTML = head('Journées') +
+  const empty=filteredDates.length===0?`<p class="note" style="text-align:center;padding:30px">Aucune vente sur cette période.</p>`:'';
+
+  $('#view').innerHTML=head('Journées')+
     `<div class="day-toolbar">
-      <p class="note" style="margin:0">Clique sur une journée pour consulter et modifier ses ventes.</p>
-      <button class="btn sm" onclick="openToday()">+ Vente aujourd'hui</button>
+      ${periodeBar}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        ${filteredDates.length>0?`<span style="font-size:14px;color:var(--ink2)">CA : <b style="color:var(--wine)">${fmt(pCa)}</b> · Marge : <b style="color:${pMarge<0?'var(--red)':'var(--green)'}">${fmt(pMarge)}</b></span>`:''}
+        <button class="btn sm gold" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn sm" onclick="openToday()">+ Vente aujourd'hui</button>
+      </div>
     </div>
     ${panelHtml}
-    <div class="daygrid">${cards}</div>`;
+    <div class="daygrid">${cards}</div>${empty}`;
 }
 
-function buildDayPanel(date, sales) {
-  let ca=0, cout=0;
-  sales.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; });
-  const marge = ca - cout;
+function buildDayPanel(date,sales){
+  let ca=0,cout=0;
+  sales.forEach(v=>{const c=venteCalc(v);ca+=c.ca;cout+=c.cout;});
+  const marge=ca-cout;
+  const prodOpts=PRD.map(p=>`<option>${esc(p.nom)}</option>`).join('');
+  const canalOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(c=>`<option>${c}</option>`).join('');
 
-  const prodOpts = PRD.map(p => `<option>${esc(p.nom)}</option>`).join('');
-  const canalOpts = ['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre']
-    .map(c => `<option>${c}</option>`).join('');
-
-  const rows = sales.map(v => {
-    const c = venteCalc(v);
-    if (EDIT_VENTE === v.id) {
-      const cOpts = ['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre']
-        .map(x => `<option${x === v.canal ? ' selected' : ''}>${x}</option>`).join('');
-      return `<tr class="editing">
-        <td><select id="ev_prod" style="min-width:110px">${PRD.map(p => `<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
+  const rows=sales.map(v=>{
+    const c=venteCalc(v);
+    if(EDIT_VENTE===v.id){
+      const cOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(x=>`<option${x===v.canal?' selected':''}>${x}</option>`).join('');
+      return`<tr class="editing">
+        <td><select id="ev_prod" style="min-width:110px">${PRD.map(p=>`<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
         <td><input type="number" id="ev_qte" value="${Number(v.qte_vendue)||0}" style="width:58px"></td>
         <td><input type="number" id="ev_off" value="${Number(v.offerts)||0}" style="width:52px"></td>
         <td><input type="number" step="0.01" id="ev_prix" value="${v.prix_unit!=null?v.prix_unit:''}" placeholder="base" style="width:80px"></td>
@@ -625,7 +896,7 @@ function buildDayPanel(date, sales) {
         </div></td>
       </tr>`;
     }
-    return `<tr>
+    return`<tr>
       <td><b>${esc(v.produit)}</b></td>
       <td class="num">${Number(v.qte_vendue)||0}</td>
       <td class="num">${Number(v.offerts)||0}</td>
@@ -640,10 +911,7 @@ function buildDayPanel(date, sales) {
     </tr>`;
   }).join('');
 
-  const emptyRow = `<tr><td colspan="8" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">
-    Aucune vente enregistrée ce jour.</td></tr>`;
-
-  return `<div class="day-panel" id="dayPanel">
+  return`<div class="day-panel" id="dayPanel">
     <div class="day-panel-head">
       <div>
         <div class="day-panel-title">${fmtDate(date)}</div>
@@ -655,24 +923,19 @@ function buildDayPanel(date, sales) {
       </div>
       <button class="day-panel-close" onclick="SELECTED_DAY=null;renderJournees()" title="Fermer">✕</button>
     </div>
-    <div class="card" style="margin-bottom:14px">
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr>
-            <th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th>
-            <th>Canal</th><th>Note</th><th>Marge</th><th></th>
-          </tr></thead>
-          <tbody>${rows || emptyRow}</tbody>
-        </table>
-      </div>
-    </div>
+    <div class="card" style="margin-bottom:14px"><div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>Canal</th><th>Note</th><th>Marge</th><th></th></tr></thead>
+        <tbody>${rows||`<tr><td colspan="8" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">Aucune vente enregistrée ce jour.</td></tr>`}</tbody>
+      </table>
+    </div></div>
     <div class="addform">
       <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
       <div class="addform-row">
         <label>Produit<select id="nv_prod">${prodOpts}</select></label>
         <label>Qté<input type="number" id="nv_qte" value="1" style="width:65px"></label>
         <label>Offerts<input type="number" id="nv_off" value="0" style="width:58px"></label>
-        <label>Prix (vide = base)<input type="number" step="0.01" id="nv_prix" placeholder="—" style="width:100px"></label>
+        <label>Prix (vide=base)<input type="number" step="0.01" id="nv_prix" placeholder="—" style="width:100px"></label>
         <label>Canal<select id="nv_canal">${canalOpts}</select></label>
         <label>Note<input id="nv_note" style="width:130px"></label>
         <button class="btn sm" onclick="addVenteDay('${date}')">+ Ajouter</button>
@@ -681,291 +944,239 @@ function buildDayPanel(date, sales) {
   </div>`;
 }
 
-function selectDay(date) {
-  EDIT_VENTE = null;
-  SELECTED_DAY = SELECTED_DAY === date ? null : date;
+function selectDay(date){
+  EDIT_VENTE=null;
+  SELECTED_DAY=SELECTED_DAY===date?null:date;
   renderJournees();
-  if (SELECTED_DAY) setTimeout(() => { const p = $('#dayPanel'); if (p) p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 60);
+  if(SELECTED_DAY) setTimeout(()=>{const p=$('#dayPanel');if(p)p.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+function openToday(){
+  EDIT_VENTE=null; SELECTED_DAY=today(); renderJournees();
+  setTimeout(()=>{const p=$('#dayPanel');if(p)p.scrollIntoView({behavior:'smooth',block:'start'});},60);
+}
+function editVente(id){ EDIT_VENTE=id; renderJournees(); }
+async function saveVente(id){
+  const prix=$('#ev_prix').value;
+  const ok=await dbUpd('ventes',id,{produit:$('#ev_prod').value,qte_vendue:Number($('#ev_qte').value)||0,
+    offerts:Number($('#ev_off').value)||0,prix_unit:prix===''?null:Number(prix),
+    canal:$('#ev_canal').value,note:$('#ev_note').value});
+  if(ok){toast('Vente modifiée');EDIT_VENTE=null;await refresh();}
+}
+async function delVente(id){
+  if(!confirm('Supprimer cette vente ?')) return;
+  const{error}=await sb.from('ventes').delete().eq('id',id);
+  if(error){toast('Erreur : '+error.message,'err');return;}
+  toast('Vente supprimée'); await refresh();
+}
+async function addVenteDay(date){
+  const prix=$('#nv_prix').value;
+  const{error}=await sb.from('ventes').insert({date,produit:$('#nv_prod').value,
+    qte_vendue:Number($('#nv_qte').value)||0,offerts:Number($('#nv_off').value)||0,
+    prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,note:$('#nv_note').value});
+  if(error){toast('Erreur : '+error.message,'err');return;}
+  toast('Vente ajoutée'); await refresh();
 }
 
-function openToday() {
-  EDIT_VENTE = null;
-  SELECTED_DAY = today();
-  renderJournees();
-  setTimeout(() => { const p = $('#dayPanel'); if (p) p.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
-}
-
-function editVente(id) {
-  EDIT_VENTE = id;
-  renderJournees();
-}
-
-async function saveVente(id) {
-  const prix = $('#ev_prix').value;
-  const ok = await dbUpd('ventes', id, {
-    produit: $('#ev_prod').value,
-    qte_vendue: Number($('#ev_qte').value) || 0,
-    offerts: Number($('#ev_off').value) || 0,
-    prix_unit: prix === '' ? null : Number(prix),
-    canal: $('#ev_canal').value,
-    note: $('#ev_note').value
-  });
-  if (ok) { toast('Vente modifiée'); EDIT_VENTE = null; await refresh(); }
-}
-
-async function delVente(id) {
-  if (!confirm('Supprimer cette vente ?')) return;
-  const { error } = await sb.from('ventes').delete().eq('id', id);
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
-  toast('Vente supprimée');
-  await refresh();
-}
-
-async function addVenteDay(date) {
-  const prix = $('#nv_prix').value;
-  const { error } = await sb.from('ventes').insert({
-    date, produit: $('#nv_prod').value,
-    qte_vendue: Number($('#nv_qte').value) || 0,
-    offerts: Number($('#nv_off').value) || 0,
-    prix_unit: prix === '' ? null : Number(prix),
-    canal: $('#nv_canal').value,
-    note: $('#nv_note').value
-  });
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
-  toast('Vente ajoutée');
-  await refresh();
-}
-
-// ── PRODUITS & MARGES ──────────────────────────────────────────
-function renderProduits() {
-  const cats = [...new Set(PRD.map(p => p.categorie || '—'))];
-  const filtered = FILTER_CAT ? PRD.filter(p => p.categorie === FILTER_CAT) : PRD;
-  const filterHtml = `<div class="filter-group">
+// ══════════════════════════════════
+//  PRODUITS & MARGES
+// ══════════════════════════════════
+function renderProduits(){
+  const cats=[...new Set(PRD.map(p=>p.categorie||'—'))];
+  const filtered=FILTER_CAT?PRD.filter(p=>p.categorie===FILTER_CAT):PRD;
+  const filterHtml=`<div class="filter-group">
     <span class="fpill${!FILTER_CAT?' active':''}" onclick="setFilter(null)">Tous</span>
-    ${cats.map(c => `<span class="fpill${FILTER_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="setFilter(this.dataset.cat)">${esc(c)}</span>`).join('')}
+    ${cats.map(c=>`<span class="fpill${FILTER_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="setFilter(this.dataset.cat)">${esc(c)}</span>`).join('')}
   </div>`;
-  const rows = filtered.map(p => {
-    const cout = coutProduit(p.nom), prix = Number(p.prix_vente) || 0, marge = prix - cout;
-    return `<tr>
-      <td><b>${esc(p.nom)}</b></td>
-      <td>${esc(p.categorie || '')}</td>
+  const rows=filtered.map(p=>{
+    const cout=coutProduit(p.nom),prix=Number(p.prix_vente)||0,marge=prix-cout;
+    return`<tr>
+      <td><b>${esc(p.nom)}</b></td><td>${esc(p.categorie||'')}</td>
       <td class="num">${fmt(cout)}</td>
-      <td class="num"><input type="number" step="0.01" value="${prix}"
-        onchange="updProduit(${p.id},'prix_vente',this.value)" style="width:90px;text-align:right"></td>
+      <td class="num"><input type="number" step="0.01" value="${prix}" onchange="updProduit(${p.id},'prix_vente',this.value)" style="width:90px;text-align:right"></td>
       <td class="num" style="color:${marge<0?'var(--red)':'var(--green)'}">${fmt(marge)}</td>
-      <td class="num">${prix ? pct(marge/prix) : '—'}</td>
+      <td class="num">${prix?pct(marge/prix):'—'}</td>
       <td>${indicateur(p.nom)}</td>
       <td><button class="del" onclick="dbDel('produits',${p.id})">✕</button></td>
     </tr>`;
   }).join('');
-  $('#view').innerHTML = head('Produits & marges') + filterHtml +
-    `<p class="note">Le coût vient des recettes. Modifie le prix de vente directement dans le tableau.</p>
+  $('#view').innerHTML=head('Produits & marges')+filterHtml+
+    `<p class="note">Le coût est calculé depuis les recettes. Modifie le prix de vente directement dans le tableau.</p>
      <div class="card"><div style="overflow-x:auto"><table>
        <thead><tr><th>Produit</th><th>Catégorie</th><th>Coût</th><th>Prix vente</th><th>Marge</th><th>Marge %</th><th>État</th><th></th></tr></thead>
        <tbody>${rows}</tbody>
      </table></div>
      <div class="addbar">
        <label>Nom<input id="p_nom" style="width:170px"></label>
-       <label>Catégorie<select id="p_cat">
-         <option>Boisson</option><option>Nourriture</option><option>Cigarette</option><option>Intermédiaire</option>
-       </select></label>
+       <label>Catégorie<select id="p_cat"><option>Boisson</option><option>Nourriture</option><option>Cigarette</option><option>Intermédiaire</option></select></label>
        <label>Prix vente<input type="number" step="0.01" id="p_prix" value="0" style="width:90px"></label>
        <button class="btn sm" onclick="addProduit()">+ Ajouter</button>
      </div></div>`;
 }
-function setFilter(cat) { FILTER_CAT = cat || null; renderProduits(); }
-async function updProduit(id, f, val) {
-  const ok = await dbUpd('produits', id, { [f]: Number(val) || 0 });
-  if (ok) { toast('Prix mis à jour'); await refresh(); }
+function setFilter(cat){ FILTER_CAT=cat||null; renderProduits(); }
+async function updProduit(id,f,val){
+  const ok=await dbUpd('produits',id,{[f]:Number(val)||0});
+  if(ok){toast('Prix mis à jour');await refresh();}
 }
-async function addProduit() {
-  const nom = $('#p_nom').value.trim();
-  if (!nom) { toast('Nom requis', 'err'); return; }
-  const { error } = await sb.from('produits').insert({ nom, categorie: $('#p_cat').value, prix_vente: Number($('#p_prix').value) || 0 });
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+async function addProduit(){
+  const nom=$('#p_nom').value.trim(); if(!nom){toast('Nom requis','err');return;}
+  const{error}=await sb.from('produits').insert({nom,categorie:$('#p_cat').value,prix_vente:Number($('#p_prix').value)||0});
+  if(error){toast('Erreur : '+error.message,'err');return;}
   toast('Produit ajouté'); await refresh();
 }
 
-// ── RECETTES ───────────────────────────────────────────────────
-function renderRecettes() {
-  const rows = REC.map(r => {
-    const u = coutRecetteUnit(r.nom), t = coutTotalRecette(r);
-    const ings = (r.ingredients || []).map(i => `${esc(i.nom)} ×${i.qte}`).join(', ');
-    const statut = r.qte_produite == null || r.qte_produite === ''
-      ? '<span class="pill warn">⚠ Qté produite ?</span>'
-      : (r.ingredients || []).length
-        ? '<span class="pill ok">Complète</span>'
-        : '<span class="pill warn">À compléter</span>';
-    return `<tr>
-      <td><b>${esc(r.nom)}</b><div style="font-size:13px;color:var(--ink2);margin-top:2px">${ings || '<i>aucun ingrédient</i>'}</div></td>
-      <td>${esc(r.categorie || '')}</td>
-      <td class="num">${r.qte_produite ?? '—'}</td>
+// ══════════════════════════════════
+//  RECETTES
+// ══════════════════════════════════
+function renderRecettes(){
+  const rows=REC.map(r=>{
+    const u=coutRecetteUnit(r.nom),t=coutTotalRecette(r);
+    const ings=(r.ingredients||[]).map(i=>`${esc(i.nom)} ×${i.qte}`).join(', ');
+    const st=r.qte_produite==null||r.qte_produite===''
+      ?'<span class="pill warn">⚠ Qté ?</span>'
+      :(r.ingredients||[]).length?'<span class="pill ok">Complète</span>':'<span class="pill warn">À compléter</span>';
+    return`<tr>
+      <td><b>${esc(r.nom)}</b><div style="font-size:13px;color:var(--ink2);margin-top:2px">${ings||'<i>aucun ingrédient</i>'}</div></td>
+      <td>${esc(r.categorie||'')}</td>
+      <td class="num">${r.qte_produite??'—'}</td>
       <td class="num">${fmt(t)}</td>
       <td class="num"><b>${fmt(u)}</b></td>
-      <td>${statut}</td>
+      <td>${st}</td>
       <td style="white-space:nowrap">
         <button class="icobtn" onclick="editRecette(${r.id})">✎ Modifier</button>
         <button class="del" onclick="dbDel('recettes',${r.id})">✕</button>
       </td>
     </tr>`;
   }).join('');
-
-  $('#view').innerHTML = head('Recettes (crafts)') +
-    `<p class="note">Le coût unitaire se calcule en cascade — un craft peut utiliser un autre craft. Clique ✎ Modifier pour éditer.</p>
+  $('#view').innerHTML=head('Recettes (crafts)')+
+    `<p class="note">Le coût unitaire se calcule en cascade — un craft peut utiliser un autre craft.</p>
      <div class="card"><div style="overflow-x:auto"><table>
        <thead><tr><th>Produit</th><th>Catégorie</th><th>Qté prod.</th><th>Coût total</th><th>Coût unitaire</th><th>État</th><th></th></tr></thead>
-       <tbody>${rows || '<tr><td colspan="7" style="text-align:center;font-style:italic;padding:16px">Aucune recette.</td></tr>'}</tbody>
+       <tbody>${rows||'<tr><td colspan="7" style="text-align:center;font-style:italic;padding:16px">Aucune recette.</td></tr>'}</tbody>
      </table></div></div>
      <div id="recForm" style="margin-top:24px"></div>`;
   renderRecForm();
 }
-
-function allIngNames() { return [...MAT.map(m => m.nom), ...REC.map(r => r.nom)]; }
-
-function syncIngFromDOM() {
-  document.querySelectorAll('.ing-row').forEach((row, k) => {
-    if (!ING_LIST[k]) return;
-    const sel = row.querySelector('select');
-    const inp = row.querySelector('input');
-    if (sel) ING_LIST[k].nom = sel.value;
-    if (inp) ING_LIST[k].qte = inp.value;
+function allIngNames(){ return[...MAT.map(m=>m.nom),...REC.map(r=>r.nom)]; }
+function syncIngFromDOM(){
+  document.querySelectorAll('.ing-row').forEach((row,k)=>{
+    if(!ING_LIST[k]) return;
+    const sel=row.querySelector('select'),inp=row.querySelector('input');
+    if(sel) ING_LIST[k].nom=sel.value;
+    if(inp) ING_LIST[k].qte=inp.value;
   });
 }
-
-function renderRecForm() {
-  const r = EDIT_REC ? REC.find(x => x.id === EDIT_REC) : null;
-  if (!ING_LIST.length) {
-    ING_LIST = r ? JSON.parse(JSON.stringify(r.ingredients || [])) : [];
-    if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' });
+function renderRecForm(){
+  const r=EDIT_REC?REC.find(x=>x.id===EDIT_REC):null;
+  if(!ING_LIST.length){
+    ING_LIST=r?JSON.parse(JSON.stringify(r.ingredients||[])):[];
+    if(!ING_LIST.length) ING_LIST.push({nom:'',qte:''});
   }
-  const names = allIngNames();
-  const mkOpts = (sel='') => `<option value="">— choisir —</option>` +
-    names.map(n => `<option${n === sel ? ' selected' : ''}>${esc(n)}</option>`).join('');
-
-  const ingRows = ING_LIST.map((i, k) => `
+  const names=allIngNames();
+  const mkOpts=(sel='')=>`<option value="">— choisir —</option>`+names.map(n=>`<option${n===sel?' selected':''}>${esc(n)}</option>`).join('');
+  const ingRows=ING_LIST.map((i,k)=>`
     <div class="ing-row">
       <select>${mkOpts(i.nom)}</select>
-      <input type="number" value="${i.qte || ''}" placeholder="qté" min="0" step="0.5">
+      <input type="number" value="${i.qte||''}" placeholder="qté" min="0" step="0.5">
       <button class="del-ing" onclick="removeIng(${k})" title="Retirer">×</button>
     </div>`).join('');
-
-  $('#recForm').innerHTML = `
-    <div class="secttl"><h2>${r ? 'Modifier : ' + esc(r.nom) : 'Nouveau craft'}</h2><div class="rule"></div></div>
+  $('#recForm').innerHTML=`
+    <div class="secttl"><span class="orn">✦</span><h2>${r?'Modifier : '+esc(r.nom):'Nouveau craft'}</h2><div class="rule"></div></div>
     <div class="rec-form-card">
       <div class="rec-meta">
-        <label>Nom du craft
-          <input id="r_nom" value="${r ? esc(r.nom) : ''}" style="width:200px" placeholder="ex. Bière ambrée"></label>
-        <label>Catégorie
-          <select id="r_cat">
-            ${['Boisson','Nourriture','Intermédiaire','Cigarette'].map(c => `<option${r&&r.categorie===c?' selected':''}>${c}</option>`).join('')}
-          </select></label>
-        <label>Qté produite par craft
-          <input type="number" id="r_qte" value="${r && r.qte_produite != null ? r.qte_produite : ''}" placeholder="ex. 4" style="width:110px"></label>
+        <label>Nom du craft<input id="r_nom" value="${r?esc(r.nom):''}" style="width:200px" placeholder="ex. Bière ambrée"></label>
+        <label>Catégorie<select id="r_cat">${['Boisson','Nourriture','Intermédiaire','Cigarette'].map(c=>`<option${r&&r.categorie===c?' selected':''}>${c}</option>`).join('')}</select></label>
+        <label>Qté produite par craft<input type="number" id="r_qte" value="${r&&r.qte_produite!=null?r.qte_produite:''}" placeholder="ex. 4" style="width:110px"></label>
       </div>
       <div class="ing-section-title">Ingrédients</div>
       <div class="ing-list" id="ingContainer">${ingRows}</div>
       <button class="add-ing-btn" onclick="addIng()">+ Ajouter un ingrédient</button>
       <div class="rec-actions">
-        <button class="btn sm" onclick="saveRecette()">${r ? 'Enregistrer les modifications' : '+ Créer le craft'}</button>
-        ${r ? '<button class="btn sm ghost" onclick="cancelRec()">Annuler</button>' : ''}
+        <button class="btn sm" onclick="saveRecette()">${r?'Enregistrer les modifications':'+ Créer le craft'}</button>
+        ${r?'<button class="btn sm ghost" onclick="cancelRec()">Annuler</button>':''}
       </div>
     </div>`;
 }
-
-function addIng() { syncIngFromDOM(); ING_LIST.push({ nom:'', qte:'' }); renderRecForm(); }
-function removeIng(k) { syncIngFromDOM(); ING_LIST.splice(k, 1); if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' }); renderRecForm(); }
-function cancelRec() { EDIT_REC = null; ING_LIST = []; renderRecettes(); }
-function editRecette(id) {
-  EDIT_REC = id;
-  const r = REC.find(x => x.id === id);
-  ING_LIST = r ? JSON.parse(JSON.stringify(r.ingredients || [])) : [];
-  if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' });
+function addIng(){ syncIngFromDOM(); ING_LIST.push({nom:'',qte:''}); renderRecForm(); }
+function removeIng(k){ syncIngFromDOM(); ING_LIST.splice(k,1); if(!ING_LIST.length) ING_LIST.push({nom:'',qte:''}); renderRecForm(); }
+function cancelRec(){ EDIT_REC=null; ING_LIST=[]; renderRecettes(); }
+function editRecette(id){
+  EDIT_REC=id;
+  const r=REC.find(x=>x.id===id);
+  ING_LIST=r?JSON.parse(JSON.stringify(r.ingredients||[])):[];
+  if(!ING_LIST.length) ING_LIST.push({nom:'',qte:''});
   renderRecettes();
-  setTimeout(() => { const f = $('#recForm'); if (f) f.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+  setTimeout(()=>{const f=$('#recForm');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});},60);
 }
-async function saveRecette() {
+async function saveRecette(){
   syncIngFromDOM();
-  const nom = $('#r_nom').value.trim();
-  if (!nom) { toast('Le nom est requis', 'err'); return; }
-  const ings = ING_LIST.filter(i => i.nom && (Number(i.qte) || 0) > 0)
-    .map(i => ({ nom: i.nom, qte: Number(i.qte) }));
-  const qteVal = $('#r_qte').value;
-  const data = { nom, categorie: $('#r_cat').value, qte_produite: qteVal === '' ? null : Number(qteVal), ingredients: ings };
-  if (EDIT_REC) {
-    const ok = await dbUpd('recettes', EDIT_REC, data);
-    if (ok) { toast('Recette modifiée'); EDIT_REC = null; ING_LIST = []; await refresh(); }
-  } else {
-    const { error } = await sb.from('recettes').insert(data);
-    if (error) { toast('Erreur : ' + error.message, 'err'); return; }
-    toast('Recette créée'); ING_LIST = []; await refresh();
+  const nom=$('#r_nom').value.trim(); if(!nom){toast('Le nom est requis','err');return;}
+  const ings=ING_LIST.filter(i=>i.nom&&(Number(i.qte)||0)>0).map(i=>({nom:i.nom,qte:Number(i.qte)}));
+  const qteVal=$('#r_qte').value;
+  const data={nom,categorie:$('#r_cat').value,qte_produite:qteVal===''?null:Number(qteVal),ingredients:ings};
+  if(EDIT_REC){
+    const ok=await dbUpd('recettes',EDIT_REC,data);
+    if(ok){toast('Recette modifiée');EDIT_REC=null;ING_LIST=[];await refresh();}
+  }else{
+    const{error}=await sb.from('recettes').insert(data);
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast('Recette créée');ING_LIST=[];await refresh();
   }
 }
 
-// ── MATIÈRES PREMIÈRES ─────────────────────────────────────────
-function renderMatieres() {
-  const grouped = {};
-  MAT.forEach(m => { const c = m.categorie || 'Autre'; if (!grouped[c]) grouped[c] = []; grouped[c].push(m); });
-
-  let html = '';
-  for (const [cat, items] of Object.entries(grouped)) {
-    const rows = items.map(m => `<tr>
+// ══════════════════════════════════
+//  MATIÈRES PREMIÈRES
+// ══════════════════════════════════
+function renderMatieres(){
+  const grouped={};
+  MAT.forEach(m=>{const c=m.categorie||'Autre';if(!grouped[c])grouped[c]=[];grouped[c].push(m);});
+  let html='';
+  for(const[cat,items] of Object.entries(grouped)){
+    const rows=items.map(m=>`<tr>
       <td><b>${esc(m.nom)}</b></td>
-      <td class="num">
-        <input type="number" step="0.01" value="${Number(m.prix)||0}"
-          onchange="updMat(${m.id},this.value)" style="width:90px;text-align:right">
-      </td>
-      <td>${m.recolte_gratuite
-        ? '<span class="pill ok">Récolte</span>'
-        : '<span class="pill muted">Achat</span>'}</td>
-      <td style="font-size:13px;color:var(--ink2)">${esc(m.notes || '')}</td>
+      <td class="num"><input type="number" step="0.01" value="${Number(m.prix)||0}" onchange="updMat(${m.id},this.value)" style="width:90px;text-align:right"></td>
+      <td>${m.recolte_gratuite?'<span class="pill ok">Récolte</span>':'<span class="pill muted">Achat</span>'}</td>
+      <td style="font-size:13px;color:var(--ink2)">${esc(m.notes||'')}</td>
       <td><button class="del" onclick="dbDel('matieres_premieres',${m.id})">✕</button></td>
     </tr>`).join('');
-    html += `<div class="cat-group-title">${esc(cat)}</div>
+    html+=`<div class="cat-group-title">${esc(cat)}</div>
       <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
         <thead><tr><th>Matière</th><th>Prix achat</th><th>Source</th><th>Notes</th><th></th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div></div>`;
   }
-
-  $('#view').innerHTML = head('Matières premières') +
-    `<p class="note">Modifie un prix → toutes les recettes et marges se recalculent immédiatement.</p>` + html +
+  $('#view').innerHTML=head('Matières premières')+
+    `<p class="note">Modifie un prix → toutes les recettes et marges se recalculent immédiatement.</p>`+html+
     `<div class="card" style="margin-top:18px"><div class="addbar" style="border-top:none">
       <label>Nom<input id="m_nom" style="width:155px"></label>
       <label>Catégorie<input id="m_cat" style="width:120px" placeholder="ex. Céréale"></label>
       <label>Prix achat<input type="number" step="0.01" id="m_prix" value="0" style="width:80px"></label>
-      <label>Source<select id="m_free">
-        <option value="false">Achat</option>
-        <option value="true">Récolte gratuite</option>
-      </select></label>
+      <label>Source<select id="m_free"><option value="false">Achat</option><option value="true">Récolte gratuite</option></select></label>
       <button class="btn sm" onclick="addMat()">+ Ajouter</button>
     </div></div>`;
 }
-async function updMat(id, val) {
-  const ok = await dbUpd('matieres_premieres', id, { prix: Number(val) || 0 });
-  if (ok) { toast('Prix mis à jour'); await refresh(); }
+async function updMat(id,val){
+  const ok=await dbUpd('matieres_premieres',id,{prix:Number(val)||0});
+  if(ok){toast('Prix mis à jour');await refresh();}
 }
-async function addMat() {
-  const nom = $('#m_nom').value.trim();
-  if (!nom) { toast('Nom requis', 'err'); return; }
-  const { error } = await sb.from('matieres_premieres').insert({
-    nom, categorie: $('#m_cat').value,
-    prix: Number($('#m_prix').value) || 0,
-    recolte_gratuite: $('#m_free').value === 'true'
-  });
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+async function addMat(){
+  const nom=$('#m_nom').value.trim(); if(!nom){toast('Nom requis','err');return;}
+  const{error}=await sb.from('matieres_premieres').insert({nom,categorie:$('#m_cat').value,
+    prix:Number($('#m_prix').value)||0,recolte_gratuite:$('#m_free').value==='true'});
+  if(error){toast('Erreur : '+error.message,'err');return;}
   toast('Matière première ajoutée'); await refresh();
 }
 
-// ── STOCK ──────────────────────────────────────────────────────
-function renderStock() {
-  if (STOCK_DATA === undefined) {
-    $('#view').innerHTML = head('Stock') +
-      `<p class="note" style="text-align:center;padding:20px">Chargement du stock…</p>`;
-    loadStock().then(() => { if (VIEW === 'stock') renderStock(); });
+// ══════════════════════════════════
+//  STOCK
+// ══════════════════════════════════
+function renderStock(){
+  if(STOCK_DATA===undefined){
+    $('#view').innerHTML=head('Stock')+`<p class="note" style="text-align:center;padding:20px">Chargement du stock…</p>`;
+    loadStock().then(()=>{if(VIEW==='stock') renderStock();});
     return;
   }
-  if (STOCK_DATA === null) {
-    $('#view').innerHTML = head('Stock') + `<div class="setup-box">
+  if(STOCK_DATA===null){
+    $('#view').innerHTML=head('Stock')+`<div class="setup-box">
       <p style="font-size:15px;margin:0 0 8px">La table <b>stock</b> n'existe pas encore dans Supabase.</p>
       <p style="margin:0 0 4px">Exécute ce SQL dans <b>Supabase → SQL Editor</b>, puis recharge la page :</p>
       <pre>CREATE TABLE IF NOT EXISTS stock (
@@ -982,208 +1193,175 @@ CREATE POLICY "auth_only" ON stock
     </div>`;
     return;
   }
-
-  const stockMap = {};
-  STOCK_DATA.forEach(s => stockMap[s.produit] = s);
-  const prods = PRD.filter(p => !(p.categorie||'').startsWith('Inter') && !String(p.nom).startsWith('Ajustement'));
-
-  function badge(qty) {
-    if (qty === 0) return '<span class="stock-badge s-empty">Épuisé</span>';
-    if (qty <= 3) return '<span class="stock-badge s-low">Faible</span>';
-    return '<span class="stock-badge s-ok">En stock</span>';
+  const stockMap={};
+  STOCK_DATA.forEach(s=>stockMap[s.produit]=s);
+  const prods=PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'));
+  function badge(qty){
+    if(qty===0) return'<span class="stock-badge s-empty">Épuisé</span>';
+    if(qty<=3) return'<span class="stock-badge s-low">Faible</span>';
+    return'<span class="stock-badge s-ok">En stock</span>';
   }
-
-  const grouped = {};
-  prods.forEach(p => { const c = p.categorie||'Autre'; if (!grouped[c]) grouped[c]=[]; grouped[c].push(p); });
-
-  let html = '';
-  for (const [cat, items] of Object.entries(grouped)) {
-    const rows = items.map(p => {
-      const s = stockMap[p.nom];
-      const qty = s ? s.quantite : 0;
-      const when = s && s.updated_at
-        ? new Date(s.updated_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
-        : '—';
-      const who = s ? (s.updated_by || '') : '';
-      return `<tr>
+  const grouped={};
+  prods.forEach(p=>{const c=p.categorie||'Autre';if(!grouped[c])grouped[c]=[];grouped[c].push(p);});
+  let html='';
+  for(const[cat,items] of Object.entries(grouped)){
+    const rows=items.map(p=>{
+      const s=stockMap[p.nom],qty=s?s.quantite:0;
+      const when=s&&s.updated_at?new Date(s.updated_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+      const who=s?(s.updated_by||''):'';
+      return`<tr>
         <td><b>${esc(p.nom)}</b></td>
-        <td class="num">
-          <input type="number" min="0" value="${qty}"
-            data-prod="${esc(p.nom)}" onchange="updStock(this.dataset.prod,this.value)"
-            style="width:75px;text-align:right">
-        </td>
+        <td class="num"><input type="number" min="0" value="${qty}" data-prod="${esc(p.nom)}" onchange="updStock(this.dataset.prod,this.value)" style="width:75px;text-align:right"></td>
         <td>${badge(qty)}</td>
-        <td style="font-size:13px;color:var(--ink2)">${when}${who ? ' · ' + esc(who) : ''}</td>
+        <td style="font-size:13px;color:var(--ink2)">${when}${who?' · '+esc(who):''}</td>
       </tr>`;
     }).join('');
-    html += `<div class="cat-group-title">${esc(cat)}</div>
+    html+=`<div class="cat-group-title">${esc(cat)}</div>
       <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
         <thead><tr><th>Produit</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div></div>`;
   }
-
-  $('#view').innerHTML = head('Stock') +
-    `<p class="note">Épuisé = 0 unité, Faible ≤ 3 unités. Modifie les quantités directement dans le tableau.</p>` + html;
+  $('#view').innerHTML=head('Stock')+
+    `<p class="note">Épuisé = 0 unité · Faible ≤ 3 · Modifie les quantités directement dans le tableau.</p>`+html;
 }
-
-async function updStock(produit, valeur) {
-  const qty = Math.max(0, Number(valeur) || 0);
-  const { data: { session } } = await sb.auth.getSession();
-  const who = session ? session.user.email : null;
-  const { error } = await sb.from('stock').upsert(
-    { produit, quantite: qty, updated_at: new Date().toISOString(), updated_by: who },
-    { onConflict: 'produit' }
-  );
-  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+async function updStock(produit,valeur){
+  const qty=Math.max(0,Number(valeur)||0);
+  const{data:{session}}=await sb.auth.getSession();
+  const who=session?session.user.email:null;
+  const{error}=await sb.from('stock').upsert({produit,quantite:qty,updated_at:new Date().toISOString(),updated_by:who},{onConflict:'produit'});
+  if(error){toast('Erreur : '+error.message,'err');return;}
   toast('Stock mis à jour');
-  if (STOCK_DATA) {
-    const idx = STOCK_DATA.findIndex(s => s.produit === produit);
-    const entry = { produit, quantite: qty, updated_at: new Date().toISOString(), updated_by: who };
-    if (idx >= 0) STOCK_DATA[idx] = { ...STOCK_DATA[idx], ...entry };
+  if(STOCK_DATA){
+    const idx=STOCK_DATA.findIndex(s=>s.produit===produit);
+    const entry={produit,quantite:qty,updated_at:new Date().toISOString(),updated_by:who};
+    if(idx>=0) STOCK_DATA[idx]={...STOCK_DATA[idx],...entry};
     else STOCK_DATA.push(entry);
   }
   renderStock();
 }
 
-// ── AIDE / TUTORIEL ────────────────────────────────────────────
-function renderTuto() {
-  const ind = [
+// ══════════════════════════════════
+//  AIDE / TUTORIEL
+// ══════════════════════════════════
+function renderTuto(){
+  const ind=[
     ['✅ OK','ok','Marge ≥ 20 % — produit rentable'],
-    ['⚠ Marge faible','warn','Marge entre 0 et 20 % — à surveiller'],
-    ['❌ Perte','bad','Le produit coûte plus cher à produire qu\'il ne se vend'],
+    ['⚠ Marge faible','warn','Entre 0 et 20 % de marge — à surveiller'],
+    ['❌ Perte','bad','Coûte plus cher à produire qu\'il ne se vend'],
     ['⚠ Prix à définir','warn','Prix de vente encore à 0 dans la base'],
-    ['⚠ Coût à définir','warn','Aucune recette ou coût inconnu'],
-    ['—','muted','Intermédiaire ou Ajustement — non affiché dans les alertes'],
+    ['⚠ Coût à définir','warn','Aucune recette ou ingrédient sans prix'],
+    ['—','muted','Intermédiaire ou Ajustement — hors alertes'],
   ];
-  $('#view').innerHTML = head('Guide du registre') +
+  $('#view').innerHTML=head('Guide du registre')+
   `<div class="tuto-section">
-    <h3>★ Bienvenue au Silver Pine</h3>
+    <h3>✦ Bienvenue au Silver Pine</h3>
     <p>Ce registre permet à toute l'équipe de suivre les ventes, les marges et le stock du saloon en temps réel.
-    Toute personne connectée peut consulter et modifier les données — les changements sont instantanément visibles par tous.</p>
+    Toute personne connectée peut consulter et modifier les données — les changements sont visibles par tous instantanément.</p>
   </div>
-
   <div class="tuto-section">
     <h3>Les onglets</h3>
     <div class="tuto-cols">
-      <div class="tuto-item"><strong>Tableau de bord</strong><p>Vue d'ensemble : résumé du jour, alertes, top produits et graphiques. Point de départ de chaque séance.</p></div>
-      <div class="tuto-item"><strong>Journées</strong><p>Une carte par journée avec CA, coût et marge. Cliquer ouvre le détail complet — modifier ou ajouter des ventes directement.</p></div>
-      <div class="tuto-item"><strong>Produits & marges</strong><p>Liste de tout ce qui se vend, avec le coût calculé automatiquement et le prix de vente éditable.</p></div>
-      <div class="tuto-item"><strong>Recettes</strong><p>Les crafts : ingrédients, quantités et coût calculé en cascade. Modifier ici met à jour toutes les marges.</p></div>
-      <div class="tuto-item"><strong>Matières premières</strong><p>Tous les ingrédients de base avec leur prix d'achat. Changer un prix recalcule tout automatiquement.</p></div>
-      <div class="tuto-item"><strong>Stock</strong><p>Quantités disponibles de chaque produit fini. Mise à jour manuelle après chaque craft ou vente de lot.</p></div>
+      <div class="tuto-item"><strong>Tableau de bord</strong><p>Résumé du jour, comparaison semaine, objectif CA, alertes produits, top 5, graphiques. Point de départ.</p></div>
+      <div class="tuto-item"><strong>Journées</strong><p>Une carte par journée. Filtrer par période, consulter/modifier les ventes, exporter en CSV.</p></div>
+      <div class="tuto-item"><strong>Produits & marges</strong><p>Liste complète avec coût auto et prix de vente éditable. Filtres par catégorie.</p></div>
+      <div class="tuto-item"><strong>Recettes</strong><p>Les crafts : ingrédients dynamiques et coût en cascade. Modifier ici recalcule toutes les marges.</p></div>
+      <div class="tuto-item"><strong>Matières premières</strong><p>Ingrédients de base avec prix d'achat. Regroupés par catégorie.</p></div>
+      <div class="tuto-item"><strong>Stock</strong><p>Quantités disponibles par produit fini. Mise à jour manuelle avec suivi de qui a modifié quoi.</p></div>
     </div>
   </div>
-
   <div class="tuto-section">
     <h3>Saisir une vente</h3>
-    <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:15px">
-      <li>Aller dans l'onglet <b>Journées</b> et cliquer sur la carte du jour, ou sur <b>+ Vente aujourd'hui</b></li>
-      <li>Choisir le produit vendu dans la liste déroulante</li>
-      <li>Entrer la quantité vendue (<i>Qté</i>) et les éventuelles unités offertes (<i>Off.</i> — comptées en coût mais pas en CA)</li>
-      <li>Laisser <i>Prix</i> vide pour utiliser le prix de base ; entrer un montant pour une vente spéciale (exportateur, promo)</li>
-      <li>Indiquer le canal : <b>Comptoir</b>, <b>Exportateur</b>, <b>Promo 2+1</b>, etc.</li>
-      <li>Valider avec <b>+ Ajouter</b> — la marge se calcule instantanément</li>
+    <ol style="margin:0;padding-left:20px;line-height:2;font-size:15px">
+      <li>Aller dans <b>Journées</b> → <b>+ Vente aujourd'hui</b></li>
+      <li>Choisir le produit, la quantité vendue et les unités offertes (si promo)</li>
+      <li>Laisser <i>Prix</i> vide pour le prix de base ; entrer un montant pour une vente spéciale</li>
+      <li>Choisir le canal : Comptoir, Exportateur, Promo 2+1…</li>
+      <li><b>+ Ajouter</b> — la marge se calcule immédiatement</li>
     </ol>
   </div>
-
   <div class="tuto-section">
     <h3>La logique des coûts (cascade)</h3>
-    <p>Le coût d'un produit se calcule automatiquement à partir de sa recette :</p>
     <div class="tuto-formula">
-Coût ingrédient = prix dans « Matières premières »
-                  (ou coût unitaire d'un autre craft si l'ingrédient est lui-même un craft)
+Coût ingrédient  = prix dans « Matières premières »
+                   OU coût unitaire d'un autre craft (récursif)
 
-Coût total recette = Σ (qté × coût) de chaque ingrédient
-Coût unitaire      = Coût total ÷ Qté produite par craft
+Coût total craft = Σ (qté × coût de chaque ingrédient)
+Coût unitaire    = Coût total ÷ Qté produite par craft
 
-Coût produit = cout_manuel  (si défini)
-             = Coût unitaire de la recette du même nom  (sinon)
+Coût produit     = cout_manuel si défini
+                   SINON coût unitaire de la recette du même nom
 
-Marge vente  = (qté vendue × prix) − (qté vendue + offerts) × coût
+Marge vente      = (qté × prix) − (qté + offerts) × coût
     </div>
-    <p><b>Exemple :</b> La Bière utilise du Moût, qui utilise lui-même de l'Orge. Changer le prix de l'Orge
-    recalcule automatiquement le Moût, puis la Bière, puis la marge sur toutes les ventes de Bière.</p>
   </div>
-
   <div class="tuto-section">
     <h3>Les indicateurs de marge</h3>
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-      ${ind.map(([label,cls,desc])=>`
-      <div style="display:flex;align-items:center;gap:12px;font-size:14px">
-        <span class="pill ${cls}" style="min-width:130px;text-align:center">${label}</span>
-        <span style="color:var(--ink2)">${desc}</span>
+      ${ind.map(([l,c,d])=>`<div style="display:flex;align-items:center;gap:12px;font-size:14px">
+        <span class="pill ${c}" style="min-width:135px;text-align:center">${l}</span>
+        <span style="color:var(--ink2)">${d}</span>
       </div>`).join('')}
     </div>
   </div>
-
   <div class="tuto-section">
     <h3>Canaux de vente</h3>
     <div class="tuto-cols">
-      <div class="tuto-item"><strong>Comptoir</strong><p>Vente standard au prix affiché dans la salle.</p></div>
-      <div class="tuto-item"><strong>Exportateur</strong><p>Vente en gros à prix réduit — entrer le prix spécifique dans le champ Prix.</p></div>
-      <div class="tuto-item"><strong>Promo 2+1</strong><p>2 achetés, 1 offert. Saisir qté=2, offerts=1.</p></div>
-      <div class="tuto-item"><strong>Ajustement</strong><p>Correction comptable (perte, casse, erreur). Le produit « Ajustement » avec un coût manuel couvre les imprévus.</p></div>
+      <div class="tuto-item"><strong>Comptoir</strong><p>Vente standard au prix affiché.</p></div>
+      <div class="tuto-item"><strong>Exportateur</strong><p>Vente en gros à prix réduit — entrer le prix dans le champ dédié.</p></div>
+      <div class="tuto-item"><strong>Promo 2+1</strong><p>2 achetés 1 offert — saisir qté=2, offerts=1.</p></div>
+      <div class="tuto-item"><strong>Ajustement</strong><p>Correction comptable : perte, casse, erreur de caisse.</p></div>
     </div>
   </div>
-
   <div class="tuto-section">
-    <h3>Conseils pratiques</h3>
+    <h3>✦ Conseils pratiques</h3>
     <ul>
-      <li>Saisir les ventes <b>au fil de la journée</b> plutôt qu'en fin de soirée — moins d'oublis.</li>
-      <li>Vérifier le <b>Tableau de bord → Alertes</b> régulièrement pour détecter les produits non configurés.</li>
-      <li>Quand on rajoute un craft, créer d'abord la <b>Recette</b>, puis le <b>Produit</b> du même nom — le coût se lie automatiquement.</li>
-      <li>Le champ <b>Qté produite</b> d'une recette est crucial : sans lui, le coût unitaire est 0 et la marge semble fausse.</li>
-      <li>Pour les ingrédients de récolte gratuite, mettre le prix à <b>0 $</b> et cocher « Récolte gratuite ».</li>
-      <li>Utiliser les <b>Notes</b> sur les ventes pour tracer les événements spéciaux (soirée poker, fête, visiteur VIP).</li>
+      <li>Saisir les ventes <b>au fil de la journée</b> — moins d'oublis en fin de soirée.</li>
+      <li>Vérifier le <b>Tableau de bord → Alertes</b> régulièrement.</li>
+      <li>Pour un nouveau craft : créer d'abord la <b>Recette</b>, puis le <b>Produit</b> du même nom.</li>
+      <li>Le champ <b>Qté produite</b> d'une recette est crucial : sans lui, le coût unitaire reste à 0.</li>
+      <li>Ingrédients de récolte : mettre le prix à 0 $ et cocher « Récolte gratuite ».</li>
+      <li>Utiliser le champ <b>Note</b> sur les ventes pour tracer les événements spéciaux.</li>
+      <li>L'<b>Objectif hebdomadaire</b> sur le tableau de bord est personnel (stocké dans le navigateur).</li>
     </ul>
   </div>`;
 }
 
-// ── AUTH + NAVIGATION ──────────────────────────────────────────
-$('#loginBtn').onclick = async () => {
-  $('#loginErr').textContent = '';
-  const { error } = await sb.auth.signInWithPassword({ email: $('#email').value.trim(), password: $('#pass').value });
-  if (error) $('#loginErr').textContent = "Connexion impossible — vérifie l'e-mail / mot de passe.";
+// ══════════════════════════════════
+//  AUTH + NAVIGATION
+// ══════════════════════════════════
+$('#loginBtn').onclick=async()=>{
+  $('#loginErr').textContent='';
+  const{error}=await sb.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#pass').value});
+  if(error) $('#loginErr').textContent="Connexion impossible — vérifie l'e-mail / mot de passe.";
 };
-$('#pass').addEventListener('keydown', e => { if (e.key === 'Enter') $('#loginBtn').click(); });
-$('#logoutBtn').onclick = () => sb.auth.signOut();
+$('#pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('#loginBtn').click();});
+$('#logoutBtn').onclick=()=>sb.auth.signOut();
 
-document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
-  VIEW = t.dataset.v;
-  EDIT_REC = null; ING_LIST = []; EDIT_VENTE = null; FILTER_CAT = null;
+  VIEW=t.dataset.v;
+  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;
   render();
 });
 
-// Réactions aux changements d'état après le chargement initial (connexion formulaire, déconnexion)
-sb.auth.onAuthStateChange((event, session) => {
-  if (!session) {
-    $('#app').classList.add('hidden');
-    $('#login').classList.remove('hidden');
-    return;
-  }
-  if (event === 'SIGNED_IN') {
-    // Connexion via le formulaire → charger les données
-    $('#userEmail').textContent = session.user.email;
-    $('#login').classList.add('hidden');
-    $('#app').classList.remove('hidden');
+sb.auth.onAuthStateChange((event,session)=>{
+  if(!session){$('#app').classList.add('hidden');$('#login').classList.remove('hidden');return;}
+  if(event==='SIGNED_IN'){
+    $('#userEmail').textContent=session.user.email;
+    $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
     refresh();
   }
 });
 
-// Chargement initial : getSession() attend que le token soit valide avant de lancer les requêtes
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    $('#userEmail').textContent = session.user.email;
-    $('#login').classList.add('hidden');
-    $('#app').classList.remove('hidden');
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    $('#userEmail').textContent=session.user.email;
+    $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
     await refresh();
-  } else {
-    $('#login').classList.remove('hidden');
-  }
+  }else{$('#login').classList.remove('hidden');}
 })();
 </script>
 </body>
