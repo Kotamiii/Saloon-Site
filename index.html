@@ -17,16 +17,16 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);
   background:
-    radial-gradient(900px 500px at 80% -10%, rgba(156,123,47,.10), transparent 60%),
-    radial-gradient(700px 500px at -10% 110%, rgba(123,45,38,.10), transparent 60%),
+    radial-gradient(900px 500px at 80% -10%,rgba(156,123,47,.10),transparent 60%),
+    radial-gradient(700px 500px at -10% 110%,rgba(123,45,38,.10),transparent 60%),
     #e4d6b8;
-  font-size:16px;}
+  font-size:16px}
 .hidden{display:none!important}
 h1,h2,h3{font-family:'Rye',serif;font-weight:400;letter-spacing:.3px}
 button{font-family:'EB Garamond',serif;cursor:pointer}
 .wrap{max-width:1150px;margin:0 auto;padding:0 18px 60px}
 
-/* ---- LOGIN ---- */
+/* LOGIN */
 #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .lcard{background:var(--card);border:1px solid var(--wood2);border-radius:4px;
   box-shadow:0 14px 40px rgba(40,25,12,.35);max-width:380px;width:100%;padding:34px 30px;
@@ -46,7 +46,7 @@ button{font-family:'EB Garamond',serif;cursor:pointer}
 .err{color:var(--red);font-size:14px;min-height:18px;margin-top:6px}
 .star{color:var(--gold);letter-spacing:6px;font-size:14px}
 
-/* ---- HEADER + TABS ---- */
+/* HEADER + TABS */
 header{background:linear-gradient(180deg,var(--wood),var(--wood2));color:#f2e6c9;
   border-bottom:3px solid var(--gold)}
 .htop{max-width:1150px;margin:0 auto;padding:16px 18px;display:flex;align-items:center;
@@ -59,7 +59,7 @@ header{background:linear-gradient(180deg,var(--wood),var(--wood2));color:#f2e6c9
 .tab:hover{color:#fff}
 .tab.active{color:#fff;border-bottom-color:var(--gold);font-weight:600}
 
-/* ---- CARDS / TABLES ---- */
+/* CARDS / TABLES */
 section{margin-top:26px}
 .secttl{display:flex;align-items:center;gap:12px;margin:0 0 14px}
 .secttl h2{color:var(--wine);font-size:23px;margin:0}
@@ -69,40 +69,168 @@ section{margin-top:26px}
 table{width:100%;border-collapse:collapse;font-size:15px}
 th{background:var(--wood2);color:#f1e3c4;font-family:'EB Garamond';font-weight:600;
   text-align:left;padding:9px 11px;font-size:13.5px;letter-spacing:.3px;white-space:nowrap}
-td{padding:8px 11px;border-top:1px solid #e2d3b0}
+td{padding:8px 11px;border-top:1px solid #e2d3b0;vertical-align:middle}
 tr:nth-child(even) td{background:rgba(201,180,138,.13)}
 td input,td select{width:100%;border:1px solid #d8c7a0;background:#fffdf6;padding:5px 6px;
   border-radius:3px;font-family:inherit;font-size:14px}
 td.num{text-align:right;font-variant-numeric:tabular-nums}
 .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12.5px;white-space:nowrap}
-.ok{background:#dcebd4;color:#345e2e}.warn{background:#f6e2bd;color:#7a5a17}
-.bad{background:#f1cfca;color:#8a2620}.muted{background:#e6ddc7;color:#6b5a3c}
-.del{color:var(--red);background:none;border:none;font-size:16px;padding:2px 6px}
+.ok{background:#dcebd4;color:#345e2e}
+.warn{background:#f6e2bd;color:#7a5a17}
+.bad{background:#f1cfca;color:#8a2620}
+.muted{background:#e6ddc7;color:#6b5a3c}
+.del{color:var(--red);background:none;border:none;font-size:16px;padding:2px 6px;line-height:1}
 .del:hover{color:#000}
+.icobtn{color:var(--ink2);background:none;border:none;font-size:15px;padding:2px 7px;cursor:pointer;line-height:1;border-radius:3px}
+.icobtn:hover{background:rgba(91,65,48,.1);color:var(--wine)}
+.row-actions{display:flex;gap:2px;white-space:nowrap;align-items:center}
 .addbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;padding:14px;
   background:rgba(91,65,48,.06);border-top:1px solid #e2d3b0}
 .addbar label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
 .addbar input,.addbar select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
   background:#fffdf6;font-family:inherit;font-size:14px}
+.note{font-size:13.5px;color:var(--ink2);font-style:italic;margin:0 0 14px}
 
-/* KPIs */
+/* KPIs / CHARTS */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:16px 18px;
   position:relative;box-shadow:0 4px 14px rgba(40,25,12,.08)}
-.kpi::after{content:"";position:absolute;inset:5px;border:1px solid rgba(156,123,47,.35);border-radius:3px;pointer-events:none}
+.kpi::after{content:"";position:absolute;inset:5px;border:1px solid rgba(156,123,47,.35);
+  border-radius:3px;pointer-events:none}
 .kpi .k{font-size:13px;color:var(--ink2);text-transform:uppercase;letter-spacing:1px}
 .kpi .v{font-family:'Rye';font-size:25px;color:var(--wine);margin-top:6px}
 .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-top:18px}
 .chartbox{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:14px 16px 8px;
   box-shadow:0 4px 14px rgba(40,25,12,.08)}
 .chartbox h3{margin:0 0 8px;color:var(--wood);font-size:16px}
-.note{font-size:13.5px;color:var(--ink2);font-style:italic;margin:8px 2px 0}
-@media(max-width:600px){.htop h1{font-size:20px}.tab{padding:9px 10px;font-size:14px}}
+
+/* FILTER PILLS */
+.filter-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fpill{background:var(--parch2);border:1px solid var(--line);color:var(--ink2);
+  padding:4px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:.1s;user-select:none}
+.fpill:hover,.fpill.active{background:var(--wine);color:#f6e9c8;border-color:var(--wine)}
+
+/* JOURNÉES — DAY CARDS */
+.day-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.daygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:14px;margin-top:20px}
+.daycard{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 3px 10px rgba(40,25,12,.08);position:relative;overflow:hidden}
+.daycard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(40,25,12,.15)}
+.daycard.selected{border-color:var(--gold);box-shadow:0 4px 18px rgba(156,123,47,.3)}
+.daycard.today-card{border-color:var(--gold)}
+.today-badge{position:absolute;top:0;right:0;background:var(--gold);color:#fff8e6;
+  font-size:10px;padding:2px 8px;border-radius:0 6px 0 6px;letter-spacing:.8px;
+  text-transform:uppercase;font-family:'EB Garamond',serif;font-weight:600}
+.daycard-date{font-family:'Rye',serif;font-size:13.5px;color:var(--wine);margin-bottom:10px;
+  text-transform:capitalize;padding-right:30px;line-height:1.3}
+.daycard-stats{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.daycard-stat{display:flex;justify-content:space-between;font-size:14px}
+.dc-label{color:var(--ink2)}
+.dc-val{font-weight:600;font-variant-numeric:tabular-nums}
+.dc-marge-ok .dc-val{color:var(--green)}
+.dc-marge-warn .dc-val{color:#8a6020}
+.dc-marge-bad .dc-val{color:var(--red)}
+.daycard-footer{display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--line);padding-top:8px;font-size:13px}
+.dc-count{color:var(--ink2)}
+.dc-toggle{color:var(--gold);font-weight:600;font-size:12px;letter-spacing:.5px}
+
+/* DAY PANEL */
+.day-panel{background:var(--card);border:1px solid var(--gold);border-radius:6px;
+  padding:20px;box-shadow:0 6px 24px rgba(156,123,47,.18);
+  animation:fadeDown .2s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.day-panel-head{display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.day-panel-title{font-family:'Rye',serif;font-size:19px;color:var(--wine);margin-bottom:4px;
+  text-transform:capitalize}
+.day-panel-kpis{display:flex;gap:18px;flex-wrap:wrap}
+.dp-kpi{font-size:14px;color:var(--ink2)}
+.dp-kpi strong{color:var(--ink);font-size:15px}
+.day-panel-close{background:none;border:none;font-size:22px;color:var(--ink2);cursor:pointer;
+  padding:0 4px;line-height:1;flex-shrink:0}
+.day-panel-close:hover{color:var(--wine)}
+.addform{background:rgba(91,65,48,.06);border:1px solid var(--line);border-radius:4px;
+  padding:14px;margin-top:14px}
+.addform-title{font-size:13px;color:var(--ink2);font-weight:600;margin-bottom:10px}
+.addform-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.addform label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.addform input,.addform select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
+  background:#fffdf6;font-family:inherit;font-size:14px}
+tr.editing td{background:#fffbf0!important}
+
+/* INGREDIENT EDITOR */
+.rec-form-card{background:var(--card);border:1px solid var(--line);border-radius:4px;
+  padding:18px;box-shadow:0 4px 14px rgba(40,25,12,.08)}
+.rec-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.rec-meta label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.rec-meta input,.rec-meta select{padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
+  background:#fffdf6;font-family:inherit;font-size:14px}
+.ing-section-title{font-size:12.5px;color:var(--ink2);font-weight:600;margin:0 0 8px;
+  text-transform:uppercase;letter-spacing:.6px}
+.ing-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.ing-row{display:flex;gap:8px;align-items:center}
+.ing-row select{flex:1;min-width:0;padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
+  background:#fffdf6;font-family:inherit;font-size:14px}
+.ing-row input{width:85px;flex-shrink:0;padding:7px 8px;border:1px solid #c9b48a;border-radius:3px;
+  background:#fffdf6;font-family:inherit;font-size:14px}
+.ing-row .del-ing{background:none;border:none;color:var(--red);font-size:20px;
+  cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0}
+.ing-row .del-ing:hover{color:#000}
+.add-ing-btn{background:none;border:1px dashed var(--wood2);color:var(--wood);
+  padding:6px 14px;border-radius:3px;font-size:13.5px;cursor:pointer;transition:.1s;width:100%}
+.add-ing-btn:hover{background:rgba(91,65,48,.07);border-style:solid}
+.rec-actions{display:flex;gap:8px;margin-top:16px}
+
+/* STOCK */
+.stock-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600}
+.s-ok{background:#dcebd4;color:#345e2e}
+.s-low{background:#f6e2bd;color:#7a5a17}
+.s-empty{background:#f1cfca;color:#8a2620}
+.setup-box{background:var(--card);border:2px dashed var(--line);border-radius:6px;
+  padding:24px;text-align:center;color:var(--ink2);line-height:1.7}
+.setup-box pre{background:var(--wood2);color:#f4e7c5;padding:14px;border-radius:4px;
+  text-align:left;font-size:12px;overflow-x:auto;margin:14px 0;white-space:pre-wrap}
+
+/* TOAST */
+#toastZone{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;
+  gap:8px;z-index:9999;pointer-events:none}
+.toast{background:var(--wood);color:#f4e7c5;padding:11px 16px;border-radius:4px;
+  font-size:14px;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.3);
+  transform:translateX(110%);transition:transform .25s ease;
+  border-left:4px solid var(--gold);pointer-events:auto}
+.toast.show{transform:none}
+.toast.t-err{background:var(--red);border-left-color:#f1cfca}
+.toast.t-ok{border-left-color:#3f6b3a}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:rgba(228,214,184,.65);display:flex;
+  align-items:center;justify-content:center;z-index:8888}
+.spin{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--wine);
+  border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* CAT GROUP HEADERS */
+.cat-group-title{font-family:'Rye',serif;font-size:14px;color:var(--wood2);
+  padding:4px 2px;margin:18px 0 6px;letter-spacing:.5px}
+.cat-group-title:first-child{margin-top:0}
+
+@media(max-width:600px){
+  .htop h1{font-size:20px}
+  .tab{padding:9px 10px;font-size:14px}
+  .daygrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .day-panel-kpis{flex-direction:column;gap:4px}
+  .rec-meta{flex-direction:column;align-items:stretch}
+}
 </style>
 </head>
 <body>
 
-<!-- ================= LOGIN ================= -->
+<div id="toastZone"></div>
+<div id="loader" class="hidden"><div class="spin"></div></div>
+
+<!-- LOGIN -->
 <div id="login">
   <div class="lcard">
     <div class="star">★ ★ ★</div>
@@ -115,331 +243,720 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
   </div>
 </div>
 
-<!-- ================= APP ================= -->
+<!-- APP -->
 <div id="app" class="hidden">
   <header>
     <div class="htop">
       <h1>🥃 The Silver Pine</h1>
-      <div class="who"><span id="userEmail"></span>
-        <button class="btn sm ghost" id="logoutBtn" style="color:#f0e3c4;border-color:#caa">Sortir</button></div>
+      <div class="who">
+        <span id="userEmail"></span>
+        <button class="btn sm ghost" id="logoutBtn" style="color:#f0e3c4;border-color:#caa">Sortir</button>
+      </div>
     </div>
     <div class="tabs" id="tabs">
       <button class="tab active" data-v="dash">Tableau de bord</button>
-      <button class="tab" data-v="ventes">Ventes</button>
+      <button class="tab" data-v="journees">Journées</button>
       <button class="tab" data-v="produits">Produits &amp; marges</button>
       <button class="tab" data-v="recettes">Recettes</button>
       <button class="tab" data-v="matieres">Matières premières</button>
+      <button class="tab" data-v="stock">Stock</button>
     </div>
   </header>
   <div class="wrap" id="view"></div>
 </div>
 
 <script>
-// ====== CONFIG : REMPLACE CES 2 LIGNES PAR TES CLÉS SUPABASE ======
+// ====== CONFIG ======
 const SUPABASE_URL = "https://tpzpqusflfqxcobsugal.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_gmljcxE-XRvc9aEJ3ECpNA_X0iuf6Bm";
-// ==================================================================
+// ====================
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = s => document.querySelector(s);
 const fmt = n => (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' $';
 const pct = n => (Number(n)||0).toLocaleString('fr-FR',{style:'percent',minimumFractionDigits:1});
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today = () => new Date().toISOString().slice(0,10);
 
-let MAT=[], REC=[], PRD=[], VEN=[], CHARTS=[];
+let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=null;
+let CHARTS=[];
+let VIEW='dash';
+let EDIT_REC=null, ING_LIST=[];
+let SELECTED_DAY=null, EDIT_VENTE=null;
+let FILTER_CAT=null;
 
-// ---------- CALCULS (logique de ton Excel) ----------
-function coutIngredient(nom, stack){
-  const m = MAT.find(x=>x.nom===nom);
-  if(m) return Number(m.prix)||0;
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const z = $('#toastZone');
+  const t = document.createElement('div');
+  t.className = 'toast t-' + type;
+  t.textContent = msg;
+  z.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+// ── LOADER ─────────────────────────────────────────────────────
+function loading(on) { $('#loader').classList.toggle('hidden', !on); }
+
+// ── CALCULS ────────────────────────────────────────────────────
+function coutIngredient(nom, stack) {
+  const m = MAT.find(x => x.nom === nom);
+  if (m) return Number(m.prix) || 0;
   return coutRecetteUnit(nom, stack);
 }
-function coutRecetteUnit(nom, stack=[]){
-  if(stack.includes(nom)) return 0;
-  const r = REC.find(x=>x.nom===nom);
-  if(!r) return 0;
-  const ns=[...stack,nom];
-  let tot=0;
-  for(const ing of (r.ingredients||[])) tot += coutIngredient(ing.nom,ns)*(Number(ing.qte)||0);
-  const q=Number(r.qte_produite);
-  return q>0 ? tot/q : 0;
+function coutRecetteUnit(nom, stack=[]) {
+  if (stack.includes(nom)) return 0;
+  const r = REC.find(x => x.nom === nom);
+  if (!r) return 0;
+  const ns = [...stack, nom];
+  let tot = 0;
+  for (const ing of (r.ingredients || [])) tot += coutIngredient(ing.nom, ns) * (Number(ing.qte) || 0);
+  const q = Number(r.qte_produite);
+  return q > 0 ? tot / q : 0;
 }
-function coutTotalRecette(r){
-  let tot=0; for(const ing of (r.ingredients||[])) tot += coutIngredient(ing.nom,[r.nom])*(Number(ing.qte)||0);
+function coutTotalRecette(r) {
+  let tot = 0;
+  for (const ing of (r.ingredients || [])) tot += coutIngredient(ing.nom, [r.nom]) * (Number(ing.qte) || 0);
   return tot;
 }
-function coutProduit(nom){
-  const p=PRD.find(x=>x.nom===nom);
-  if(p && p.cout_manuel!=null) return Number(p.cout_manuel);
+function coutProduit(nom) {
+  const p = PRD.find(x => x.nom === nom);
+  if (p && p.cout_manuel != null) return Number(p.cout_manuel);
   return coutRecetteUnit(nom);
 }
-function prixBase(nom){ const p=PRD.find(x=>x.nom===nom); return p?Number(p.prix_vente)||0:0; }
-function catProduit(nom){ const p=PRD.find(x=>x.nom===nom); return p?p.categorie:''; }
-function venteCalc(v){
-  const prix = (v.prix_unit!=null && v.prix_unit!=='') ? Number(v.prix_unit) : prixBase(v.produit);
-  const ca = (Number(v.qte_vendue)||0)*prix;
-  const cout = ((Number(v.qte_vendue)||0)+(Number(v.offerts)||0))*coutProduit(v.produit);
-  return {prix, ca, cout, marge:ca-cout};
+function prixBase(nom) { const p = PRD.find(x => x.nom === nom); return p ? Number(p.prix_vente) || 0 : 0; }
+function catProduit(nom) { const p = PRD.find(x => x.nom === nom); return p ? p.categorie : ''; }
+function venteCalc(v) {
+  const prix = (v.prix_unit != null && v.prix_unit !== '') ? Number(v.prix_unit) : prixBase(v.produit);
+  const ca = (Number(v.qte_vendue) || 0) * prix;
+  const cout = ((Number(v.qte_vendue) || 0) + (Number(v.offerts) || 0)) * coutProduit(v.produit);
+  return { prix, ca, cout, marge: ca - cout };
 }
 
-// ---------- DATA ----------
-async function loadAll(){
-  const [m,r,p,v] = await Promise.all([
-    sb.from('matieres_premieres').select('*').order('id'),
-    sb.from('recettes').select('*').order('id'),
-    sb.from('produits').select('*').order('id'),
-    sb.from('ventes').select('*').order('date',{ascending:false}).order('id',{ascending:false}),
-  ]);
-  MAT=m.data||[]; REC=r.data||[]; PRD=p.data||[]; VEN=v.data||[];
+// ── DATA ───────────────────────────────────────────────────────
+async function loadAll() {
+  loading(true);
+  try {
+    const [m, r, p, v] = await Promise.all([
+      sb.from('matieres_premieres').select('*').order('id'),
+      sb.from('recettes').select('*').order('id'),
+      sb.from('produits').select('*').order('id'),
+      sb.from('ventes').select('*').order('date', {ascending:false}).order('id', {ascending:false}),
+    ]);
+    MAT = m.data || []; REC = r.data || []; PRD = p.data || []; VEN = v.data || [];
+    const { data: sd, error: se } = await sb.from('stock').select('*').order('produit');
+    STOCK_DATA = se ? null : (sd || []);
+  } finally {
+    loading(false);
+  }
 }
-async function upd(table,id,patch){ await sb.from(table).update(patch).eq('id',id); }
-async function del(table,id){ if(confirm('Supprimer cette ligne ?')){ await sb.from(table).delete().eq('id',id); await refresh(); } }
-async function refresh(){ await loadAll(); render(); }
+async function dbUpd(table, id, patch) {
+  const { error } = await sb.from(table).update(patch).eq('id', id);
+  if (error) { toast('Erreur : ' + error.message, 'err'); return false; }
+  return true;
+}
+async function dbDel(table, id) {
+  if (!confirm('Supprimer cette ligne ?')) return;
+  const { error } = await sb.from(table).delete().eq('id', id);
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Supprimé');
+  await refresh();
+}
+async function refresh() { await loadAll(); render(); }
 
-// ---------- RENDER ----------
-let VIEW='dash';
-function render(){
+// ── RENDER ─────────────────────────────────────────────────────
+function render() {
   destroyCharts();
-  if(VIEW==='dash') renderDash();
-  else if(VIEW==='ventes') renderVentes();
-  else if(VIEW==='produits') renderProduits();
-  else if(VIEW==='recettes') renderRecettes();
-  else if(VIEW==='matieres') renderMatieres();
+  const fns = { dash:renderDash, journees:renderJournees, produits:renderProduits,
+    recettes:renderRecettes, matieres:renderMatieres, stock:renderStock };
+  (fns[VIEW] || renderDash)();
 }
-function destroyCharts(){ CHARTS.forEach(c=>c.destroy()); CHARTS=[]; }
-function head(t){ return `<div class="secttl"><h2>${t}</h2><div class="rule"></div></div>`; }
-function indicateur(nom){
-  const p=PRD.find(x=>x.nom===nom); if(!p) return '';
-  if((p.categorie||'').startsWith('Inter')||String(nom).startsWith('Ajustement')) return '<span class="pill muted">—</span>';
-  const prix=Number(p.prix_vente)||0, cout=coutProduit(nom);
-  if(prix===0) return '<span class="pill warn">⚠ Prix à définir</span>';
-  if(cout===0) return '<span class="pill warn">⚠ Coût à définir</span>';
-  const mp=(prix-cout)/prix;
-  if(prix-cout<0) return '<span class="pill bad">❌ Perte</span>';
-  if(mp<0.2) return '<span class="pill warn">⚠ Marge faible</span>';
+function destroyCharts() { CHARTS.forEach(c => c.destroy()); CHARTS = []; }
+function head(t) { return `<div class="secttl"><h2>${t}</h2><div class="rule"></div></div>`; }
+function indicateur(nom) {
+  const p = PRD.find(x => x.nom === nom); if (!p) return '';
+  if ((p.categorie || '').startsWith('Inter') || String(nom).startsWith('Ajustement'))
+    return '<span class="pill muted">—</span>';
+  const prix = Number(p.prix_vente) || 0, cout = coutProduit(nom);
+  if (prix === 0) return '<span class="pill warn">⚠ Prix à définir</span>';
+  if (cout === 0) return '<span class="pill warn">⚠ Coût à définir</span>';
+  const mp = (prix - cout) / prix;
+  if (prix - cout < 0) return '<span class="pill bad">❌ Perte</span>';
+  if (mp < 0.2) return '<span class="pill warn">⚠ Marge faible</span>';
   return '<span class="pill ok">✅ OK</span>';
 }
+function chartOpts() {
+  return { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ family:'EB Garamond', size:13 } } } },
+    scales:{ x:{ ticks:{ font:{ size:11 } } }, y:{ ticks:{ font:{ size:11 } } } } };
+}
 
-// ----- DASHBOARD -----
-function renderDash(){
-  let ca=0,cout=0,unites=0;
-  VEN.forEach(v=>{const c=venteCalc(v); ca+=c.ca; cout+=c.cout; unites+=Number(v.qte_vendue)||0;});
-  const marge=ca-cout;
-  const kpi=[['Chiffre d\'affaires',fmt(ca)],['Coût de production',fmt(cout)],
-    ['Marge (bénéfice)',fmt(marge)],['Marge %',ca?pct(marge/ca):'0 %'],['Unités vendues',unites.toLocaleString('fr-FR')]];
-  $('#view').innerHTML = head('Tableau de bord')+
-    `<div class="kpis">${kpi.map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('')}</div>
+// ── TABLEAU DE BORD ────────────────────────────────────────────
+function renderDash() {
+  let ca=0, cout=0, unites=0;
+  VEN.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; unites += Number(v.qte_vendue) || 0; });
+  const marge = ca - cout;
+  const kpi = [
+    ["Chiffre d'affaires", fmt(ca)],
+    ['Coût de production', fmt(cout)],
+    ['Marge (bénéfice)', fmt(marge)],
+    ['Marge %', ca ? pct(marge / ca) : '0 %'],
+    ['Unités vendues', unites.toLocaleString('fr-FR')]
+  ];
+  $('#view').innerHTML = head('Tableau de bord') +
+    `<div class="kpis">${kpi.map(k => `<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}</div></div>`).join('')}</div>
      <div class="charts">
        <div class="chartbox"><h3>Coût de production vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
        <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="200"></canvas></div>
        <div class="chartbox"><h3>Répartition du CA</h3><canvas id="c3" height="200"></canvas></div>
        <div class="chartbox"><h3>Comparaison jour par jour</h3><canvas id="c4" height="200"></canvas></div>
      </div>`;
-  const real = PRD.filter(p=>!String(p.nom).startsWith('Ajustement'));
-  // c1 coût vs prix
-  CHARTS.push(new Chart($('#c1'),{type:'bar',data:{labels:real.map(p=>p.nom),
-    datasets:[{label:'Coût',data:real.map(p=>coutProduit(p.nom)),backgroundColor:'#7b2d26'},
-              {label:'Prix',data:real.map(p=>Number(p.prix_vente)||0),backgroundColor:'#9c7b2f'}]},
-    options:chartOpts()}));
-  // c2 marge par produit (depuis ventes)
-  const byP={}; VEN.forEach(v=>{const c=venteCalc(v); byP[v.produit]=(byP[v.produit]||0)+c.marge;});
-  const pe=Object.entries(byP).filter(([n])=>!n.startsWith('Ajustement'));
-  CHARTS.push(new Chart($('#c2'),{type:'bar',data:{labels:pe.map(e=>e[0]),
-    datasets:[{label:'Marge',data:pe.map(e=>e[1]),backgroundColor:'#3f6b3a'}]},
-    options:{...chartOpts(),indexAxis:'y'}}));
-  // c3 répartition CA par catégorie
-  const byC={}; VEN.forEach(v=>{const c=venteCalc(v); const cat=catProduit(v.produit)||'Autre'; byC[cat]=(byC[cat]||0)+c.ca;});
-  const ce=Object.entries(byC).filter(e=>e[1]>0);
-  CHARTS.push(new Chart($('#c3'),{type:'doughnut',data:{labels:ce.map(e=>e[0]),
-    datasets:[{data:ce.map(e=>e[1]),backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130']}]},
-    options:{responsive:true,plugins:{legend:{position:'bottom'}}}}));
-  // c4 jour par jour
-  const byD={}; VEN.forEach(v=>{const c=venteCalc(v); const d=v.date||'?'; if(!byD[d])byD[d]={ca:0,m:0}; byD[d].ca+=c.ca; byD[d].m+=c.marge;});
-  const ds=Object.keys(byD).sort();
-  const lab=ds.map(d=>{const p=d.split('-');return p.length===3?p[2]+'/'+p[1]:d;});
-  CHARTS.push(new Chart($('#c4'),{type:'bar',data:{labels:lab,
-    datasets:[{label:'CA',data:ds.map(d=>byD[d].ca),backgroundColor:'#9c7b2f'},
-              {label:'Marge',data:ds.map(d=>byD[d].m),backgroundColor:'#3f6b3a'}]},
-    options:chartOpts()}));
+  const real = PRD.filter(p => !String(p.nom).startsWith('Ajustement'));
+  CHARTS.push(new Chart($('#c1'), { type:'bar', data:{ labels:real.map(p => p.nom),
+    datasets:[{ label:'Coût', data:real.map(p => coutProduit(p.nom)), backgroundColor:'#7b2d26' },
+              { label:'Prix', data:real.map(p => Number(p.prix_vente) || 0), backgroundColor:'#9c7b2f' }] },
+    options:chartOpts() }));
+  const byP = {}; VEN.forEach(v => { const c = venteCalc(v); byP[v.produit] = (byP[v.produit] || 0) + c.marge; });
+  const pe = Object.entries(byP).filter(([n]) => !n.startsWith('Ajustement'));
+  CHARTS.push(new Chart($('#c2'), { type:'bar', data:{ labels:pe.map(e => e[0]),
+    datasets:[{ label:'Marge', data:pe.map(e => e[1]), backgroundColor:'#3f6b3a' }] },
+    options:{ ...chartOpts(), indexAxis:'y' } }));
+  const byC = {}; VEN.forEach(v => { const c = venteCalc(v); const cat = catProduit(v.produit) || 'Autre'; byC[cat] = (byC[cat] || 0) + c.ca; });
+  const ce = Object.entries(byC).filter(e => e[1] > 0);
+  CHARTS.push(new Chart($('#c3'), { type:'doughnut', data:{ labels:ce.map(e => e[0]),
+    datasets:[{ data:ce.map(e => e[1]), backgroundColor:['#7b2d26','#9c7b2f','#3f6b3a','#5a4130'] }] },
+    options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } } }));
+  const byD = {}; VEN.forEach(v => { const c = venteCalc(v); const d = v.date || '?'; if (!byD[d]) byD[d] = { ca:0, m:0 }; byD[d].ca += c.ca; byD[d].m += c.marge; });
+  const ds = Object.keys(byD).sort();
+  const lab = ds.map(d => { const p = d.split('-'); return p.length === 3 ? p[2]+'/'+p[1] : d; });
+  CHARTS.push(new Chart($('#c4'), { type:'bar', data:{ labels:lab,
+    datasets:[{ label:'CA', data:ds.map(d => byD[d].ca), backgroundColor:'#9c7b2f' },
+              { label:'Marge', data:ds.map(d => byD[d].m), backgroundColor:'#3f6b3a' }] },
+    options:chartOpts() }));
 }
-function chartOpts(){return{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'EB Garamond',size:13}}}},
-  scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}}};}
 
-// ----- VENTES -----
-function renderVentes(){
-  const opts = PRD.map(p=>`<option>${esc(p.nom)}</option>`).join('');
-  const today = new Date().toISOString().slice(0,10);
-  let rows = VEN.map(v=>{const c=venteCalc(v);
+// ── JOURNÉES ───────────────────────────────────────────────────
+function fmtDate(s) {
+  if (!s || s === '?') return '?';
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  return dt.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+}
+
+function renderJournees() {
+  const byDate = {};
+  VEN.forEach(v => { const d = v.date || '?'; if (!byDate[d]) byDate[d] = []; byDate[d].push(v); });
+  const td = today();
+  if (!byDate[td]) byDate[td] = [];
+  const dates = Object.keys(byDate).sort().reverse();
+
+  const panelHtml = SELECTED_DAY
+    ? buildDayPanel(SELECTED_DAY, byDate[SELECTED_DAY] || [])
+    : '';
+
+  const cards = dates.map(date => {
+    const sales = byDate[date] || [];
+    let ca=0, cout=0;
+    sales.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; });
+    const marge = ca - cout;
+    const mp = ca ? marge / ca : 0;
+    const margeClass = marge < 0 ? 'dc-marge-bad' : mp < 0.2 ? 'dc-marge-warn' : 'dc-marge-ok';
+    const isToday = date === td;
+    const isSel = SELECTED_DAY === date;
+    return `<div class="daycard${isSel ? ' selected' : ''}${isToday ? ' today-card' : ''}" onclick="selectDay('${date}')">
+      ${isToday ? '<div class="today-badge">Aujourd\'hui</div>' : ''}
+      <div class="daycard-date">${fmtDate(date)}</div>
+      <div class="daycard-stats">
+        <div class="daycard-stat"><span class="dc-label">CA</span><span class="dc-val">${fmt(ca)}</span></div>
+        <div class="daycard-stat"><span class="dc-label">Coût</span><span class="dc-val">${fmt(cout)}</span></div>
+        <div class="daycard-stat ${margeClass}"><span class="dc-label">Marge</span><span class="dc-val">${fmt(marge)}</span></div>
+        <div class="daycard-stat"><span class="dc-label">Marge %</span><span class="dc-val">${ca ? pct(mp) : '—'}</span></div>
+      </div>
+      <div class="daycard-footer">
+        <span class="dc-count">${sales.length} vente${sales.length !== 1 ? 's' : ''}</span>
+        <span class="dc-toggle">${isSel ? '▲ Fermer' : '▼ Voir'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  $('#view').innerHTML = head('Journées') +
+    `<div class="day-toolbar">
+      <p class="note" style="margin:0">Clique sur une journée pour consulter et modifier ses ventes.</p>
+      <button class="btn sm" onclick="openToday()">+ Vente aujourd'hui</button>
+    </div>
+    ${panelHtml}
+    <div class="daygrid">${cards}</div>`;
+}
+
+function buildDayPanel(date, sales) {
+  let ca=0, cout=0;
+  sales.forEach(v => { const c = venteCalc(v); ca += c.ca; cout += c.cout; });
+  const marge = ca - cout;
+
+  const prodOpts = PRD.map(p => `<option>${esc(p.nom)}</option>`).join('');
+  const canalOpts = ['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre']
+    .map(c => `<option>${c}</option>`).join('');
+
+  const rows = sales.map(v => {
+    const c = venteCalc(v);
+    if (EDIT_VENTE === v.id) {
+      const cOpts = ['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre']
+        .map(x => `<option${x === v.canal ? ' selected' : ''}>${x}</option>`).join('');
+      return `<tr class="editing">
+        <td><select id="ev_prod" style="min-width:110px">${PRD.map(p => `<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
+        <td><input type="number" id="ev_qte" value="${Number(v.qte_vendue)||0}" style="width:58px"></td>
+        <td><input type="number" id="ev_off" value="${Number(v.offerts)||0}" style="width:52px"></td>
+        <td><input type="number" step="0.01" id="ev_prix" value="${v.prix_unit!=null?v.prix_unit:''}" placeholder="base" style="width:80px"></td>
+        <td><select id="ev_canal">${cOpts}</select></td>
+        <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:90px"></td>
+        <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
+        <td><div class="row-actions">
+          <button class="btn sm" onclick="saveVente(${v.id})">✓ OK</button>
+          <button class="btn sm ghost" onclick="EDIT_VENTE=null;renderJournees()">✕</button>
+        </div></td>
+      </tr>`;
+    }
     return `<tr>
-      <td>${v.date?v.date.split('-').reverse().join('/'):''}</td>
-      <td>${esc(v.produit)}</td>
+      <td><b>${esc(v.produit)}</b></td>
       <td class="num">${Number(v.qte_vendue)||0}</td>
       <td class="num">${Number(v.offerts)||0}</td>
       <td class="num">${fmt(c.prix)}</td>
-      <td class="num">${fmt(c.ca)}</td>
-      <td class="num">${fmt(c.cout)}</td>
-      <td class="num" style="color:${c.marge<0?'#9b2c2c':'#3f6b3a'};font-weight:600">${fmt(c.marge)}</td>
       <td>${esc(v.canal||'')}</td>
-      <td>${esc(v.note||'')}</td>
-      <td><button class="del" onclick="del('ventes',${v.id})">✕</button></td></tr>`;}).join('');
-  $('#view').innerHTML = head('Ventes')+
-    `<p class="note">Laisse « Prix » vide → prix de base du produit. Mets un montant pour une vente moins chère (exportateur). « Off. » = unités offertes (promo).</p>
-     <div class="card"><div style="overflow-x:auto"><table>
-      <thead><tr><th>Date</th><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>CA</th><th>Coût</th><th>Marge</th><th>Canal</th><th>Note</th><th></th></tr></thead>
-      <tbody>${rows||'<tr><td colspan="11" style="text-align:center;font-style:italic;padding:18px">Aucune vente — ajoute la première ci-dessous.</td></tr>'}</tbody></table></div>
-      <div class="addbar">
-        <label>Date<input type="date" id="v_date" value="${today}"></label>
-        <label>Produit<select id="v_prod">${opts}</select></label>
-        <label>Qté vendue<input type="number" id="v_qte" value="0" style="width:90px"></label>
-        <label>Offerts<input type="number" id="v_off" value="0" style="width:80px"></label>
-        <label>Prix (vide=base)<input type="number" step="0.01" id="v_prix" placeholder="—" style="width:110px"></label>
-        <label>Canal<select id="v_canal"><option>Comptoir</option><option>Exportateur</option><option>Promo 2+1</option><option>Ajustement</option><option>Autre</option></select></label>
-        <label>Note<input type="text" id="v_note" style="width:150px"></label>
-        <button class="btn sm" onclick="addVente()">+ Ajouter</button>
-      </div></div>`;
+      <td style="font-size:13px;color:var(--ink2)">${esc(v.note||'')}</td>
+      <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
+      <td><div class="row-actions">
+        <button class="icobtn" onclick="editVente(${v.id})" title="Modifier">✎</button>
+        <button class="del" onclick="delVente(${v.id})" title="Supprimer">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  const emptyRow = `<tr><td colspan="8" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">
+    Aucune vente enregistrée ce jour.</td></tr>`;
+
+  return `<div class="day-panel" id="dayPanel">
+    <div class="day-panel-head">
+      <div>
+        <div class="day-panel-title">${fmtDate(date)}</div>
+        <div class="day-panel-kpis">
+          <div class="dp-kpi">CA : <strong>${fmt(ca)}</strong></div>
+          <div class="dp-kpi">Coût : <strong>${fmt(cout)}</strong></div>
+          <div class="dp-kpi" style="color:${marge<0?'var(--red)':'var(--green)'}">Marge : <strong>${fmt(marge)}</strong></div>
+        </div>
+      </div>
+      <button class="day-panel-close" onclick="SELECTED_DAY=null;renderJournees()" title="Fermer">✕</button>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr>
+            <th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th>
+            <th>Canal</th><th>Note</th><th>Marge</th><th></th>
+          </tr></thead>
+          <tbody>${rows || emptyRow}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="addform">
+      <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
+      <div class="addform-row">
+        <label>Produit<select id="nv_prod">${prodOpts}</select></label>
+        <label>Qté<input type="number" id="nv_qte" value="1" style="width:65px"></label>
+        <label>Offerts<input type="number" id="nv_off" value="0" style="width:58px"></label>
+        <label>Prix (vide = base)<input type="number" step="0.01" id="nv_prix" placeholder="—" style="width:100px"></label>
+        <label>Canal<select id="nv_canal">${canalOpts}</select></label>
+        <label>Note<input id="nv_note" style="width:130px"></label>
+        <button class="btn sm" onclick="addVenteDay('${date}')">+ Ajouter</button>
+      </div>
+    </div>
+  </div>`;
 }
-async function addVente(){
-  const prix=$('#v_prix').value;
-  await sb.from('ventes').insert({date:$('#v_date').value,produit:$('#v_prod').value,
-    qte_vendue:Number($('#v_qte').value)||0,offerts:Number($('#v_off').value)||0,
-    prix_unit: prix===''?null:Number(prix), canal:$('#v_canal').value, note:$('#v_note').value});
+
+function selectDay(date) {
+  EDIT_VENTE = null;
+  SELECTED_DAY = SELECTED_DAY === date ? null : date;
+  renderJournees();
+  if (SELECTED_DAY) setTimeout(() => { const p = $('#dayPanel'); if (p) p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 60);
+}
+
+function openToday() {
+  EDIT_VENTE = null;
+  SELECTED_DAY = today();
+  renderJournees();
+  setTimeout(() => { const p = $('#dayPanel'); if (p) p.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+}
+
+function editVente(id) {
+  EDIT_VENTE = id;
+  renderJournees();
+}
+
+async function saveVente(id) {
+  const prix = $('#ev_prix').value;
+  const ok = await dbUpd('ventes', id, {
+    produit: $('#ev_prod').value,
+    qte_vendue: Number($('#ev_qte').value) || 0,
+    offerts: Number($('#ev_off').value) || 0,
+    prix_unit: prix === '' ? null : Number(prix),
+    canal: $('#ev_canal').value,
+    note: $('#ev_note').value
+  });
+  if (ok) { toast('Vente modifiée'); EDIT_VENTE = null; await refresh(); }
+}
+
+async function delVente(id) {
+  if (!confirm('Supprimer cette vente ?')) return;
+  const { error } = await sb.from('ventes').delete().eq('id', id);
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Vente supprimée');
   await refresh();
 }
 
-// ----- PRODUITS -----
-function renderProduits(){
-  let rows = PRD.map(p=>{const cout=coutProduit(p.nom),prix=Number(p.prix_vente)||0,marge=prix-cout;
-    return `<tr>
-      <td>${esc(p.nom)}</td><td>${esc(p.categorie||'')}</td>
-      <td class="num">${fmt(cout)}</td>
-      <td class="num"><input type="number" step="0.01" value="${prix}" onchange="updProduit(${p.id},'prix_vente',this.value)" style="width:90px;text-align:right"></td>
-      <td class="num" style="color:${marge<0?'#9b2c2c':'#3f6b3a'}">${fmt(marge)}</td>
-      <td class="num">${prix?pct(marge/prix):'—'}</td>
-      <td>${indicateur(p.nom)}</td>
-      <td><button class="del" onclick="del('produits',${p.id})">✕</button></td></tr>`;}).join('');
-  $('#view').innerHTML = head('Produits & marges')+
-    `<p class="note">Le coût vient des recettes. Modifie le « Prix de vente » directement dans le tableau.</p>
-     <div class="card"><div style="overflow-x:auto"><table>
-      <thead><tr><th>Produit</th><th>Catégorie</th><th>Coût prod.</th><th>Prix vente</th><th>Marge</th><th>Marge %</th><th>État</th><th></th></tr></thead>
-      <tbody>${rows}</tbody></table></div>
-      <div class="addbar">
-        <label>Nom<input id="p_nom" style="width:170px"></label>
-        <label>Catégorie<select id="p_cat"><option>Boisson</option><option>Nourriture</option><option>Cigarette</option><option>Intermédiaire</option></select></label>
-        <label>Prix vente<input type="number" step="0.01" id="p_prix" value="0" style="width:90px"></label>
-        <button class="btn sm" onclick="addProduit()">+ Ajouter</button>
-      </div></div>`;
+async function addVenteDay(date) {
+  const prix = $('#nv_prix').value;
+  const { error } = await sb.from('ventes').insert({
+    date, produit: $('#nv_prod').value,
+    qte_vendue: Number($('#nv_qte').value) || 0,
+    offerts: Number($('#nv_off').value) || 0,
+    prix_unit: prix === '' ? null : Number(prix),
+    canal: $('#nv_canal').value,
+    note: $('#nv_note').value
+  });
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Vente ajoutée');
+  await refresh();
 }
-async function updProduit(id,f,val){ await upd('produits',id,{[f]:Number(val)||0}); await refresh(); }
-async function addProduit(){ if(!$('#p_nom').value)return;
-  await sb.from('produits').insert({nom:$('#p_nom').value,categorie:$('#p_cat').value,prix_vente:Number($('#p_prix').value)||0});
-  await refresh(); }
 
-// ----- RECETTES -----
-let EDIT_REC=null;
-function renderRecettes(){
-  let rows = REC.map(r=>{const u=coutRecetteUnit(r.nom),t=coutTotalRecette(r);
-    const ings=(r.ingredients||[]).map(i=>`${esc(i.nom)} ×${i.qte}`).join(', ');
-    const ok=(r.qte_produite==null||r.qte_produite==='')?'<span class="pill warn">⚠ Qté produite ?</span>':((r.ingredients||[]).length?'<span class="pill ok">Complète</span>':'<span class="pill warn">À compléter</span>');
+// ── PRODUITS & MARGES ──────────────────────────────────────────
+function renderProduits() {
+  const cats = [...new Set(PRD.map(p => p.categorie || '—'))];
+  const filtered = FILTER_CAT ? PRD.filter(p => p.categorie === FILTER_CAT) : PRD;
+  const filterHtml = `<div class="filter-group">
+    <span class="fpill${!FILTER_CAT?' active':''}" onclick="FILTER_CAT=null;renderProduits()">Tous</span>
+    ${cats.map(c => `<span class="fpill${FILTER_CAT===c?' active':''}" onclick="FILTER_CAT=${JSON.stringify(c)};renderProduits()">${esc(c)}</span>`).join('')}
+  </div>`;
+  const rows = filtered.map(p => {
+    const cout = coutProduit(p.nom), prix = Number(p.prix_vente) || 0, marge = prix - cout;
     return `<tr>
-      <td><b>${esc(r.nom)}</b><div style="font-size:13px;color:#6b5a3c">${ings||'<i>aucun ingrédient</i>'}</div></td>
-      <td>${esc(r.categorie||'')}</td>
-      <td class="num">${r.qte_produite??'—'}</td>
+      <td><b>${esc(p.nom)}</b></td>
+      <td>${esc(p.categorie || '')}</td>
+      <td class="num">${fmt(cout)}</td>
+      <td class="num"><input type="number" step="0.01" value="${prix}"
+        onchange="updProduit(${p.id},'prix_vente',this.value)" style="width:90px;text-align:right"></td>
+      <td class="num" style="color:${marge<0?'var(--red)':'var(--green)'}">${fmt(marge)}</td>
+      <td class="num">${prix ? pct(marge/prix) : '—'}</td>
+      <td>${indicateur(p.nom)}</td>
+      <td><button class="del" onclick="dbDel('produits',${p.id})">✕</button></td>
+    </tr>`;
+  }).join('');
+  $('#view').innerHTML = head('Produits & marges') + filterHtml +
+    `<p class="note">Le coût vient des recettes. Modifie le prix de vente directement dans le tableau.</p>
+     <div class="card"><div style="overflow-x:auto"><table>
+       <thead><tr><th>Produit</th><th>Catégorie</th><th>Coût</th><th>Prix vente</th><th>Marge</th><th>Marge %</th><th>État</th><th></th></tr></thead>
+       <tbody>${rows}</tbody>
+     </table></div>
+     <div class="addbar">
+       <label>Nom<input id="p_nom" style="width:170px"></label>
+       <label>Catégorie<select id="p_cat">
+         <option>Boisson</option><option>Nourriture</option><option>Cigarette</option><option>Intermédiaire</option>
+       </select></label>
+       <label>Prix vente<input type="number" step="0.01" id="p_prix" value="0" style="width:90px"></label>
+       <button class="btn sm" onclick="addProduit()">+ Ajouter</button>
+     </div></div>`;
+}
+async function updProduit(id, f, val) {
+  const ok = await dbUpd('produits', id, { [f]: Number(val) || 0 });
+  if (ok) { toast('Prix mis à jour'); await refresh(); }
+}
+async function addProduit() {
+  const nom = $('#p_nom').value.trim();
+  if (!nom) { toast('Nom requis', 'err'); return; }
+  const { error } = await sb.from('produits').insert({ nom, categorie: $('#p_cat').value, prix_vente: Number($('#p_prix').value) || 0 });
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Produit ajouté'); await refresh();
+}
+
+// ── RECETTES ───────────────────────────────────────────────────
+function renderRecettes() {
+  const rows = REC.map(r => {
+    const u = coutRecetteUnit(r.nom), t = coutTotalRecette(r);
+    const ings = (r.ingredients || []).map(i => `${esc(i.nom)} ×${i.qte}`).join(', ');
+    const statut = r.qte_produite == null || r.qte_produite === ''
+      ? '<span class="pill warn">⚠ Qté produite ?</span>'
+      : (r.ingredients || []).length
+        ? '<span class="pill ok">Complète</span>'
+        : '<span class="pill warn">À compléter</span>';
+    return `<tr>
+      <td><b>${esc(r.nom)}</b><div style="font-size:13px;color:var(--ink2);margin-top:2px">${ings || '<i>aucun ingrédient</i>'}</div></td>
+      <td>${esc(r.categorie || '')}</td>
+      <td class="num">${r.qte_produite ?? '—'}</td>
       <td class="num">${fmt(t)}</td>
       <td class="num"><b>${fmt(u)}</b></td>
-      <td>${ok}</td>
+      <td>${statut}</td>
       <td style="white-space:nowrap">
-        <button class="btn sm ghost" onclick="editRecette(${r.id})">✎</button>
-        <button class="del" onclick="del('recettes',${r.id})">✕</button></td></tr>`;}).join('');
-  $('#view').innerHTML = head('Recettes (crafts)')+
-    `<p class="note">Le coût unitaire se calcule en cascade (un craft peut utiliser un autre craft). Clique ✎ pour modifier.</p>
+        <button class="icobtn" onclick="editRecette(${r.id})">✎ Modifier</button>
+        <button class="del" onclick="dbDel('recettes',${r.id})">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $('#view').innerHTML = head('Recettes (crafts)') +
+    `<p class="note">Le coût unitaire se calcule en cascade — un craft peut utiliser un autre craft. Clique ✎ Modifier pour éditer.</p>
      <div class="card"><div style="overflow-x:auto"><table>
        <thead><tr><th>Produit</th><th>Catégorie</th><th>Qté prod.</th><th>Coût total</th><th>Coût unitaire</th><th>État</th><th></th></tr></thead>
-       <tbody>${rows}</tbody></table></div></div>
-     <div id="recForm"></div>`;
+       <tbody>${rows || '<tr><td colspan="7" style="text-align:center;font-style:italic;padding:16px">Aucune recette.</td></tr>'}</tbody>
+     </table></div></div>
+     <div id="recForm" style="margin-top:24px"></div>`;
   renderRecForm();
 }
-function ingredientList(){ return [...MAT.map(m=>m.nom),...REC.map(r=>r.nom)]; }
-function renderRecForm(){
-  const r = EDIT_REC ? REC.find(x=>x.id===EDIT_REC) : null;
-  const ings = r ? JSON.parse(JSON.stringify(r.ingredients||[])) : [];
-  while(ings.length<6) ings.push({nom:'',qte:''});
-  const opts = n=>`<option value="">—</option>`+ingredientList().map(x=>`<option ${x===n?'selected':''}>${esc(x)}</option>`).join('');
-  $('#recForm').innerHTML =
-    `<section><div class="secttl"><h2>${r?'Modifier : '+esc(r.nom):'Nouveau craft'}</h2><div class="rule"></div></div>
-     <div class="card" style="padding:16px">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
-        <label class="addbar" style="padding:0;background:none">Nom<input id="r_nom" value="${r?esc(r.nom):''}" style="width:200px"></label>
-        <label class="addbar" style="padding:0;background:none">Catégorie<select id="r_cat">
-          ${['Boisson','Nourriture','Intermédiaire','Cigarette'].map(c=>`<option ${r&&r.categorie===c?'selected':''}>${c}</option>`).join('')}</select></label>
-        <label class="addbar" style="padding:0;background:none">Qté produite<input type="number" id="r_qte" value="${r&&r.qte_produite!=null?r.qte_produite:''}" placeholder="ex. 4" style="width:90px"></label>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px">
-        ${ings.map((i,k)=>`<div style="display:flex;gap:6px">
-          <select class="r_ing" data-k="${k}" style="flex:1">${opts(i.nom)}</select>
-          <input type="number" class="r_q" data-k="${k}" value="${i.qte||''}" placeholder="qté" style="width:70px">
-        </div>`).join('')}
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn sm" onclick="saveRecette()">${r?'Enregistrer':'+ Ajouter le craft'}</button>
-        ${r?'<button class="btn sm ghost" onclick="EDIT_REC=null;renderRecettes()">Annuler</button>':''}
-      </div></div></section>`;
-}
-function editRecette(id){ EDIT_REC=id; renderRecettes(); }
-async function saveRecette(){
-  const nom=$('#r_nom').value.trim(); if(!nom)return;
-  const ings=[]; document.querySelectorAll('.r_ing').forEach(sel=>{
-    const k=sel.dataset.k; const q=document.querySelector('.r_q[data-k="'+k+'"]').value;
-    if(sel.value && q!=='') ings.push({nom:sel.value,qte:Number(q)});
+
+function allIngNames() { return [...MAT.map(m => m.nom), ...REC.map(r => r.nom)]; }
+
+function syncIngFromDOM() {
+  document.querySelectorAll('.ing-row').forEach((row, k) => {
+    if (!ING_LIST[k]) return;
+    const sel = row.querySelector('select');
+    const inp = row.querySelector('input');
+    if (sel) ING_LIST[k].nom = sel.value;
+    if (inp) ING_LIST[k].qte = inp.value;
   });
-  const qte=$('#r_qte').value;
-  const data={nom,categorie:$('#r_cat').value,qte_produite:qte===''?null:Number(qte),ingredients:ings};
-  if(EDIT_REC){ await upd('recettes',EDIT_REC,data); EDIT_REC=null; }
-  else await sb.from('recettes').insert(data);
-  await refresh();
 }
 
-// ----- MATIERES -----
-function renderMatieres(){
-  let rows = MAT.map(m=>`<tr>
-      <td>${esc(m.nom)}</td><td>${esc(m.categorie||'')}</td>
-      <td class="num"><input type="number" step="0.01" value="${Number(m.prix)||0}" onchange="updMat(${m.id},this.value)" style="width:90px;text-align:right"></td>
-      <td>${m.recolte_gratuite?'Oui':'Non'}</td>
-      <td style="font-size:13px;color:#6b5a3c">${esc(m.notes||'')}</td>
-      <td><button class="del" onclick="del('matieres_premieres',${m.id})">✕</button></td></tr>`).join('');
-  $('#view').innerHTML = head('Matières premières')+
-    `<p class="note">Modifie un prix → toutes les recettes et marges se recalculent automatiquement.</p>
-     <div class="card"><div style="overflow-x:auto"><table>
-      <thead><tr><th>Matière</th><th>Catégorie</th><th>Prix achat</th><th>Récolte ?</th><th>Notes</th><th></th></tr></thead>
-      <tbody>${rows}</tbody></table></div>
-      <div class="addbar">
-        <label>Nom<input id="m_nom" style="width:160px"></label>
-        <label>Catégorie<input id="m_cat" style="width:120px"></label>
-        <label>Prix<input type="number" step="0.01" id="m_prix" value="0" style="width:80px"></label>
-        <label>Récolte<select id="m_free"><option value="false">Non</option><option value="true">Oui</option></select></label>
-        <button class="btn sm" onclick="addMat()">+ Ajouter</button>
-      </div></div>`;
-}
-async function updMat(id,val){ await upd('matieres_premieres',id,{prix:Number(val)||0}); await refresh(); }
-async function addMat(){ if(!$('#m_nom').value)return;
-  await sb.from('matieres_premieres').insert({nom:$('#m_nom').value,categorie:$('#m_cat').value,
-    prix:Number($('#m_prix').value)||0,recolte_gratuite:$('#m_free').value==='true'}); await refresh(); }
+function renderRecForm() {
+  const r = EDIT_REC ? REC.find(x => x.id === EDIT_REC) : null;
+  if (!ING_LIST.length) {
+    ING_LIST = r ? JSON.parse(JSON.stringify(r.ingredients || [])) : [];
+    if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' });
+  }
+  const names = allIngNames();
+  const mkOpts = (sel='') => `<option value="">— choisir —</option>` +
+    names.map(n => `<option${n === sel ? ' selected' : ''}>${esc(n)}</option>`).join('');
 
-// ---------- AUTH + NAV ----------
-$('#loginBtn').onclick = async ()=>{
-  $('#loginErr').textContent='';
-  const {error} = await sb.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#pass').value});
-  if(error) $('#loginErr').textContent = "Connexion impossible — vérifie l'e-mail / mot de passe.";
+  const ingRows = ING_LIST.map((i, k) => `
+    <div class="ing-row">
+      <select>${mkOpts(i.nom)}</select>
+      <input type="number" value="${i.qte || ''}" placeholder="qté" min="0" step="0.5">
+      <button class="del-ing" onclick="removeIng(${k})" title="Retirer">×</button>
+    </div>`).join('');
+
+  $('#recForm').innerHTML = `
+    <div class="secttl"><h2>${r ? 'Modifier : ' + esc(r.nom) : 'Nouveau craft'}</h2><div class="rule"></div></div>
+    <div class="rec-form-card">
+      <div class="rec-meta">
+        <label>Nom du craft
+          <input id="r_nom" value="${r ? esc(r.nom) : ''}" style="width:200px" placeholder="ex. Bière ambrée"></label>
+        <label>Catégorie
+          <select id="r_cat">
+            ${['Boisson','Nourriture','Intermédiaire','Cigarette'].map(c => `<option${r&&r.categorie===c?' selected':''}>${c}</option>`).join('')}
+          </select></label>
+        <label>Qté produite par craft
+          <input type="number" id="r_qte" value="${r && r.qte_produite != null ? r.qte_produite : ''}" placeholder="ex. 4" style="width:110px"></label>
+      </div>
+      <div class="ing-section-title">Ingrédients</div>
+      <div class="ing-list" id="ingContainer">${ingRows}</div>
+      <button class="add-ing-btn" onclick="addIng()">+ Ajouter un ingrédient</button>
+      <div class="rec-actions">
+        <button class="btn sm" onclick="saveRecette()">${r ? 'Enregistrer les modifications' : '+ Créer le craft'}</button>
+        ${r ? '<button class="btn sm ghost" onclick="cancelRec()">Annuler</button>' : ''}
+      </div>
+    </div>`;
+}
+
+function addIng() { syncIngFromDOM(); ING_LIST.push({ nom:'', qte:'' }); renderRecForm(); }
+function removeIng(k) { syncIngFromDOM(); ING_LIST.splice(k, 1); if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' }); renderRecForm(); }
+function cancelRec() { EDIT_REC = null; ING_LIST = []; renderRecettes(); }
+function editRecette(id) {
+  EDIT_REC = id;
+  const r = REC.find(x => x.id === id);
+  ING_LIST = r ? JSON.parse(JSON.stringify(r.ingredients || [])) : [];
+  if (!ING_LIST.length) ING_LIST.push({ nom:'', qte:'' });
+  renderRecettes();
+  setTimeout(() => { const f = $('#recForm'); if (f) f.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+}
+async function saveRecette() {
+  syncIngFromDOM();
+  const nom = $('#r_nom').value.trim();
+  if (!nom) { toast('Le nom est requis', 'err'); return; }
+  const ings = ING_LIST.filter(i => i.nom && (Number(i.qte) || 0) > 0)
+    .map(i => ({ nom: i.nom, qte: Number(i.qte) }));
+  const qteVal = $('#r_qte').value;
+  const data = { nom, categorie: $('#r_cat').value, qte_produite: qteVal === '' ? null : Number(qteVal), ingredients: ings };
+  if (EDIT_REC) {
+    const ok = await dbUpd('recettes', EDIT_REC, data);
+    if (ok) { toast('Recette modifiée'); EDIT_REC = null; ING_LIST = []; await refresh(); }
+  } else {
+    const { error } = await sb.from('recettes').insert(data);
+    if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+    toast('Recette créée'); ING_LIST = []; await refresh();
+  }
+}
+
+// ── MATIÈRES PREMIÈRES ─────────────────────────────────────────
+function renderMatieres() {
+  const grouped = {};
+  MAT.forEach(m => { const c = m.categorie || 'Autre'; if (!grouped[c]) grouped[c] = []; grouped[c].push(m); });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(grouped)) {
+    const rows = items.map(m => `<tr>
+      <td><b>${esc(m.nom)}</b></td>
+      <td class="num">
+        <input type="number" step="0.01" value="${Number(m.prix)||0}"
+          onchange="updMat(${m.id},this.value)" style="width:90px;text-align:right">
+      </td>
+      <td>${m.recolte_gratuite
+        ? '<span class="pill ok">Récolte</span>'
+        : '<span class="pill muted">Achat</span>'}</td>
+      <td style="font-size:13px;color:var(--ink2)">${esc(m.notes || '')}</td>
+      <td><button class="del" onclick="dbDel('matieres_premieres',${m.id})">✕</button></td>
+    </tr>`).join('');
+    html += `<div class="cat-group-title">${esc(cat)}</div>
+      <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
+        <thead><tr><th>Matière</th><th>Prix achat</th><th>Source</th><th>Notes</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div></div>`;
+  }
+
+  $('#view').innerHTML = head('Matières premières') +
+    `<p class="note">Modifie un prix → toutes les recettes et marges se recalculent immédiatement.</p>` + html +
+    `<div class="card" style="margin-top:18px"><div class="addbar" style="border-top:none">
+      <label>Nom<input id="m_nom" style="width:155px"></label>
+      <label>Catégorie<input id="m_cat" style="width:120px" placeholder="ex. Céréale"></label>
+      <label>Prix achat<input type="number" step="0.01" id="m_prix" value="0" style="width:80px"></label>
+      <label>Source<select id="m_free">
+        <option value="false">Achat</option>
+        <option value="true">Récolte gratuite</option>
+      </select></label>
+      <button class="btn sm" onclick="addMat()">+ Ajouter</button>
+    </div></div>`;
+}
+async function updMat(id, val) {
+  const ok = await dbUpd('matieres_premieres', id, { prix: Number(val) || 0 });
+  if (ok) { toast('Prix mis à jour'); await refresh(); }
+}
+async function addMat() {
+  const nom = $('#m_nom').value.trim();
+  if (!nom) { toast('Nom requis', 'err'); return; }
+  const { error } = await sb.from('matieres_premieres').insert({
+    nom, categorie: $('#m_cat').value,
+    prix: Number($('#m_prix').value) || 0,
+    recolte_gratuite: $('#m_free').value === 'true'
+  });
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Matière première ajoutée'); await refresh();
+}
+
+// ── STOCK ──────────────────────────────────────────────────────
+function renderStock() {
+  if (STOCK_DATA === null) {
+    $('#view').innerHTML = head('Stock') + `<div class="setup-box">
+      <p style="font-size:15px;margin:0 0 8px">La table <b>stock</b> n'existe pas encore dans Supabase.</p>
+      <p style="margin:0 0 4px">Exécute ce SQL dans <b>Supabase → SQL Editor</b>, puis recharge la page :</p>
+      <pre>CREATE TABLE IF NOT EXISTS stock (
+  id          BIGSERIAL PRIMARY KEY,
+  produit     TEXT NOT NULL UNIQUE,
+  quantite    INTEGER NOT NULL DEFAULT 0,
+  updated_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_by  TEXT
+);
+ALTER TABLE stock ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "auth_only" ON stock
+  USING  (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);</pre>
+    </div>`;
+    return;
+  }
+
+  const stockMap = {};
+  STOCK_DATA.forEach(s => stockMap[s.produit] = s);
+  const prods = PRD.filter(p => !(p.categorie||'').startsWith('Inter') && !String(p.nom).startsWith('Ajustement'));
+
+  function badge(qty) {
+    if (qty === 0) return '<span class="stock-badge s-empty">Épuisé</span>';
+    if (qty <= 3) return '<span class="stock-badge s-low">Faible</span>';
+    return '<span class="stock-badge s-ok">En stock</span>';
+  }
+
+  const grouped = {};
+  prods.forEach(p => { const c = p.categorie||'Autre'; if (!grouped[c]) grouped[c]=[]; grouped[c].push(p); });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(grouped)) {
+    const rows = items.map(p => {
+      const s = stockMap[p.nom];
+      const qty = s ? s.quantite : 0;
+      const when = s && s.updated_at
+        ? new Date(s.updated_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+        : '—';
+      const who = s ? (s.updated_by || '') : '';
+      return `<tr>
+        <td><b>${esc(p.nom)}</b></td>
+        <td class="num">
+          <input type="number" min="0" value="${qty}"
+            onchange="updStock(${JSON.stringify(esc(p.nom))},this.value)"
+            style="width:75px;text-align:right">
+        </td>
+        <td>${badge(qty)}</td>
+        <td style="font-size:13px;color:var(--ink2)">${when}${who ? ' · ' + esc(who) : ''}</td>
+      </tr>`;
+    }).join('');
+    html += `<div class="cat-group-title">${esc(cat)}</div>
+      <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
+        <thead><tr><th>Produit</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div></div>`;
+  }
+
+  $('#view').innerHTML = head('Stock') +
+    `<p class="note">Épuisé = 0 unité, Faible ≤ 3 unités. Modifie les quantités directement dans le tableau.</p>` + html;
+}
+
+async function updStock(produit, valeur) {
+  const qty = Math.max(0, Number(valeur) || 0);
+  const { data: { session } } = await sb.auth.getSession();
+  const who = session ? session.user.email : null;
+  const { error } = await sb.from('stock').upsert(
+    { produit, quantite: qty, updated_at: new Date().toISOString(), updated_by: who },
+    { onConflict: 'produit' }
+  );
+  if (error) { toast('Erreur : ' + error.message, 'err'); return; }
+  toast('Stock mis à jour');
+  if (STOCK_DATA) {
+    const idx = STOCK_DATA.findIndex(s => s.produit === produit);
+    const entry = { produit, quantite: qty, updated_at: new Date().toISOString(), updated_by: who };
+    if (idx >= 0) STOCK_DATA[idx] = { ...STOCK_DATA[idx], ...entry };
+    else STOCK_DATA.push(entry);
+  }
+  renderStock();
+}
+
+// ── AUTH + NAVIGATION ──────────────────────────────────────────
+$('#loginBtn').onclick = async () => {
+  $('#loginErr').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: $('#email').value.trim(), password: $('#pass').value });
+  if (error) $('#loginErr').textContent = "Connexion impossible — vérifie l'e-mail / mot de passe.";
 };
-$('#pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('#loginBtn').click();});
-$('#logoutBtn').onclick = ()=> sb.auth.signOut();
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active'); VIEW=t.dataset.v; EDIT_REC=null; render();
+$('#pass').addEventListener('keydown', e => { if (e.key === 'Enter') $('#loginBtn').click(); });
+$('#logoutBtn').onclick = () => sb.auth.signOut();
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  VIEW = t.dataset.v;
+  EDIT_REC = null; ING_LIST = []; EDIT_VENTE = null; FILTER_CAT = null;
+  render();
 });
-sb.auth.onAuthStateChange(async (_e,session)=>{
-  if(session){ $('#userEmail').textContent=session.user.email; $('#login').classList.add('hidden');
-    $('#app').classList.remove('hidden'); await refresh(); }
-  else { $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); }
+
+sb.auth.onAuthStateChange(async (_e, session) => {
+  if (session) {
+    $('#userEmail').textContent = session.user.email;
+    $('#login').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    await refresh();
+  } else {
+    $('#app').classList.add('hidden');
+    $('#login').classList.remove('hidden');
+  }
 });
 sb.auth.getSession();
 </script>
