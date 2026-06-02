@@ -204,12 +204,13 @@ tr.editing td{background:#fffbf0!important}
 .toast.t-err{background:var(--red);border-left-color:#f1cfca}
 .toast.t-ok{border-left-color:#3f6b3a}
 
-/* LOADER */
-#loader{position:fixed;inset:0;background:rgba(228,214,184,.65);display:flex;
-  align-items:center;justify-content:center;z-index:8888}
-.spin{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--wine);
-  border-radius:50%;animation:rot .7s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
+/* LOADER — fine barre en haut, non bloquante */
+#loader{position:fixed;top:0;left:0;right:0;height:3px;z-index:9900;
+  background:linear-gradient(90deg,var(--gold) 0%,var(--wine) 50%,var(--gold) 100%);
+  background-size:200% 100%;animation:loadbar 1.4s linear infinite;
+  transform-origin:left;pointer-events:none}
+#loader.hidden{display:none}
+@keyframes loadbar{0%{background-position:100% 0}100%{background-position:-100% 0}}
 
 /* CAT GROUP HEADERS */
 .cat-group-title{font-family:'Rye',serif;font-size:14px;color:var(--wood2);
@@ -228,7 +229,7 @@ tr.editing td{background:#fffbf0!important}
 <body>
 
 <div id="toastZone"></div>
-<div id="loader" class="hidden"><div class="spin"></div></div>
+<div id="loader" class="hidden"></div>
 
 <!-- LOGIN -->
 <div id="login">
@@ -961,18 +962,34 @@ document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
   render();
 });
 
-sb.auth.onAuthStateChange(async (_e, session) => {
+// Réactions aux changements d'état après le chargement initial (connexion formulaire, déconnexion)
+sb.auth.onAuthStateChange((event, session) => {
+  if (!session) {
+    $('#app').classList.add('hidden');
+    $('#login').classList.remove('hidden');
+    return;
+  }
+  if (event === 'SIGNED_IN') {
+    // Connexion via le formulaire → charger les données
+    $('#userEmail').textContent = session.user.email;
+    $('#login').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    refresh();
+  }
+});
+
+// Chargement initial : getSession() attend que le token soit valide avant de lancer les requêtes
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     $('#userEmail').textContent = session.user.email;
     $('#login').classList.add('hidden');
     $('#app').classList.remove('hidden');
     await refresh();
   } else {
-    $('#app').classList.add('hidden');
     $('#login').classList.remove('hidden');
   }
-});
-sb.auth.getSession();
+})();
 </script>
 </body>
 </html>
