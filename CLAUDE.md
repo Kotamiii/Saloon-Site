@@ -1,76 +1,96 @@
 # CLAUDE.md — The Silver Pine (registre de gestion du saloon)
 
-> Document de contexte pour Claude Code. À lire au début de chaque session, avec `index.html`.
-> **Important :** ceci est une base de départ, **pas** un cahier des charges figé. Le projet va grandir (voir « Évolutions prévues »). Garde la structure extensible : on ajoutera des fonctions, des onglets et on refera l'apparence.
+> Contexte pour Claude Code. À lire en début de session. **Base de départ, pas un cahier des charges figé** — le projet grandit, garde la structure extensible.
 
 ## Langue
-Tout est en **français** : interface, commentaires, messages, et nos échanges. Ne bascule jamais en anglais dans le code visible par les utilisateurs.
+Tout en **français** : interface, commentaires, messages, échanges. Jamais d'anglais visible par les utilisateurs.
 
-## C'est quoi ce projet
-Une application web de **gestion** pour un saloon de jeu de rôle Red Dead Redemption 2 : **« The Silver Pine »**, à Strawberry, ambiance **1899 / western**.
-Utilisée par une **petite équipe (4-5 personnes)** qui gère le saloon ensemble : ils suivent les ventes, les coûts de production et les marges. Tout le monde voit et modifie les mêmes données, en temps réel.
+## Le projet
+Application web de **gestion** d'un saloon de jeu de rôle Red Dead Redemption 2 : **« The Silver Pine »**, Strawberry, **1899 / western**. Équipe de **4-5 personnes**, données partagées en temps réel. Outil interne protégé par connexion, pas public.
 
-Ce n'est **pas** un site public : c'est un outil interne d'équipe, protégé par connexion.
+## Architecture (statique, sans build)
+Le code JavaScript a été **découpé en 16 modules** rangés dans `js/` (avant : un seul gros `app.js`), pour réduire le coût en tokens et permettre des modifs ciblées.
 
-## Architecture (volontairement simple)
-- **`index.html`** — toute l'application dans un seul fichier : HTML + CSS + JavaScript (pas de build, pas de framework). Librairies via CDN : `@supabase/supabase-js` (données + auth) et `chart.js` (graphiques). Polices Google : *Rye* (titres) et *EB Garamond* (texte).
-- **Supabase** — base PostgreSQL + authentification + sécurité (RLS). Le schéma est dans `schema.sql`.
-- **Vercel** — hébergement. Connecté à GitHub : un `git push` sur `main` redéploie automatiquement en ~30 s. Un redéploiement ne touche QUE le code ; les données restent dans Supabase.
+```
+index.html      → structure (login, en-tête, onglets) + liens vers tout le reste
+style.css       → TOUT le visuel (thème western, variables CSS) — refonte d'apparence = uniquement ici
+schema.sql      → schéma Supabase
+js/
+  config.js       → clés Supabase, client `sb`, helpers globaux ($, fmt, pct, esc, today), variables d'état (MAT, REC, PRD, VEN, STOCK_DATA, CONTACTS_DATA, TODOS_DATA, VIEW, etc.)
+  ui-helpers.js   → toast, loader, confirmations (askConfirm)
+  calculs.js      → LOGIQUE MÉTIER : coûts en cascade, marges, venteCalc, helpers de dates
+  data.js         → accès Supabase : loadAll, loadStock, loadContacts, loadTodos, dbUpd, dbDel, refresh
+  core.js         → routeur d'affichage `render()`, helpers de rendu, export CSV, objectif semaine
+  ui-dashboard.js → onglet Tableau de bord (KPI + graphiques)
+  ui-contacts.js  → onglet Contacts
+  ui-tarifs.js    → onglet Tarifs (carte menu + vente rapide)
+  ui-todos.js     → tâches + alertes (affichées sur le tableau de bord)
+  ui-journees.js  → onglet Journées (ventes, prix unit/total, déduction stock)
+  ui-produits.js  → onglet Produits & marges
+  ui-recettes.js  → onglet Recettes (formulaire d'ingrédients)
+  ui-matieres.js  → onglet Matières premières
+  ui-stock.js     → onglet Stock
+  ui-tuto.js      → onglet Aide
+  main.js         → connexion (auth), navigation, initialisation — CHARGÉ EN DERNIER
+```
+
+**Règle d'or pour modifier :** ouvre **uniquement le fichier concerné**. Un onglet → son `ui-*.js`. La logique de coûts → `calculs.js`. L'accès données → `data.js`. Le visuel → `style.css`. Ne réécris jamais l'ensemble.
+
+**Fonctionnement technique :** ce sont des **scripts classiques** (pas des modules ES) chargés **dans l'ordre défini par `index.html`**, partageant le même scope global (les `function`, `let`, `const` du haut de chaque fichier sont visibles partout). Conséquences à respecter :
+- `config.js` se charge en premier (il définit `sb` et l'état global), `main.js` en dernier (il lance l'app).
+- Si tu ajoutes un module, ajoute sa balise `<script src="js/…">` dans `index.html`, au bon endroit de l'ordre (avant `main.js`).
+- Ne convertis pas en modules ES (`import`/`export`) sans tout adapter.
 
 ### Connexion Supabase
-En haut du `<script>` de `index.html`, deux constantes :
+En haut de **`js/config.js`** :
 ```js
 const SUPABASE_URL = "https://tpzpqusflfqxcobsugal.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_..."; // clé PUBLISHABLE (publique, sans danger)
 ```
-La clé publishable est **faite pour être publique** (elle vit dans le navigateur). La sécurité ne repose pas sur elle mais sur le **RLS** : seules les personnes connectées (comptes créés dans Supabase → Authentication → Users) accèdent aux données. **Ne jamais** mettre la clé `service_role` / `secret` dans `index.html`.
+Clé publishable = publique par nature (elle vit dans le navigateur). Sécurité via **RLS** Supabase : seules les personnes connectées (comptes dans Supabase → Authentication → Users) accèdent aux données. **Jamais** la clé `service_role` / `secret` dans le code.
+
+Déploiement : **Vercel** branché sur GitHub. `git push` sur `main` → redéploiement auto. Le déploiement ne change que le code ; les données restent dans Supabase.
 
 ## Modèle de données (tables Supabase)
-- **`matieres_premieres`** — ressources de base. Colonnes : `nom`, `categorie`, `prix` (achat unitaire), `recolte_gratuite` (bool), `notes`.
-- **`recettes`** — les crafts. `nom`, `categorie`, `qte_produite` (nb d'unités produites par craft ; peut être NULL = à définir), `ingredients` (JSONB : `[{"nom":"Orge","qte":2}, ...]`), `notes`.
-- **`produits`** — ce qui est vendu. `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût calculé via la recette du même nom ; une valeur = coût fixe, utilisé pour les lignes « Ajustement »), `notes`.
-- **`ventes`** — journal, 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes en promo : comptent en coût, pas en CA), `prix_unit` (NULL = prix de base du produit ; une valeur = prix de cette vente, ex. exportateur), `canal`, `note`, `created_by`.
+- **`matieres_premieres`** — `nom`, `categorie`, `prix`, `recolte_gratuite` (bool), `notes`.
+- **`recettes`** — `nom`, `categorie`, `qte_produite` (NULL = à définir), `ingredients` (JSONB : `[{"nom":"Orge","qte":2}]`), `notes`.
+- **`produits`** — `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût via recette homonyme ; valeur = coût fixe, ex. « Ajustement »), `notes`.
+- **`ventes`** — 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes : coût sans CA), `prix_unit` (NULL = prix de base ; valeur = prix de cette vente), `canal`, `note`, `created_by`.
+- **`stock`** — `produit` (unique), `quantite`, `updated_at`, `updated_by`.
+- **`contacts`** et **`todos`** — tables utilisées par les onglets Contacts et par la liste de tâches (ajoutées via Claude Code). Si une table manque, l'onglet concerné peut afficher un `CREATE TABLE` à coller dans Supabase. Voir `schema.sql` et les fonctions `loadContacts` / `loadTodos` dans `data.js`.
 
-## Logique métier (le cœur — ne pas casser)
-Le coût se calcule **en cascade**, exactement comme dans le tableur d'origine :
-1. **Coût d'un ingrédient** = son prix dans `matieres_premieres`. S'il ne s'y trouve pas, on cherche une **recette** du même nom et on prend son coût unitaire (récursif) → permet « un craft utilise un autre craft » (ex. Canne → Sucre → Moût → Bière).
-2. **Coût unitaire d'une recette** = (somme des coûts des ingrédients × leurs quantités) ÷ `qte_produite`. Si `qte_produite` est NULL/0 → coût 0 (recette à compléter).
-3. **Coût d'un produit** = `cout_manuel` s'il est défini, sinon le coût unitaire de la recette homonyme.
-4. **Une vente** : prix appliqué = `prix_unit` si renseigné, sinon prix de base du produit. CA = `qte_vendue` × prix. Coût = (`qte_vendue` + `offerts`) × coût produit. Marge = CA − coût.
+## Logique métier (le cœur — ne pas casser, dans `calculs.js`)
+Coûts **en cascade** :
+1. **Coût d'un ingrédient** = prix dans `matieres_premieres` ; sinon coût unitaire de la recette homonyme (récursif → un craft peut utiliser un autre craft).
+2. **Coût unitaire d'une recette** = (Σ coûts ingrédients × quantités) ÷ `qte_produite`. Si `qte_produite` NULL/0 → 0.
+3. **Coût d'un produit** = `cout_manuel` si défini, sinon coût unitaire de la recette homonyme.
+4. **Vente** : prix = `prix_unit` si renseigné, sinon prix de base. CA = `qte_vendue` × prix. Coût = (`qte_vendue` + `offerts`) × coût produit. Marge = CA − coût.
 
-Protection anti-boucle : la récursion porte une pile (`stack`) des noms déjà visités pour éviter les références circulaires entre recettes.
+Anti-boucle : pile (`stack`) des noms visités contre les références circulaires.
 
-Indicateurs produits : `⚠ Prix à définir` (prix = 0), `⚠ Coût à définir` (coût = 0), `❌ Perte` (marge < 0), `⚠ Marge faible` (marge % < 20 %), `✅ OK` sinon. Les lignes « Ajustement » et catégories « Intermédiaire » affichent `—`.
+Indicateurs produits : `⚠ Prix à définir` (prix 0), `⚠ Coût à définir` (coût 0), `❌ Perte` (marge < 0), `⚠ Marge faible` (< 20 %), `✅ OK` sinon ; `—` pour « Ajustement » / « Intermédiaire ».
 
-## Interface (5 onglets actuels)
-1. **Tableau de bord** — KPI (CA, coût, marge, marge %, unités) + 4 graphiques : coût vs prix, marge par produit, répartition CA par catégorie (donut), comparaison jour par jour.
-2. **Ventes** — saisie (date, produit, qté, offerts, prix optionnel, canal, note), calculs en direct.
-3. **Produits & marges** — coût (auto) vs prix de vente (éditable inline), marge, indicateur.
-4. **Recettes** — liste + formulaire d'ajout/édition (6 emplacements d'ingrédients, menus déroulants, coût en cascade).
-5. **Matières premières** — liste + ajout, prix éditable inline.
-
-Auth : écran de connexion e-mail/mot de passe ; bascule automatique vers l'app une fois connecté.
+## Interface (onglets)
+Tableau de bord, Journées, Produits & marges, Recettes, Matières premières, Stock, Tarifs, Contacts, Aide. Auth e-mail/mot de passe, bascule auto vers l'app une fois connecté.
 
 ## Conventions de code
-- Un seul fichier, pas de framework, pas d'étape de build. Garder ça simple et lisible.
-- **Pas** de `localStorage`/`sessionStorage` pour les données métier : tout passe par Supabase (sinon ce n'est plus partagé).
-- Échapper le HTML inséré (fonction `esc`) pour éviter les soucis d'affichage.
-- Format monétaire FR : `fmt()` → `1 234,56 $`. Pourcentages : `pct()`.
-- Couleurs via variables CSS dans `:root` (thème bois/parchemin/or/vin). Titres en *Rye*, texte en *EB Garamond*.
+- 16 modules classiques + 1 CSS, **pas de framework, pas de build**. Simple et lisible.
+- Données métier partagées → **toujours Supabase**, jamais `localStorage`. Exception : une préférence perso (ex. objectif hebdomadaire) peut rester en `localStorage`.
+- Échapper le HTML inséré (`esc`).
+- Monnaie FR : `fmt()` → `1 234,56 $`. Pourcentages : `pct()`.
+- Couleurs via variables CSS dans `:root`. Titres *Rye*, texte *EB Garamond*.
+- **Modifs ciblées** : préciser le fichier (souvent un seul `ui-*.js`, ou `style.css` pour le visuel) plutôt que tout régénérer.
 
-## État actuel / à compléter (données réelles déjà en base)
-- Recettes encore vides (coût 0 tant qu'on ne les renseigne pas) : Vin de Cassis, Vin de Rhubarbe, Café, Biscuits fruits.
-- `qte_produite` à confirmer : Soupe aux champignons, Jerky boeuf classique, Bouillon simple, Soupe/Ragoût de fortune (NULL pour l'instant).
-- Prix de vente à définir sur plusieurs boissons/plats (indicateur « ⚠ Prix à définir »).
-- Prix d'achat inconnus (= 0, surlignés à l'origine) : Tomate, Origan, Baie de Gaultherie, Groseille doré, Prunus des rivières, Rhubarbe, baies récoltables.
-- Attention connue : **Tourte fermière** ressort en perte si le Thym est compté à 0,50 $ (3 unités) — à arbitrer (récolte gratuite ? qté produite > 1 ?).
+## À compléter
+- Recettes vides (coût 0) : Vin de Cassis, Vin de Rhubarbe, Café, Biscuits fruits.
+- `qte_produite` à confirmer : Soupe aux champignons, Jerky boeuf, Bouillon simple, Soupe/Ragoût de fortune.
+- Prix de vente à définir sur plusieurs produits.
+- Prix d'achat inconnus (= 0) : Tomate, Origan, Baie de Gaultherie, Groseille doré, Prunus des rivières, Rhubarbe, baies récoltables.
+- Tourte fermière en perte si le Thym est compté à 0,50 $ — à arbitrer.
 
-## Évolutions prévues (garder la base ouverte)
-Ne fige rien qui empêcherait ces ajouts :
-- **Cigarettes / tabac** comme 3ᵉ catégorie de produits (la catégorie existe déjà dans les menus).
-- Nouveaux onglets possibles : suivi de **stock** (état des réserves), **historique / archives**, **rôles** (qui a saisi quoi).
-- **Refonte visuelle** à venir via une maquette (Claude Design) : l'apparence pourra changer, mais la logique métier ci-dessus doit rester intacte.
-- Filtres par date / par personne sur le tableau de bord.
-- Export (CSV / impression) des ventes.
+## Évolutions (garder la base ouverte)
+- **Cigarettes / tabac** comme catégorie produit (déjà dans les menus).
+- **Refonte visuelle** (Claude Design) → uniquement `style.css`, logique intacte.
+- Filtres avancés par date/personne, export, impression.
 
-Quand on ajoute une fonctionnalité : penser à étendre le **schéma Supabase** si besoin (`schema.sql`) en plus du `index.html`, et garder l'interface cohérente avec le thème western.
+En ajoutant une fonctionnalité : étendre le schéma Supabase si besoin, ajouter le module + sa balise script dans `index.html`, garder le thème western.
