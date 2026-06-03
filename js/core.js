@@ -12,6 +12,14 @@ function render(){
   v.classList.add('view-fade');
 }
 function destroyCharts(){ CHARTS.forEach(c=>c.destroy()); CHARTS=[]; }
+// Bascule programmatique vers un onglet (réutilisé par les liens produit↔recette)
+function goTab(view){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.v===view));
+  VIEW=view;
+  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;PARTIE_ACTIVE=null;
+  window.scrollTo({top:0,behavior:'smooth'});
+  render();
+}
 function head(t){
   return `<div class="secttl"><span class="orn">✦</span><h2>${t}</h2><div class="rule"></div></div>`;
 }

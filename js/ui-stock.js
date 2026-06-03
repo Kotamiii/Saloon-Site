@@ -36,7 +36,9 @@ CREATE POLICY "auth_only" ON stock
   const grouped={};
   prods.forEach(p=>{const c=p.categorie||'Autre';if(!grouped[c])grouped[c]=[];grouped[c].push(p);});
   let html='';
-  for(const[cat,items] of Object.entries(grouped)){
+  const cats=Object.keys(grouped).sort((a,b)=>a.localeCompare(b,'fr'));
+  for(const cat of cats){
+    const items=grouped[cat].slice().sort((a,b)=>(a.nom||'').localeCompare(b.nom||'','fr'));
     const rows=items.map(p=>{
       const s=stockMap[p.nom],qty=s?s.quantite:0;
       const when=s&&s.updated_at?new Date(s.updated_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';

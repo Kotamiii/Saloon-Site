@@ -73,15 +73,15 @@ function buildDayPanel(date,sales){
       const evTotVal=evPrixVal!==''?(Number(evPrixVal)*qvd).toFixed(2):'';
       return`<tr class="editing">
         <td><select id="ev_prod" style="min-width:110px">${PRD.map(p=>`<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
-        <td><input type="number" id="ev_qte" value="${qvd}" style="width:55px" oninput="syncEvFromUnit()"></td>
-        <td><input type="number" id="ev_off" value="${off}" style="width:50px"></td>
+        <td><input type="number" min="0" id="ev_qte" value="${qvd}" style="width:55px" oninput="syncEvFromUnit()"></td>
+        <td><input type="number" min="0" id="ev_off" value="${off}" style="width:50px"></td>
         <td><input type="number" step="0.01" id="ev_prix" value="${evPrixVal}" placeholder="base" style="width:75px" oninput="syncEvFromUnit()"></td>
         <td><input type="number" step="0.01" id="ev_total" value="${evTotVal}" placeholder="total" style="width:75px" oninput="syncEvFromTotal()" title="Prix total = prix unit × qté"></td>
         <td><select id="ev_canal">${cOpts}</select></td>
         <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:80px"></td>
         <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
         <td><div class="row-actions">
-          <button class="btn sm" onclick="saveVente(${v.id})">✓</button>
+          <button class="btn sm" onclick="saveVente(this,${v.id})">✓</button>
           <button class="btn sm ghost" onclick="EDIT_VENTE=null;renderJournees()">✕</button>
         </div></td>
       </tr>`;
@@ -172,13 +172,13 @@ function buildDayPanel(date,sales){
       <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
       <div class="addform-row">
         <label>Produit<select id="nv_prod" onchange="previewVente()" onclick="previewVente()">${prodOpts}</select></label>
-        <label>Qté vendue<input type="number" id="nv_qte" value="1" style="width:62px" oninput="syncNvFromQte()"></label>
-        <label title="Unités offertes gratuitement : comptées en coût, pas en CA.">Offerts ⓘ<input type="number" id="nv_off" value="0" style="width:55px" oninput="previewVente()"></label>
+        <label>Qté vendue<input type="number" min="0" id="nv_qte" value="1" style="width:62px" oninput="syncNvFromQte()"></label>
+        <label title="Unités offertes gratuitement : comptées en coût, pas en CA.">Offerts ⓘ<input type="number" min="0" id="nv_off" value="0" style="width:55px" oninput="previewVente()"></label>
         <label title="Laisser vide = prix de base du produit">Prix unit.<input type="number" step="0.01" id="nv_prix" placeholder="base" style="width:85px" oninput="syncNvFromUnit()"></label>
         <label title="Remplis ce champ pour calculer le prix unitaire automatiquement">Prix total<input type="number" step="0.01" id="nv_total" placeholder="calc." style="width:85px" oninput="syncNvFromTotal()"></label>
         <label>Canal<select id="nv_canal">${canalOpts}</select></label>
         <label>Note<input id="nv_note" style="width:130px"></label>
-        <button class="btn sm" onclick="addVenteDay('${date}')">+ Ajouter</button>
+        <button class="btn sm" onclick="addVenteDay(this,'${date}')">+ Ajouter</button>
       </div>
       <div id="ventePreview" class="vente-preview"></div>
     </div>
@@ -196,12 +196,14 @@ function openToday(){
   setTimeout(()=>{const p=$('#dayPanel');if(p)p.scrollIntoView({behavior:'smooth',block:'start'});},60);
 }
 function editVente(id){ EDIT_VENTE=id; renderJournees(); }
-async function saveVente(id){
+async function saveVente(btn,id){
   const prix=$('#ev_prix').value;
-  const ok=await dbUpd('ventes',id,{produit:$('#ev_prod').value,qte_vendue:Number($('#ev_qte').value)||0,
-    offerts:Number($('#ev_off').value)||0,prix_unit:prix===''?null:Number(prix),
-    canal:$('#ev_canal').value,note:$('#ev_note').value});
-  if(ok){toast('Vente modifiée');EDIT_VENTE=null;await refresh();}
+  await runOnce(btn,async()=>{
+    const ok=await dbUpd('ventes',id,{produit:$('#ev_prod').value,qte_vendue:Math.max(0,Number($('#ev_qte').value)||0),
+      offerts:Math.max(0,Number($('#ev_off').value)||0),prix_unit:prix===''?null:Number(prix),
+      canal:$('#ev_canal').value,note:$('#ev_note').value});
+    if(ok){toast('Vente modifiée');EDIT_VENTE=null;await refresh();}
+  });
 }
 async function delVente(id){
   askConfirm('Supprimer cette vente ?','🗑️',async()=>{
@@ -210,13 +212,20 @@ async function delVente(id){
     toast('Vente supprimée'); await refresh();
   });
 }
-async function addVenteDay(date){
+async function addVenteDay(btn,date){
+  const produit=$('#nv_prod').value;
+  if(!produit){toast('Aucun produit sélectionné — crée d\'abord un produit','err');return;}
+  const qte=Math.max(0,Number($('#nv_qte').value)||0);
+  const off=Math.max(0,Number($('#nv_off').value)||0);
+  if(qte===0&&off===0){toast('Indique une quantité vendue ou offerte','err');return;}
   const prix=$('#nv_prix').value;
-  const{error}=await sb.from('ventes').insert({date,produit:$('#nv_prod').value,
-    qte_vendue:Number($('#nv_qte').value)||0,offerts:Number($('#nv_off').value)||0,
-    prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,note:$('#nv_note').value});
-  if(error){toast('Erreur : '+error.message,'err');return;}
-  toast('Vente ajoutée'); await refresh();
+  await runOnce(btn,async()=>{
+    const{error}=await sb.from('ventes').insert({date,produit,
+      qte_vendue:qte,offerts:off,
+      prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,note:$('#nv_note').value});
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast('Vente ajoutée'); await refresh();
+  });
 }
 
 // ══════════════════════════════════

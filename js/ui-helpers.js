@@ -10,6 +10,21 @@ function toast(msg, type='ok') {
 }
 function loading(on){ $('#loader').classList.toggle('hidden',!on); }
 
+// Anti double-envoi : désactive le bouton déclencheur pendant l'action async.
+// Évite les doublons en base si on clique deux fois (ou Entrée + clic).
+// `btn` peut être null (appel sans bouton) — l'action s'exécute alors normalement.
+async function runOnce(btn, fn){
+  if(btn){
+    if(btn.disabled) return;            // déjà en cours → on ignore
+    btn.disabled=true; btn.classList.add('is-busy');
+  }
+  try{ await fn(); }
+  finally{
+    // La vue a pu être re-rendue (refresh) → le bouton n'existe plus, rien à faire.
+    if(btn&&document.body.contains(btn)){ btn.disabled=false; btn.classList.remove('is-busy'); }
+  }
+}
+
 // ══════════════════════════════════
 //  CONFIRMATION PERSONNALISÉE
 // ══════════════════════════════════

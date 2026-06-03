@@ -1037,6 +1037,20 @@ tr.editing td { background: rgba(255,248,210,.35) !important; }
 .add-ing-btn:hover { background: rgba(50,24,8,.06); border-style: solid; color: var(--ink); }
 .rec-actions { display: flex; gap: 8px; margin-top: 16px; }
 
+/* ━━ Liens produit ↔ recette ━━━━━━━━━━━━━━━━━━━━━━━━ */
+.cost-src { font-size: 11px; color: var(--ink3); font-weight: 400; letter-spacing: .2px; margin-top: 1px; text-align: right; }
+.cost-src.warn { color: #8c6408; }
+.rec-link { margin: 0 0 14px; min-height: 1px; }
+.rec-link .link-ok, .rec-link .link-info { font-size: 13.5px; font-family: 'EB Garamond', serif; }
+.rec-link .link-ok { color: #2a5418; }
+.rec-link .link-info { color: var(--ink2); }
+.linkbtn {
+  background: none; border: 1px solid var(--gold3); color: var(--wine);
+  padding: 3px 10px; border-radius: 2px; font-family: inherit; font-size: 13px;
+  cursor: pointer; margin-left: 4px; transition: background .15s, color .15s;
+}
+.linkbtn:hover { background: var(--wine); color: #f4dcd0; border-color: var(--wine); }
+
 /* ━━ STOCK ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .stock-badge { display: inline-block; padding: 2px 10px; border-radius: 2px; font-size: 12px; font-weight: 600; letter-spacing: .3px; }
 .s-ok    { background: rgba(54,104,34,.12); color: var(--green2); border: 1px solid rgba(54,104,34,.2); }
@@ -1556,6 +1570,11 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 /* ━━ SAUVEGARDE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .btn.saving { opacity: .58; pointer-events: none; }
 .btn.saving::after { content: " …"; }
+/* État occupé (anti double-envoi via runOnce) + boutons désactivés */
+.btn:disabled, .btn.is-busy, .linkbtn:disabled {
+  opacity: .55; cursor: progress; pointer-events: none; transform: none !important; box-shadow: none;
+}
+.btn.is-busy::after { content: " …"; }
 
 /* ━━ CALCULATEUR LIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .vente-preview {

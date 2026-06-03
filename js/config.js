@@ -18,6 +18,7 @@ let ALERTS_COLLAPSED=localStorage.getItem('sp_alerts_coll')==='1';
 let CHARTS=[];
 let VIEW='dash';
 let EDIT_REC=null, ING_LIST=[];
+let PREFILL_NOM='', PREFILL_CAT='', PREFILL_QTE=''; // pré-remplissage lors d'un saut produit↔recette
 let SELECTED_DAY=null, EDIT_VENTE=null;
 let FILTER_CAT=null;
 let PERIODE='all'; // today | week | month | all

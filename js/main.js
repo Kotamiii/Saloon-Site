@@ -14,6 +14,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   t.classList.add('active');
   VIEW=t.dataset.v;
   EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;PARTIE_ACTIVE=null;
+  PREFILL_NOM='';PREFILL_CAT='';PREFILL_QTE='';
   window.scrollTo({top:0,behavior:'smooth'});
   render();
 });

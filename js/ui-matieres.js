@@ -5,7 +5,9 @@ function renderMatieres(){
   const grouped={};
   MAT.forEach(m=>{const c=m.categorie||'Autre';if(!grouped[c])grouped[c]=[];grouped[c].push(m);});
   let html='';
-  for(const[cat,items] of Object.entries(grouped)){
+  const cats=Object.keys(grouped).sort((a,b)=>a.localeCompare(b,'fr'));
+  for(const cat of cats){
+    const items=grouped[cat].slice().sort((a,b)=>(a.nom||'').localeCompare(b.nom||'','fr'));
     const rows=items.map(m=>`<tr>
       <td><b>${esc(m.nom)}</b></td>
       <td class="num"><input type="number" step="0.01" value="${Number(m.prix)||0}" onchange="updMat(${m.id},this.value)" style="width:90px;text-align:right"></td>
@@ -26,17 +28,20 @@ function renderMatieres(){
       <label>Catégorie<input id="m_cat" style="width:120px" placeholder="ex. Céréale"></label>
       <label>Prix achat<input type="number" step="0.01" id="m_prix" value="0" style="width:80px"></label>
       <label>Source<select id="m_free"><option value="false">Achat</option><option value="true">Récolte gratuite</option></select></label>
-      <button class="btn sm" onclick="addMat()">+ Ajouter</button>
+      <button class="btn sm" onclick="addMat(this)">+ Ajouter</button>
     </div></div>`;
 }
 async function updMat(id,val){
   const ok=await dbUpd('matieres_premieres',id,{prix:Number(val)||0});
   if(ok){toast('Prix mis à jour');await refresh();}
 }
-async function addMat(){
+async function addMat(btn){
   const nom=$('#m_nom').value.trim(); if(!nom){toast('Nom requis','err');return;}
-  const{error}=await sb.from('matieres_premieres').insert({nom,categorie:$('#m_cat').value,
-    prix:Number($('#m_prix').value)||0,recolte_gratuite:$('#m_free').value==='true'});
-  if(error){toast('Erreur : '+error.message,'err');return;}
-  toast('Matière première ajoutée'); await refresh();
+  if(MAT.some(m=>m.nom.toLowerCase()===nom.toLowerCase())){toast(`Une matière « ${nom} » existe déjà`,'err');return;}
+  await runOnce(btn,async()=>{
+    const{error}=await sb.from('matieres_premieres').insert({nom,categorie:$('#m_cat').value,
+      prix:Number($('#m_prix').value)||0,recolte_gratuite:$('#m_free').value==='true'});
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast('Matière première ajoutée'); await refresh();
+  });
 }
