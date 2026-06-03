@@ -59,24 +59,24 @@ body {
   font-size: 16px;
   line-height: 1.65;
   /* Comptoir mahogany très sombre — les cartes flottent dessus */
-  background-color: #120a02;
+  background-color: #3a2210;
   background-image:
     /* Nervures bois horizontales fines */
     repeating-linear-gradient(89.2deg,
       transparent, transparent 220px,
-      rgba(255,180,60,.018) 220px, rgba(255,180,60,.018) 221px),
+      rgba(255,180,60,.022) 220px, rgba(255,180,60,.022) 221px),
     repeating-linear-gradient(90.8deg,
       transparent, transparent 110px,
-      rgba(0,0,0,.045) 110px, rgba(0,0,0,.045) 111px),
+      rgba(0,0,0,.035) 110px, rgba(0,0,0,.035) 111px),
     /* Lumière de lampe à huile — chaud, centré */
-    radial-gradient(ellipse 75% 55% at 50% -5%, rgba(220,150,40,.18), transparent 68%),
-    /* Vignette sombre aux quatre coins */
-    radial-gradient(ellipse 55% 45% at 0%   0%, rgba(0,0,0,.45), transparent 55%),
-    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(0,0,0,.45), transparent 55%),
-    radial-gradient(ellipse 55% 55% at 0% 100%, rgba(0,0,0,.5), transparent 60%),
-    radial-gradient(ellipse 55% 55% at 100% 100%, rgba(0,0,0,.5), transparent 60%),
-    /* Base bois rouge-brun */
-    linear-gradient(170deg, #1e1006 0%, #140a02 45%, #1c1006 100%);
+    radial-gradient(ellipse 75% 55% at 50% 0%, rgba(220,160,50,.2), transparent 68%),
+    /* Vignette douce aux quatre coins */
+    radial-gradient(ellipse 55% 45% at 0%   0%, rgba(0,0,0,.28), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(0,0,0,.28), transparent 55%),
+    radial-gradient(ellipse 55% 55% at 0% 100%, rgba(0,0,0,.32), transparent 60%),
+    radial-gradient(ellipse 55% 55% at 100% 100%, rgba(0,0,0,.32), transparent 60%),
+    /* Base bois mahogany — plus lisible */
+    linear-gradient(170deg, #4a2e18 0%, #352010 45%, #422a14 100%);
 }
 
 /* Grain papier en overlay fixe — extrêmement subtil */
@@ -324,7 +324,7 @@ header::after {
   width: 0; height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 5px solid #120a02;
+  border-bottom: 5px solid #3a2210;
 }
 
 /* ── Boutons ─────────────────────────────────────────── */
@@ -1434,4 +1434,33 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 @keyframes vpFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
 .vp-item { white-space: nowrap; }
 .vp-sep  { color: rgba(168,124,32,.5); font-size: 11px; }
+.vp-offert {
+  width: 100%; font-size: 12.5px; color: var(--ink3); font-style: italic;
+  margin-top: 4px; border-top: 1px solid rgba(168,124,32,.18); padding-top: 4px;
+}
 .addform label[title] { cursor: help; border-bottom: 1px dotted var(--ink3); }
+
+/* ── Note offerts dans les lignes de vente ──────────── */
+.vente-offert-note {
+  font-size: 12px; color: var(--ink3); font-style: italic;
+  margin-top: 2px; letter-spacing: .2px;
+}
+
+/* ── Tarifs — prix-group + boutons action ───────────── */
+.tarif-prix-group { display: flex; align-items: center; gap: 8px; }
+.tarif-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+.tarif-row:hover .tarif-actions { opacity: 1; }
+.tarif-btn {
+  background: none; border: 1px solid rgba(138,106,26,.3);
+  color: var(--ink2); padding: 2px 8px; border-radius: 2px;
+  font-size: 13px; cursor: pointer; transition: background .12s, color .12s; line-height: 1.4;
+}
+.tarif-btn:hover { background: var(--ink); color: #f0e3c0; }
+.tarif-btn-vend { color: #2e5a1a; border-color: rgba(28,62,16,.38); }
+.tarif-btn-vend:hover { background: #1c3e10; color: #c8e8b8; }
+.tarif-nd-prix { font-family: 'EB Garamond', serif; font-size: 13px; font-style: italic; color: var(--ink3); }
+.tarif-edit-group { display: flex; align-items: center; gap: 6px; }
+.tarif-edit-group input {
+  padding: 5px 8px; border: 1px solid rgba(138,106,26,.55); border-radius: 0;
+  background: rgba(255,249,228,.92); font-family: inherit; font-size: 15px; color: var(--ink);
+}

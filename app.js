@@ -12,6 +12,7 @@ const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'
 const today = () => new Date().toISOString().slice(0,10);
 
 let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=undefined, CONTACTS_DATA=undefined;
+let TARIF_EDIT_ID=null;
 let CHARTS=[];
 let VIEW='dash';
 let EDIT_REC=null, ING_LIST=[];
@@ -476,7 +477,7 @@ async function delContact(id){
 }
 
 // ══════════════════════════════════
-//  TARIFS (carte menu)
+//  TARIFS (carte menu + édition + vente rapide)
 // ══════════════════════════════════
 function renderTarifs(){
   const catIcons={Boisson:'🥃',Nourriture:'🍖',Cigarette:'🚬'};
@@ -496,9 +497,23 @@ function renderTarifs(){
     ).sort((a,b)=>(Number(a.prix_vente)||0)-(Number(b.prix_vente)||0));
     const rows=items.map(p=>{
       const prix=Number(p.prix_vente)||0;
-      return`<div class="tarif-row${prix===0?' tarif-nd':''}">
+      const editing=TARIF_EDIT_ID===p.id;
+      const prixArea=editing
+        ?`<div class="tarif-edit-group">
+            <input type="number" step="0.01" id="te_${p.id}" value="${prix}" style="width:88px">
+            <button class="btn sm" onclick="saveTarifPrix(${p.id})">✓</button>
+            <button class="btn sm ghost" onclick="TARIF_EDIT_ID=null;renderTarifs()">✕</button>
+          </div>`
+        :`<div class="tarif-prix-group">
+            <span class="tarif-prix${prix===0?' tarif-nd-prix':''}">${prix?fmt(prix):'à définir'}</span>
+            <div class="tarif-actions">
+              <button class="tarif-btn" onclick="TARIF_EDIT_ID=${p.id};renderTarifs()" title="Modifier le prix">✎</button>
+              <button class="tarif-btn tarif-btn-vend" data-nom="${esc(p.nom)}" onclick="quickVendFromTarif(this.dataset.nom)" title="Enregistrer une vente">+</button>
+            </div>
+          </div>`;
+      return`<div class="tarif-row${prix===0&&!editing?' tarif-nd':''}">
         <span class="tarif-nom">${esc(p.nom)}</span>
-        <span class="tarif-prix">${prix?fmt(prix):'à définir'}</span>
+        ${prixArea}
       </div>`;
     }).join('');
     return`<div class="tarif-cat">
@@ -511,10 +526,26 @@ function renderTarifs(){
   }).join('');
   $('#view').innerHTML=head('Carte des tarifs')+
     `<div class="tarif-toolbar">
-      <p class="note" style="margin:0">Affichage client — les produits sans prix apparaissent en grisé.</p>
-      <button class="btn sm gold" onclick="window.print()">🖨 Imprimer la carte</button>
+      <p class="note" style="margin:0">Cliquez <b>✎</b> pour modifier un prix · <b>+</b> pour enregistrer une vente rapide.</p>
+      <button class="btn sm gold" onclick="window.print()">🖨 Imprimer</button>
     </div>
     <div class="tarifs-grid">${grid}</div>`;
+}
+async function saveTarifPrix(id){
+  const val=$(`#te_${id}`)?.value;
+  const ok=await dbUpd('produits',id,{prix_vente:Number(val)||0});
+  if(ok){toast('Prix mis à jour');TARIF_EDIT_ID=null;await refresh();if(VIEW==='tarifs')renderTarifs();}
+}
+function quickVendFromTarif(nom){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.v==='journees'));
+  VIEW='journees'; SELECTED_DAY=today(); EDIT_VENTE=null; TARIF_EDIT_ID=null;
+  render();
+  setTimeout(()=>{
+    const sel=$('#nv_prod');
+    if(sel){sel.value=nom; previewVente();}
+    const panel=$('#dayPanel');
+    if(panel) panel.scrollIntoView({behavior:'smooth',block:'start'});
+  },80);
 }
 
 // ══════════════════════════════════
@@ -601,27 +632,36 @@ function buildDayPanel(date,sales){
 
   const rows=sales.map(v=>{
     const c=venteCalc(v);
+    const qvd=Number(v.qte_vendue)||0, off=Number(v.offerts)||0;
     if(EDIT_VENTE===v.id){
       const cOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(x=>`<option${x===v.canal?' selected':''}>${x}</option>`).join('');
+      const evPrixVal=v.prix_unit!=null?v.prix_unit:'';
+      const evTotVal=evPrixVal!==''?(Number(evPrixVal)*qvd).toFixed(2):'';
       return`<tr class="editing">
         <td><select id="ev_prod" style="min-width:110px">${PRD.map(p=>`<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
-        <td><input type="number" id="ev_qte" value="${Number(v.qte_vendue)||0}" style="width:58px"></td>
-        <td><input type="number" id="ev_off" value="${Number(v.offerts)||0}" style="width:52px"></td>
-        <td><input type="number" step="0.01" id="ev_prix" value="${v.prix_unit!=null?v.prix_unit:''}" placeholder="base" style="width:80px"></td>
+        <td><input type="number" id="ev_qte" value="${qvd}" style="width:55px" oninput="syncEvFromUnit()"></td>
+        <td><input type="number" id="ev_off" value="${off}" style="width:50px"></td>
+        <td><input type="number" step="0.01" id="ev_prix" value="${evPrixVal}" placeholder="base" style="width:75px" oninput="syncEvFromUnit()"></td>
+        <td><input type="number" step="0.01" id="ev_total" value="${evTotVal}" placeholder="total" style="width:75px" oninput="syncEvFromTotal()" title="Prix total = prix unit × qté"></td>
         <td><select id="ev_canal">${cOpts}</select></td>
-        <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:90px"></td>
+        <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:80px"></td>
         <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
         <td><div class="row-actions">
-          <button class="btn sm" onclick="saveVente(${v.id})">✓ OK</button>
+          <button class="btn sm" onclick="saveVente(${v.id})">✓</button>
           <button class="btn sm ghost" onclick="EDIT_VENTE=null;renderJournees()">✕</button>
         </div></td>
       </tr>`;
     }
+    // Note offerts — impact visible sur les sorties de stock
+    const offNote=off>0
+      ?`<div class="vente-offert-note">${qvd} vendu${qvd>1?'s':''} + ${off} offert${off>1?'s':''} = ${qvd+off} sortie${qvd+off>1?'s':''}</div>`
+      :'';
     return`<tr>
-      <td><b>${esc(v.produit)}</b></td>
-      <td class="num">${Number(v.qte_vendue)||0}</td>
-      <td class="num">${Number(v.offerts)||0}</td>
+      <td><b>${esc(v.produit)}</b>${offNote}</td>
+      <td class="num">${qvd}</td>
+      <td class="num">${off||'—'}</td>
       <td class="num">${fmt(c.prix)}</td>
+      <td class="num">${fmt(c.ca)}</td>
       <td>${esc(v.canal||'')}</td>
       <td style="font-size:13px;color:var(--ink2)">${esc(v.note||'')}</td>
       <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
@@ -689,8 +729,8 @@ function buildDayPanel(date,sales){
     </div>
     <div class="card" style="margin-bottom:14px"><div style="overflow-x:auto">
       <table>
-        <thead><tr><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>Canal</th><th>Note</th><th>Marge</th><th></th></tr></thead>
-        <tbody>${rows||`<tr><td colspan="8" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">Aucune vente enregistrée ce jour.</td></tr>`}</tbody>
+        <thead><tr><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>Total</th><th>Canal</th><th>Note</th><th>Marge</th><th></th></tr></thead>
+        <tbody>${rows||`<tr><td colspan="9" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">Aucune vente enregistrée ce jour.</td></tr>`}</tbody>
       </table>
     </div></div>
     ${recapHtml}
@@ -698,9 +738,10 @@ function buildDayPanel(date,sales){
       <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
       <div class="addform-row">
         <label>Produit<select id="nv_prod" onchange="previewVente()" onclick="previewVente()">${prodOpts}</select></label>
-        <label>Qté vendue<input type="number" id="nv_qte" value="1" style="width:65px" oninput="previewVente()"></label>
-        <label title="Unités offertes gratuitement (promo). Comptées en coût, pas en CA.">Offerts ⓘ<input type="number" id="nv_off" value="0" style="width:58px" oninput="previewVente()"></label>
-        <label>Prix unitaire (vide = prix de base)<input type="number" step="0.01" id="nv_prix" placeholder="—" style="width:100px" oninput="previewVente()"></label>
+        <label>Qté vendue<input type="number" id="nv_qte" value="1" style="width:62px" oninput="syncNvFromQte()"></label>
+        <label title="Unités offertes gratuitement : comptées en coût, pas en CA.">Offerts ⓘ<input type="number" id="nv_off" value="0" style="width:55px" oninput="previewVente()"></label>
+        <label title="Laisser vide = prix de base du produit">Prix unit.<input type="number" step="0.01" id="nv_prix" placeholder="base" style="width:85px" oninput="syncNvFromUnit()"></label>
+        <label title="Remplis ce champ pour calculer le prix unitaire automatiquement">Prix total<input type="number" step="0.01" id="nv_total" placeholder="calc." style="width:85px" oninput="syncNvFromTotal()"></label>
         <label>Canal<select id="nv_canal">${canalOpts}</select></label>
         <label>Note<input id="nv_note" style="width:130px"></label>
         <button class="btn sm" onclick="addVenteDay('${date}')">+ Ajouter</button>
@@ -745,6 +786,45 @@ async function addVenteDay(date){
 }
 
 // ══════════════════════════════════
+//  SYNCHRONISATION PRIX UNIT. / TOTAL
+// ══════════════════════════════════
+function syncNvFromUnit(){
+  const u=$('#nv_prix'),t=$('#nv_total'),q=$('#nv_qte');
+  if(!u||!t||!q) return;
+  const p=parseFloat(u.value), qte=Number(q.value)||1;
+  t.value=!isNaN(p)?(p*qte).toFixed(2):'';
+  previewVente();
+}
+function syncNvFromTotal(){
+  const u=$('#nv_prix'),t=$('#nv_total'),q=$('#nv_qte');
+  if(!u||!t||!q) return;
+  const tot=parseFloat(t.value), qte=Number(q.value)||1;
+  if(!isNaN(tot)&&qte>0) u.value=(tot/qte).toFixed(2); else u.value='';
+  previewVente();
+}
+function syncNvFromQte(){
+  const u=$('#nv_prix'),t=$('#nv_total'),q=$('#nv_qte');
+  if(!u||!t||!q) return;
+  // Priorité au total si renseigné, sinon au prix unitaire
+  const tot=parseFloat(t.value), prix=parseFloat(u.value), qte=Number(q.value)||1;
+  if(!isNaN(tot)&&t.value!=='') u.value=qte>0?(tot/qte).toFixed(2):'';
+  else if(!isNaN(prix)&&u.value!=='') t.value=(prix*qte).toFixed(2);
+  previewVente();
+}
+function syncEvFromUnit(){
+  const u=$('#ev_prix'),t=$('#ev_total'),q=$('#ev_qte');
+  if(!u||!t||!q) return;
+  const p=parseFloat(u.value), qte=Number(q.value)||1;
+  t.value=!isNaN(p)?(p*qte).toFixed(2):'';
+}
+function syncEvFromTotal(){
+  const u=$('#ev_prix'),t=$('#ev_total'),q=$('#ev_qte');
+  if(!u||!t||!q) return;
+  const tot=parseFloat(t.value), qte=Number(q.value)||1;
+  if(!isNaN(tot)&&qte>0) u.value=(tot/qte).toFixed(2); else u.value='';
+}
+
+// ══════════════════════════════════
 //  CALCULATEUR LIVE (formulaire vente)
 // ══════════════════════════════════
 function previewVente(){
@@ -761,13 +841,15 @@ function previewVente(){
   const coutTotal=(qte+off)*cout;
   const marge=ca-coutTotal;
   if(qte===0){prev.innerHTML='';return;}
-  const offNote=off>0?` <small style="color:var(--ink3)">(dont ${off} offert${off>1?'s':''} : −${fmt(off*cout)})</small>`:'';
-  prev.innerHTML=`
-    <span class="vp-item">CA&nbsp;<b style="color:var(--wine)">${fmt(ca)}</b></span>
+  // Ligne principale CA · Coût · Marge
+  let html=`<span class="vp-item">CA&nbsp;<b style="color:var(--wine2,#7e2018)">${fmt(ca)}</b></span>
     <span class="vp-sep">·</span>
-    <span class="vp-item">Coût&nbsp;<b>${fmt(coutTotal)}</b>${offNote}</span>
+    <span class="vp-item">Coût&nbsp;<b>${fmt(coutTotal)}</b></span>
     <span class="vp-sep">·</span>
     <span class="vp-item" style="color:${marge<0?'var(--red)':'var(--green)'}">Marge&nbsp;<b>${fmt(marge)}</b>${ca?` (${pct(marge/ca)})`:''}${marge<0?' ⚠ perte':''}</span>`;
+  // Détail offerts si besoin
+  if(off>0) html+=`<span class="vp-offert">${qte} vendu${qte>1?'s':''} + ${off} offert${off>1?'s':''} = ${qte+off} sortie${qte+off>1?'s':''} · coût offerts : −${fmt(off*cout)}</span>`;
+  prev.innerHTML=html;
 }
 
 // ══════════════════════════════════
@@ -853,7 +935,9 @@ async function addProduit(){
   const nom=$('#p_nom').value.trim(); if(!nom){toast('Nom requis','err');return;}
   const{error}=await sb.from('produits').insert({nom,categorie:$('#p_cat').value,prix_vente:Number($('#p_prix').value)||0});
   if(error){toast('Erreur : '+error.message,'err');return;}
-  toast('Produit ajouté'); await refresh();
+  await refresh();
+  const hasRec=REC.some(r=>r.nom===nom);
+  toast(hasRec?`Produit "${nom}" ajouté — recette trouvée, coût calculé automatiquement`:`Produit "${nom}" ajouté — crée une recette du même nom dans l'onglet Recettes pour le coût automatique`);
 }
 
 // ══════════════════════════════════
@@ -879,13 +963,14 @@ function renderRecettes(){
       </td>
     </tr>`;
   }).join('');
+  // Formulaire EN HAUT — visible immédiatement
   $('#view').innerHTML=head('Recettes (crafts)')+
-    `<p class="note">Le coût unitaire se calcule en cascade — un craft peut utiliser un autre craft.</p>
+    `<div id="recForm" style="margin-bottom:24px"></div>
+     <p class="note">Les ingrédients disponibles = <b>Matières premières</b> + <b>autres crafts</b>. Pour lier un produit vendu à ce craft, crée un produit dans "Produits & marges" avec <b>exactement le même nom</b>.</p>
      <div class="card"><div style="overflow-x:auto"><table>
        <thead><tr><th>Produit</th><th>Catégorie</th><th>Qté prod.</th><th>Coût total</th><th>Coût unitaire</th><th>État</th><th></th></tr></thead>
-       <tbody>${rows||'<tr><td colspan="7" style="text-align:center;font-style:italic;padding:16px">Aucune recette.</td></tr>'}</tbody>
-     </table></div></div>
-     <div id="recForm" style="margin-top:24px"></div>`;
+       <tbody>${rows||'<tr><td colspan="7" style="text-align:center;font-style:italic;padding:16px">Aucune recette. Crée-en une ci-dessus.</td></tr>'}</tbody>
+     </table></div></div>`;
   renderRecForm();
 }
 function allIngNames(){ return[...MAT.map(m=>m.nom),...REC.map(r=>r.nom)]; }
@@ -907,8 +992,8 @@ function renderRecForm(){
   const mkOpts=(sel='')=>`<option value="">— choisir —</option>`+names.map(n=>`<option${n===sel?' selected':''}>${esc(n)}</option>`).join('');
   const ingRows=ING_LIST.map((i,k)=>`
     <div class="ing-row">
-      <select>${mkOpts(i.nom)}</select>
-      <input type="number" value="${i.qte||''}" placeholder="qté" min="0" step="0.5">
+      <select onchange="updateRecFormCost()">${mkOpts(i.nom)}</select>
+      <input type="number" value="${i.qte||''}" placeholder="qté" min="0" step="0.5" oninput="updateRecFormCost()">
       <button class="del-ing" onclick="removeIng(${k})" title="Retirer">×</button>
     </div>`).join('');
   $('#recForm').innerHTML=`
@@ -917,16 +1002,35 @@ function renderRecForm(){
       <div class="rec-meta">
         <label>Nom du craft<input id="r_nom" value="${r?esc(r.nom):''}" style="width:200px" placeholder="ex. Bière ambrée"></label>
         <label>Catégorie<select id="r_cat">${['Boisson','Nourriture','Intermédiaire','Cigarette'].map(c=>`<option${r&&r.categorie===c?' selected':''}>${c}</option>`).join('')}</select></label>
-        <label>Qté produite par craft<input type="number" id="r_qte" value="${r&&r.qte_produite!=null?r.qte_produite:''}" placeholder="ex. 4" style="width:110px"></label>
+        <label title="Nombre d'unités produites par une seule exécution du craft">Qté produite<input type="number" id="r_qte" value="${r&&r.qte_produite!=null?r.qte_produite:''}" placeholder="ex. 4" style="width:90px" oninput="updateRecFormCost()"></label>
       </div>
-      <div class="ing-section-title">Ingrédients</div>
+      <div class="ing-section-title">Ingrédients <span style="font-weight:400;font-style:italic;text-transform:none;letter-spacing:0">(matières premières ou autres crafts)</span></div>
       <div class="ing-list" id="ingContainer">${ingRows}</div>
       <button class="add-ing-btn" onclick="addIng()">+ Ajouter un ingrédient</button>
+      <div id="recFormCost" class="vente-preview" style="margin:10px 0 0"></div>
       <div class="rec-actions">
         <button class="btn sm" onclick="saveRecette()">${r?'Enregistrer les modifications':'+ Créer le craft'}</button>
         ${r?'<button class="btn sm ghost" onclick="cancelRec()">Annuler</button>':''}
       </div>
     </div>`;
+}
+function updateRecFormCost(){
+  syncIngFromDOM();
+  const qteStr=$('#r_qte')?.value;
+  const qte=qteStr?Number(qteStr):null;
+  let total=0; let hasIng=false;
+  ING_LIST.forEach(ing=>{
+    if(!ing.nom||!(Number(ing.qte)>0)) return;
+    total+=coutIngredient(ing.nom,[])*(Number(ing.qte)||0);
+    hasIng=true;
+  });
+  const el=$('#recFormCost'); if(!el) return;
+  if(!hasIng){el.innerHTML='';return;}
+  const unitCost=qte&&qte>0?total/qte:null;
+  el.innerHTML=`<span class="vp-item">Coût total du craft : <b>${fmt(total)}</b></span>`+
+    (unitCost!==null
+      ?`<span class="vp-sep">·</span><span class="vp-item">Coût unitaire : <b>${fmt(unitCost)}</b></span>`
+      :`<span class="vp-sep">·</span><span style="color:var(--ink3);font-size:13px">Renseigne la qté produite pour le coût unitaire</span>`);
 }
 function addIng(){ syncIngFromDOM(); ING_LIST.push({nom:'',qte:''}); renderRecForm(); }
 function removeIng(k){ syncIngFromDOM(); ING_LIST.splice(k,1); if(!ING_LIST.length) ING_LIST.push({nom:'',qte:''}); renderRecForm(); }
@@ -1046,16 +1150,62 @@ CREATE POLICY "auth_only" ON stock
         <td class="num"><input type="number" min="0" value="${qty}" data-prod="${esc(p.nom)}" onchange="updStock(this.dataset.prod,this.value)" style="width:75px;text-align:right"></td>
         <td>${badge(qty)}</td>
         <td style="font-size:13px;color:var(--ink2)">${when}${who?' · '+esc(who):''}</td>
+        <td><button class="btn sm gold" data-prod="${esc(p.nom)}" data-qty="${qty}" onclick="productionToStock(this.dataset.prod,Number(this.dataset.qty))" title="Ajouter une production au stock" style="padding:4px 10px;font-size:12.5px">+ Production</button></td>
       </tr>`;
     }).join('');
     html+=`<div class="cat-group-title">${esc(cat)}</div>
       <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
-        <thead><tr><th>Produit</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th></tr></thead>
+        <thead><tr><th>Produit</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th><th>Production</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div></div>`;
   }
   $('#view').innerHTML=head('Stock')+
-    `<p class="note">Épuisé = 0 unité · Faible ≤ 3 · Modifie les quantités directement dans le tableau.</p>`+html;
+    `<p class="note">Épuisé = 0 · Faible ≤ 3 · Modifie les quantités en direct · <b>+ Production</b> = ajouter des unités craftées au stock.</p>`+html;
+}
+function askInput(msg,placeholder,onConfirm,confirmLabel='Confirmer'){
+  const el=document.createElement('div');
+  el.className='confirm-overlay';
+  el.innerHTML=`<div class="confirm-box">
+    <span class="confirm-icon">📦</span>
+    <div class="confirm-msg">${esc(msg)}</div>
+    <input type="number" id="_askVal" min="1" placeholder="${esc(placeholder)}" style="width:130px;padding:9px 12px;border:1px solid var(--border,#8a6a1a);background:rgba(255,249,228,.92);font-family:inherit;font-size:16px;text-align:center;display:block;margin:0 auto 16px">
+    <div class="confirm-btns">
+      <button class="btn sm" id="_askY">${esc(confirmLabel)}</button>
+      <button class="btn sm ghost" id="_askN">Annuler</button>
+    </div>
+  </div>`;
+  document.body.appendChild(el);
+  const close=()=>{el.style.opacity='0';el.style.transition='opacity .12s';setTimeout(()=>el.remove(),130);};
+  el.querySelector('#_askY').onclick=()=>{const v=el.querySelector('#_askVal').value;close();onConfirm(v);};
+  el.querySelector('#_askN').onclick=close;
+  el.onclick=e=>{if(e.target===el)close();};
+  const kh=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',kh);}};
+  document.addEventListener('keydown',kh);
+  el.querySelector('#_askVal').addEventListener('keydown',e=>{if(e.key==='Enter')el.querySelector('#_askY').click();});
+  setTimeout(()=>el.querySelector('#_askVal').focus(),40);
+}
+async function productionToStock(produit,currentQty){
+  askInput(
+    `Ajouter une production — ${produit}\n(stock actuel : ${currentQty} unité${currentQty>1?'s':''})`,
+    'Quantité craftée',
+    async(val)=>{
+      const qte=Math.max(0,parseInt(val)||0);
+      if(!qte){toast('Quantité invalide','err');return;}
+      loading(true);
+      const session=(await sb.auth.getSession()).data.session;
+      const who=session?session.user.email:null;
+      const newQty=currentQty+qte;
+      const{error}=await sb.from('stock').upsert(
+        {produit,quantite:newQty,updated_at:new Date().toISOString(),updated_by:who},
+        {onConflict:'produit'}
+      );
+      loading(false);
+      if(error){toast('Erreur : '+error.message,'err');return;}
+      toast(`+${qte} unité${qte>1?'s':''} ajoutée${qte>1?'s':''} · ${produit} : stock = ${newQty}`);
+      STOCK_DATA=undefined; renderStock();
+    },
+    '+ Ajouter au stock'
+  );
 }
 async function updStock(produit,valeur){
   const qty=Math.max(0,Number(valeur)||0);
@@ -1174,7 +1324,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   VIEW=t.dataset.v;
-  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;
+  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;
   window.scrollTo({top:0,behavior:'smooth'});
   render();
 });
