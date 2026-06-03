@@ -7,7 +7,7 @@ function render(){
   v.classList.remove('view-fade');
   void v.offsetWidth; // force reflow pour re-déclencher l'animation
   const fns={dash:renderDash,journees:renderJournees,produits:renderProduits,
-    recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tarifs:renderTarifs,contacts:renderContacts,tuto:renderTuto};
+    recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tarifs:renderTarifs,contacts:renderContacts,jeux:renderJeux,tuto:renderTuto};
   (fns[VIEW]||renderDash)();
   v.classList.add('view-fade');
 }

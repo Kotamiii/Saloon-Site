@@ -35,3 +35,30 @@ ALTER TABLE stock ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "auth_only" ON stock
   USING  (auth.uid() IS NOT NULL)
   WITH CHECK (auth.uid() IS NOT NULL);
+
+-- ────────────────────────────────────────────────────────────────
+-- Nouvelle table : parties (onglet Jeux — Puissance 4 temps réel)
+-- ────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS parties (
+  id          BIGSERIAL PRIMARY KEY,
+  joueur1     TEXT NOT NULL,                      -- défieur (jetons bordeaux)
+  joueur2     TEXT NOT NULL,                      -- défié  (jetons dorés)
+  grille      JSONB NOT NULL,                     -- grille 6 lignes × 7 colonnes
+  tour        TEXT NOT NULL,                      -- e-mail du joueur dont c'est le tour
+  statut      TEXT NOT NULL DEFAULT 'en_attente', -- en_attente | en_cours | termine
+  gagnant     TEXT,                               -- e-mail gagnant, 'nul', ou NULL
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW(),
+  created_by  TEXT
+);
+
+ALTER TABLE parties ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "auth_only" ON parties
+  USING  (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+-- Temps réel : diffuser les changements + inclure toutes les colonnes (DELETE/UPDATE)
+ALTER PUBLICATION supabase_realtime ADD TABLE parties;
+ALTER TABLE parties REPLICA IDENTITY FULL;

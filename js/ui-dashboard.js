@@ -352,6 +352,7 @@ function renderDash(){
 
       <!-- Colonne latérale -->
       <div class="dash-aside">
+        ${typeof buildDuelsSection==='function'?buildDuelsSection():''}
         ${todosSection}
         ${alertsSection}
         <div class="dash-aside-block">

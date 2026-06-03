@@ -21,3 +21,8 @@ let EDIT_REC=null, ING_LIST=[];
 let SELECTED_DAY=null, EDIT_VENTE=null;
 let FILTER_CAT=null;
 let PERIODE='all'; // today | week | month | all
+// Jeux (Puissance 4) — état + temps réel
+let ME=null;                 // e-mail du joueur connecté
+let PARTIES_DATA=undefined;  // undefined = à charger, null = table absente
+let PARTIE_ACTIVE=null;      // id de la partie ouverte
+let NOTIF_CHANNEL=null;      // canal Supabase Realtime des parties

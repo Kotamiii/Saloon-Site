@@ -13,7 +13,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   VIEW=t.dataset.v;
-  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;
+  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;PARTIE_ACTIVE=null;
   window.scrollTo({top:0,behavior:'smooth'});
   render();
 });
@@ -38,8 +38,10 @@ document.addEventListener('keydown',e=>{
 sb.auth.onAuthStateChange((event,session)=>{
   if(!session){$('#app').classList.add('hidden');$('#login').classList.remove('hidden');return;}
   if(event==='SIGNED_IN'){
+    ME=session.user.email;
     $('#userEmail').textContent=session.user.email;
     $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
+    initJeuxRealtime();
     refresh();
   }
 });
@@ -47,8 +49,10 @@ sb.auth.onAuthStateChange((event,session)=>{
 (async()=>{
   const{data:{session}}=await sb.auth.getSession();
   if(session){
+    ME=session.user.email;
     $('#userEmail').textContent=session.user.email;
     $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
+    initJeuxRealtime();
     await refresh();
   }else{$('#login').classList.remove('hidden');}
 })();

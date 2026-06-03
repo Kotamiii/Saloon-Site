@@ -1775,3 +1775,262 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
   padding: 5px 8px; border: 1px solid rgba(138,106,26,.55); border-radius: 0;
   background: rgba(255,249,228,.92); font-family: inherit; font-size: 15px; color: var(--ink);
 }
+
+/* ═══════════════════════════════════════════════════════
+   JEUX — PUISSANCE 4  ·  affiche placardée sur le mur du saloon
+═══════════════════════════════════════════════════════ */
+.jeu-intro {
+  color: var(--parch2);
+  font-size: 15.5px;
+  max-width: 760px;
+  margin: -6px 0 22px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.jeu-intro b { color: var(--gold4); }
+
+/* ── Lobby : liste + carte « défier » ─────────────────── */
+.jeu-lobby {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 22px;
+  align-items: start;
+}
+.jeu-lobby-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.jeu-card {
+  background:
+    radial-gradient(ellipse 50% 25% at 8% 6%, rgba(255,248,210,.3), transparent 42%),
+    linear-gradient(162deg, #f8f2e0 0%, #f0e6c8 100%);
+  border: 1px solid rgba(168,124,32,.5);
+  border-radius: 2px;
+  padding: 18px 20px;
+  box-shadow: 0 8px 28px var(--shadow-med), 0 2px 4px var(--shadow);
+}
+.jeu-card-titre {
+  font-family: 'Rye', serif; font-size: 15px; color: var(--wine);
+  letter-spacing: .5px; margin-bottom: 8px;
+}
+.jeu-sub { font-size: 13.5px; color: var(--ink2); margin: 0 0 14px; line-height: 1.6; }
+.jeu-defi-form { display: flex; gap: 8px; }
+.jeu-input {
+  flex: 1; min-width: 0;
+  padding: 8px 11px; border: 1px solid rgba(138,106,26,.55);
+  background: rgba(255,249,228,.94); font-family: inherit; font-size: 15px; color: var(--ink);
+  border-radius: 0;
+}
+.jeu-input:focus { outline: 2px solid var(--gold3); outline-offset: 1px; border-color: var(--gold2); }
+
+/* ── Blocs de parties ─────────────────────────────────── */
+.jeu-bloc {
+  background: linear-gradient(160deg, #f8f2e0 0%, #f2e8c8 100%);
+  border: 1px solid rgba(168,124,32,.4);
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px var(--shadow-med), 0 2px 4px var(--shadow);
+}
+.jeu-bloc-titre {
+  font-family: 'Rye', serif; font-size: 13.5px; color: var(--wine);
+  padding: 11px 16px; letter-spacing: .4px;
+  background: rgba(26,13,5,.04);
+  border-bottom: 1px solid rgba(168,124,32,.22);
+  display: flex; align-items: center; gap: 8px;
+}
+.jeu-badge {
+  background: var(--wine2); color: #f4e2b8;
+  font-family: 'EB Garamond', serif; font-size: 12px; font-weight: 600;
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.jeu-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(168,124,32,.14);
+  transition: background .15s;
+}
+.jeu-row:last-child { border-bottom: none; }
+.jeu-row:hover { background: linear-gradient(90deg, #f4ecda, #efe3c4); }
+.jeu-row-recu { background: rgba(122,90,14,.07); }
+.jeu-row-info { flex: 1; min-width: 0; font-size: 14.5px; color: var(--ink); }
+.jeu-row-info b { color: var(--wine); }
+.jeu-row-meta {
+  display: block; font-size: 12.5px; color: var(--ink3); font-style: italic;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.jeu-row-meta.a-toi { color: var(--green2); font-style: normal; font-weight: 600; }
+.jeu-row-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.jeu-mini-del {
+  background: none; border: none; color: var(--ink3); font-size: 15px;
+  cursor: pointer; padding: 4px 6px; line-height: 1; border-radius: 2px;
+  min-width: 30px; min-height: 30px;
+}
+.jeu-mini-del:hover { color: var(--red); background: rgba(94,14,14,.08); }
+.jeu-issue {
+  font-family: 'EB Garamond', serif; font-size: 12.5px; font-weight: 600;
+  padding: 3px 10px; border-radius: 3px; letter-spacing: .3px; white-space: nowrap;
+}
+.jeu-issue-win  { background: rgba(28,62,14,.15);  color: var(--green2); border: 1px solid rgba(28,62,14,.3); }
+.jeu-issue-lose { background: rgba(94,14,14,.13);  color: var(--red);    border: 1px solid rgba(94,14,14,.28); }
+.jeu-issue-nul  { background: rgba(122,90,14,.13); color: #7a5808;       border: 1px solid rgba(122,90,14,.28); }
+
+/* Pion miniature (listes, en-têtes, dashboard) */
+.jeu-pion { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.jeu-pion.j1 { background: radial-gradient(circle at 36% 30%, #c0382e, #7e2018 52%, #4e1010); box-shadow: inset 0 1px 1px rgba(255,185,165,.45), 0 1px 2px rgba(0,0,0,.45); }
+.jeu-pion.j2 { background: radial-gradient(circle at 36% 30%, #f2d57e, #c89a34 52%, #8a6410); box-shadow: inset 0 1px 1px rgba(255,247,205,.55), 0 1px 2px rgba(0,0,0,.45); }
+
+/* ── Plateau ──────────────────────────────────────────── */
+.p4-topbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.p4-abandon:hover { color: var(--red); border-color: rgba(94,14,14,.5); background: rgba(94,14,14,.08); }
+
+.p4-players {
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+  margin: 6px 0 16px; flex-wrap: wrap;
+}
+.p4-player {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 16px; border-radius: 3px;
+  background: linear-gradient(160deg, #f6efdd, #ece0bf);
+  border: 1px solid rgba(168,124,32,.4);
+  color: var(--ink); font-size: 15px;
+  box-shadow: 0 3px 10px var(--shadow);
+  transition: box-shadow .2s, border-color .2s;
+}
+.p4-player b { color: var(--wine); }
+.p4-player.actif {
+  border-color: var(--gold3);
+  box-shadow: 0 0 0 2px rgba(221,184,74,.45), 0 4px 14px var(--shadow-med);
+  animation: p4PlayerPulse 1.6s ease-in-out infinite;
+}
+@keyframes p4PlayerPulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(221,184,74,.35), 0 4px 14px var(--shadow-med); }
+  50%     { box-shadow: 0 0 0 3px rgba(221,184,74,.6),  0 4px 18px var(--shadow-med); }
+}
+.p4-moi {
+  font-size: 11px; background: var(--gold2); color: #1c0e04;
+  padding: 1px 7px; border-radius: 8px; letter-spacing: .3px; font-weight: 600;
+}
+.p4-vs { font-family: 'Rye', serif; font-size: 13px; color: var(--parch2); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+
+/* Bandeau d'état */
+.p4-status {
+  text-align: center; font-size: 15px; color: var(--ink);
+  background: linear-gradient(160deg, #f6efdd, #ece0bf);
+  border: 1px solid rgba(168,124,32,.4);
+  border-radius: 2px; padding: 11px 16px; margin: 0 auto 18px; max-width: 620px;
+  box-shadow: 0 4px 14px var(--shadow);
+  display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+}
+.p4-status b { color: var(--wine); }
+.p4-status-actions { display: flex; gap: 8px; }
+.p4-status.a-toi { border-color: rgba(54,104,34,.55); color: var(--green2); font-weight: 600; }
+.p4-status.fin.win  { border-color: var(--gold3); background: linear-gradient(160deg, #f7efd4, #efe1b4); }
+.p4-status.fin.lose { border-color: rgba(94,14,14,.45); }
+.p4-status.fin.nul  { border-color: rgba(122,90,14,.45); }
+
+/* Cadre en bois du plateau — comme une enseigne clouée */
+.p4-board-wrap { display: flex; justify-content: center; }
+.p4-board {
+  display: flex;
+  gap: clamp(4px, 1.1vw, 11px);
+  width: 100%; max-width: 560px;
+  padding: clamp(12px, 2.4vw, 20px);
+  border-radius: 5px;
+  background:
+    /* 4 clous de laiton aux angles */
+    radial-gradient(circle at 15px 15px,                     #e2bc54 0 3px, #6e4e0c 3px 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 15px) 15px,        #e2bc54 0 3px, #6e4e0c 3px 5px, transparent 6px),
+    radial-gradient(circle at 15px calc(100% - 15px),        #e2bc54 0 3px, #6e4e0c 3px 5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px), #e2bc54 0 3px, #6e4e0c 3px 5px, transparent 6px),
+    /* veinures du bois */
+    repeating-linear-gradient(91deg, transparent, transparent 5px, rgba(0,0,0,.05) 5px, rgba(0,0,0,.05) 6px),
+    repeating-linear-gradient(1deg, rgba(255,200,120,.035), rgba(255,200,120,.035) 16px, transparent 16px, transparent 32px),
+    linear-gradient(158deg, #5a3016 0%, #3a2010 55%, #24140a 100%);
+  background-repeat: no-repeat;
+  border: 1px solid #1c0e04;
+  box-shadow:
+    0 14px 44px rgba(4,1,0,.6),
+    inset 0 1px 0 rgba(255,200,120,.12),
+    inset 0 0 0 2px rgba(122,90,14,.35);
+}
+.p4-col {
+  flex: 1; display: flex; flex-direction: column;
+  gap: clamp(4px, 1.1vw, 11px);
+  border-radius: 4px;
+  transition: background .15s;
+}
+.p4-col.jouable { cursor: pointer; }
+.p4-col.jouable:hover { background: rgba(255,210,120,.08); }
+.p4-col.jouable:focus-visible { outline: none; background: rgba(255,210,120,.12); }
+.p4-arrow {
+  height: 20px; text-align: center; color: var(--gold4); font-size: 18px;
+  line-height: 20px; opacity: 0; transition: opacity .15s, transform .15s;
+  text-shadow: 0 0 8px rgba(221,184,74,.7);
+}
+.p4-col.jouable:hover .p4-arrow,
+.p4-col.jouable:focus-visible .p4-arrow { opacity: 1; transform: translateY(3px); }
+
+/* Alvéole creusée dans le bois */
+.p4-slot { position: relative; width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+.p4-slot::before {
+  content: ""; position: absolute; inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #1a0e05, #0a0502 80%);
+  box-shadow: inset 0 3px 8px rgba(0,0,0,.85), inset 0 -2px 4px rgba(255,200,120,.05);
+  transition: box-shadow .15s;
+}
+.p4-col.jouable:hover .p4-slot::before,
+.p4-col.jouable:focus-visible .p4-slot::before {
+  box-shadow: inset 0 3px 8px rgba(0,0,0,.85), 0 0 0 2px rgba(221,184,74,.55);
+}
+
+/* Jetons — pièces métalliques bordeaux / doré */
+.jeton {
+  position: relative; z-index: 1;
+  width: 82%; aspect-ratio: 1; border-radius: 50%;
+}
+.jeton::after {
+  content: ""; position: absolute; inset: 17%; border-radius: 50%;
+  border: 1px dashed rgba(255,255,255,.16);
+}
+.jeton.j1 {
+  background: radial-gradient(circle at 36% 30%, #c0382e, #7e2018 48%, #4a0f0f 100%);
+  box-shadow: inset 0 2px 3px rgba(255,185,165,.4), inset 0 -4px 7px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.55);
+}
+.jeton.j2 {
+  background: radial-gradient(circle at 36% 30%, #f2d57e, #c89a34 48%, #836010 100%);
+  box-shadow: inset 0 2px 3px rgba(255,247,205,.55), inset 0 -4px 7px rgba(0,0,0,.42), 0 2px 5px rgba(0,0,0,.5);
+}
+.jeton.win { outline: 2px solid var(--gold4); outline-offset: 1px; animation: jetonWin 1.1s ease-in-out infinite; }
+@keyframes jetonWin {
+  0%,100% { box-shadow: inset 0 2px 3px rgba(255,255,255,.3), 0 0 6px 1px rgba(221,184,74,.5); }
+  50%     { box-shadow: inset 0 2px 3px rgba(255,255,255,.3), 0 0 16px 4px rgba(221,184,74,.9); }
+}
+
+/* Chute du jeton */
+@keyframes jetonDrop {
+  0%   { transform: translateY(-460%); }
+  72%  { transform: translateY(0); }
+  84%  { transform: translateY(-9%); }
+  100% { transform: translateY(0); }
+}
+.jeton.drop { animation: jetonDrop .42s cubic-bezier(.3,.55,.4,1); }
+
+/* ── Section « Duels » du tableau de bord ─────────────── */
+.duel-section { display: flex; flex-direction: column; gap: 7px; }
+.duel-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 2px;
+  background: linear-gradient(90deg, #f4ecda, #efe3c4);
+  border: 1px solid rgba(168,124,32,.32);
+  border-left: 4px solid var(--gold2);
+}
+.duel-txt { flex: 1; min-width: 0; font-size: 14px; color: var(--ink); }
+.duel-txt b { color: var(--wine); }
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 880px) {
+  .jeu-lobby { grid-template-columns: 1fr; }
+  .jeu-lobby-aside { order: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jeton.drop, .jeton.win, .p4-player.actif { animation: none; }
+}
