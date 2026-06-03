@@ -640,6 +640,62 @@ td.num {
   gap: 16px;
   margin-top: 22px;
 }
+
+/* ━━ DASHBOARD — GRILLE 2 COLONNES ━━━━━━━━━━━━━━━━━━ */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+  margin-top: 24px;
+}
+.dash-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.dash-aside { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Grand graphique pleine largeur dans la colonne principale */
+.dash-chart-primary { width: 100%; }
+
+/* Sous-grille des graphiques secondaires (3 colonnes) */
+.dash-charts-sub {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* Bloc "Top 5" dans l'aside */
+.dash-aside-block {
+  background: linear-gradient(160deg, #f8f2e0 0%, #f2e8c8 100%);
+  border: 1px solid rgba(168,124,32,.45);
+  border-radius: 2px;
+  box-shadow: 0 6px 22px var(--shadow-med), 0 2px 4px var(--shadow);
+  overflow: hidden;
+}
+.dash-aside-title {
+  font-family: 'Rye', serif;
+  font-size: 14px;
+  color: var(--wine);
+  padding: 13px 16px 10px;
+  border-bottom: 1px solid rgba(168,124,32,.2);
+  letter-spacing: .5px;
+  background: rgba(26,13,5,.03);
+}
+
+/* Compacité de l'aside : réduire les marges des sections */
+.dash-aside .secttl { margin: 0 0 12px; padding-top: 0; border-top: none; }
+.dash-aside .secttl::before { display: none; }
+.dash-aside .secttl h2 { font-size: 17px; }
+.dash-aside .todo-section { box-shadow: 0 4px 14px var(--shadow-med); }
+.dash-aside .alerts-grid { gap: 5px; }
+.dash-aside .alert-row { padding: 8px 12px; }
+.dash-aside .week-cmp { grid-template-columns: 1fr; gap: 8px; margin-bottom: 0; }
+.dash-aside .objectif-box { margin-bottom: 0; }
+
+/* Responsive — empilement sur petits écrans */
+@media (max-width: 1100px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-aside { order: -1; } /* aside passe au-dessus sur mobile */
+  .dash-charts-sub { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
 .chartbox {
   background:
     radial-gradient(ellipse 45% 22% at 6% 5%, rgba(255,248,210,.28), transparent 42%),
@@ -977,28 +1033,44 @@ tr.editing td { background: rgba(255,248,210,.35) !important; }
 .today-banner {
   background:
     repeating-linear-gradient(88deg, transparent, transparent 90px, rgba(0,0,0,.03) 90px, rgba(0,0,0,.03) 91px),
-    repeating-linear-gradient(92deg, transparent, transparent 180px, rgba(255,200,60,.02) 180px, rgba(255,200,60,.02) 181px),
-    linear-gradient(135deg, #2a1406 0%, #381c08 38%, #4a2210 68%, #301408 100%);
+    linear-gradient(135deg, #1e0e04 0%, #2c1608 38%, #381c0c 68%, #261208 100%);
   color: #f0dca8;
   border-radius: 2px;
-  padding: 18px 24px;
+  padding: 22px 28px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 0;
   flex-wrap: wrap;
   box-shadow:
-    0 8px 28px rgba(4,1,0,.65),
+    0 10px 32px rgba(4,1,0,.7),
     0 2px 4px rgba(4,1,0,.45),
-    0 0 0 1px rgba(168,124,32,.5),
-    inset 0 1px 0 rgba(255,200,60,.1);
+    0 0 0 1px rgba(168,124,32,.55),
+    inset 0 1px 0 rgba(255,200,60,.12);
+  position: relative;
+  overflow: hidden;
 }
-.tb-title { font-family: 'Rye', serif; font-size: 14px; color: var(--gold4); letter-spacing: 1.1px; white-space: nowrap; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
-.tb-kpis  { display: flex; gap: 32px; flex-wrap: wrap; flex: 1; }
-.tb-k     { display: flex; flex-direction: column; gap: 2px; }
-.tb-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: rgba(240,220,168,.52); }
-.tb-val   { font-family: 'Rye', serif; font-size: 23px; color: #f0dca8; text-shadow: 0 2px 5px rgba(0,0,0,.5); }
-.tb-val.pos { color: #8cd888; }
+/* Accent accent latéral gauche — comme la carte "$628" */
+.today-banner::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--gold4), var(--gold2));
+}
+.tb-title {
+  font-family: 'Rye', serif; font-size: 13px; color: var(--gold3);
+  letter-spacing: 1.2px; white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+  padding: 0 32px 0 14px;
+  border-right: 1px solid rgba(168,124,32,.3);
+  margin-right: 32px;
+}
+.tb-kpis  { display: flex; gap: 36px; flex-wrap: wrap; flex: 1; }
+.tb-k     { display: flex; flex-direction: column; gap: 3px; }
+.tb-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(240,220,168,.5); }
+.tb-val   { font-family: 'Rye', serif; font-size: 26px; color: #f0dca8; text-shadow: 0 2px 5px rgba(0,0,0,.5); line-height: 1; }
+.tb-val.pos { color: #90d880; }
 .tb-val.neg { color: #f08888; }
 
 /* ━━ DASHBOARD — SEMAINES / OBJECTIF ━━━━━━━━━━━━━━━━ */

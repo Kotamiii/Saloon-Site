@@ -380,19 +380,37 @@ function renderDash(){
   }
   const todosSection=buildTodosSection();
 
-  $('#view').innerHTML=todayHtml+weekHtml+objHtml+
+  // ── Mise en page dashboard 2 colonnes ──────────────
+  $('#view').innerHTML=
+    // Bannière du jour (pleine largeur)
+    todayHtml+
+    // KPIs (pleine largeur)
     head('Résultats globaux')+
     `<div class="kpis">${kpiHtml}</div>`+
-    bestHtml+
-    alertsSection+
-    todosSection+
-    head('Top 5 produits par CA')+topHtml+
-    `<div class="charts" style="margin-top:24px">
-      <div class="chartbox"><h3>Coût vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
-      <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="200"></canvas></div>
-      <div class="chartbox"><h3>CA par catégorie</h3><canvas id="c3" height="200"></canvas></div>
-      <div class="chartbox"><h3>CA et marge jour par jour</h3><canvas id="c4" height="200"></canvas></div>
-      <div class="chartbox"><h3>Volumes vendus (unités)</h3><canvas id="c5" height="200"></canvas></div>
+    // Grille principale
+    `<div class="dash-grid">
+      <!-- ── Colonne principale ─────────────────── -->
+      <div class="dash-main">
+        ${weekHtml}
+        ${objHtml}
+        <div class="chartbox dash-chart-primary"><h3>CA et marge — jour par jour</h3><canvas id="c4" height="200"></canvas></div>
+        <div class="dash-charts-sub">
+          <div class="chartbox"><h3>Coût vs Prix</h3><canvas id="c1" height="180"></canvas></div>
+          <div class="chartbox"><h3>Marge par produit</h3><canvas id="c2" height="180"></canvas></div>
+          <div class="chartbox"><h3>Volumes (unités)</h3><canvas id="c5" height="180"></canvas></div>
+        </div>
+      </div>
+      <!-- ── Colonne latérale ───────────────────── -->
+      <div class="dash-aside">
+        ${todosSection}
+        ${alertsSection}
+        <div class="dash-aside-block">
+          <div class="dash-aside-title">✦ Top 5 produits</div>
+          ${topHtml}
+        </div>
+        <div class="chartbox"><h3>CA par catégorie</h3><canvas id="c3" height="200"></canvas></div>
+        ${bestHtml}
+      </div>
     </div>`;
 
   const noAdj=PRD.filter(p=>!String(p.nom).startsWith('Ajustement'));
