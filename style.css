@@ -655,11 +655,46 @@ td.num {
 /* Grand graphique pleine largeur dans la colonne principale */
 .dash-chart-primary { width: 100%; }
 
-/* Sous-grille des graphiques secondaires (3 colonnes) */
-.dash-charts-sub {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+/* En-tête graphique : titre + onglets de sélection */
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(168,124,32,.22);
+  flex-wrap: wrap;
+}
+.chart-header h3 { margin: 0; padding-bottom: 0; border-bottom: none; }
+
+/* Onglets de sélection (période / métrique) */
+.chart-tabs {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.ctab {
+  background: rgba(26,13,5,.05);
+  border: 1px solid rgba(168,124,32,.28);
+  border-radius: 2px;
+  color: var(--ink3);
+  font-family: 'EB Garamond', serif;
+  font-size: 12.5px;
+  padding: 3px 11px;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  line-height: 1.4;
+}
+.ctab:hover {
+  background: rgba(156,123,47,.14);
+  color: var(--wine);
+  border-color: rgba(156,123,47,.45);
+}
+.ctab.active {
+  background: var(--wine);
+  color: #f4e4bc;
+  border-color: var(--wine);
 }
 
 /* Bloc "Top 5" dans l'aside */
@@ -693,8 +728,8 @@ td.num {
 /* Responsive — empilement sur petits écrans */
 @media (max-width: 1100px) {
   .dash-grid { grid-template-columns: 1fr; }
-  .dash-aside { order: -1; } /* aside passe au-dessus sur mobile */
-  .dash-charts-sub { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .dash-aside { order: -1; }
+  .chart-header { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 .chartbox {
   background:
@@ -713,6 +748,12 @@ td.num {
   padding-bottom: 9px;
   border-bottom: 1px solid rgba(168,124,32,.25);
   letter-spacing: .6px;
+}
+/* Quand h3 est dans un chart-header, la séparation est gérée par le header */
+.chart-header h3 {
+  padding-bottom: 0;
+  border-bottom: none;
+  margin: 0;
 }
 
 /* ━━ FILTRES & PÉRIODE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
