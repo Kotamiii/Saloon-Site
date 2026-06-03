@@ -11,8 +11,10 @@ const pct = n => (Number(n)||0).toLocaleString('fr-FR',{style:'percent',minimumF
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today = () => new Date().toISOString().slice(0,10);
 
-let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=undefined, CONTACTS_DATA=undefined;
+let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=undefined, CONTACTS_DATA=undefined, TODOS_DATA=undefined;
 let TARIF_EDIT_ID=null;
+let TODO_FILTER='active';
+let ALERTS_COLLAPSED=localStorage.getItem('sp_alerts_coll')==='1';
 let CHARTS=[];
 let VIEW='dash';
 let EDIT_REC=null, ING_LIST=[];
@@ -145,6 +147,12 @@ async function loadContacts(){
     const{data,error}=await sb.from('contacts').select('*').order('nom').order('prenom');
     CONTACTS_DATA=error?null:(data||[]);
   }catch{ CONTACTS_DATA=null; }
+}
+async function loadTodos(){
+  try{
+    const{data,error}=await sb.from('todos').select('*').order('created_at',{ascending:false});
+    TODOS_DATA=error?null:(data||[]);
+  }catch{ TODOS_DATA=null; }
 }
 async function dbUpd(table,id,patch){
   const{error}=await sb.from(table).update(patch).eq('id',id);
@@ -345,11 +353,39 @@ function renderDash(){
     ['Marge totale',fmt(marge),marge<0?'neg':'pos'],['Marge %',ca?pct(marge/ca):'0 %',marge<0?'neg':''],
     ['Unités vendues',unites.toLocaleString('fr-FR'),'']];
 
+  // KPIs avec animation d'entrée décalée
+  const kpiHtml=kpis.map((k,i)=>`<div class="kpi" style="animation-delay:${i*55}ms"><div class="k">${k[0]}</div><div class="v ${k[2]}">${k[1]}</div></div>`).join('');
+
+  // Section alertes collapsible
+  const alertTotal=alertLines.length+dismissedCount;
+  const alertsSection=`
+    <div class="secttl secttl-collapse">
+      <span class="orn">✦</span>
+      <h2>Alertes${alertLines.length>0?' ('+alertLines.length+')':''}</h2>
+      ${alertTotal>0?`<button class="collapse-toggle" id="alertsToggleBtn" onclick="toggleAlerts()" title="${ALERTS_COLLAPSED?'Développer':'Réduire'}">${ALERTS_COLLAPSED?'▼':'▲'}</button>`:''}
+      <div class="rule"></div>
+    </div>
+    ${ALERTS_COLLAPSED
+      ?`<div class="alerts-collapsed-summary">
+          ${alertLines.length>0?`<span class="alert-badge a-warn">${alertLines.length} active${alertLines.length>1?'s':''}</span>`:''}
+          ${dismissedCount>0?`<span class="alert-badge a-muted">${dismissedCount} traitée${dismissedCount>1?'s':''}</span>`:''}
+          ${alertLines.length===0&&dismissedCount===0?`<span class="alert-badge a-ok">Tout est en ordre</span>`:''}
+          ${dismissedCount>0?`<button class="btn sm ghost" onclick="restoreAlerts()">Restaurer</button>`:''}
+        </div>`
+      :alertsHtml}`;
+
+  // Section TODO list
+  if(TODOS_DATA===undefined){
+    loadTodos().then(()=>{if(VIEW==='dash')renderDash();});
+  }
+  const todosSection=buildTodosSection();
+
   $('#view').innerHTML=todayHtml+weekHtml+objHtml+
     head('Résultats globaux')+
-    `<div class="kpis">${kpis.map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v ${k[2]}">${k[1]}</div></div>`).join('')}</div>`+
+    `<div class="kpis">${kpiHtml}</div>`+
     bestHtml+
-    head('Alertes ('+alertLines.length+')')+alertsHtml+
+    alertsSection+
+    todosSection+
     head('Top 5 produits par CA')+topHtml+
     `<div class="charts" style="margin-top:24px">
       <div class="chartbox"><h3>Coût vs Prix de vente</h3><canvas id="c1" height="200"></canvas></div>
@@ -546,6 +582,125 @@ function quickVendFromTarif(nom){
     const panel=$('#dayPanel');
     if(panel) panel.scrollIntoView({behavior:'smooth',block:'start'});
   },80);
+}
+
+// ══════════════════════════════════
+//  ALERTES — COLLAPSE
+// ══════════════════════════════════
+function toggleAlerts(){
+  ALERTS_COLLAPSED=!ALERTS_COLLAPSED;
+  localStorage.setItem('sp_alerts_coll',ALERTS_COLLAPSED?'1':'0');
+  renderDash();
+}
+
+// ══════════════════════════════════
+//  TODO LIST
+// ══════════════════════════════════
+function buildTodosSection(){
+  const prioLabels={urgent:'Urgent',normal:'Normal',info:'Info'};
+  const prioIcons={urgent:'🔴',normal:'🟡',info:'🟢'};
+
+  if(TODOS_DATA===null){
+    return`<div class="secttl"><span class="orn">✦</span><h2>Tâches de l'équipe</h2><div class="rule"></div></div>
+    <div class="setup-box" style="text-align:left">
+      <p style="margin:0 0 6px;font-size:15px">La table <b>todos</b> n'existe pas encore.</p>
+      <p style="margin:0 0 4px;font-size:13px">Exécute ce SQL dans <b>Supabase → SQL Editor</b> :</p>
+      <pre>CREATE TABLE IF NOT EXISTS todos (
+  id         BIGSERIAL PRIMARY KEY,
+  texte      TEXT NOT NULL,
+  priorite   TEXT DEFAULT 'normal',
+  done       BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by TEXT
+);
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "auth_only" ON todos
+  USING  (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);</pre>
+    </div>`;
+  }
+
+  const todos=TODOS_DATA||[];
+  const filtered=todos.filter(t=>
+    TODO_FILTER==='all'?true:
+    TODO_FILTER==='done'?t.done:
+    !t.done
+  );
+  const activeCount=todos.filter(t=>!t.done).length;
+  const doneCount=todos.filter(t=>t.done).length;
+
+  const items=filtered.map(t=>{
+    const dateStr=t.created_at?new Date(t.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}):'';
+    const who=t.created_by?(t.created_by.split('@')[0]):'';
+    return`<div class="todo-item todo-prio-${esc(t.priorite||'normal')}${t.done?' todo-done':''}">
+      <button class="todo-check" onclick="toggleTodoDone(${t.id})" title="${t.done?'Marquer à faire':'Marquer fait'}">${t.done?'✓':''}</button>
+      <span class="todo-text">${esc(t.texte)}</span>
+      <span class="todo-prio-badge">${prioIcons[t.priorite||'normal']} ${prioLabels[t.priorite||'normal']}</span>
+      <span class="todo-meta">${who?esc(who)+' · ':''}${dateStr}</span>
+      <button class="todo-del" onclick="deleteTodo(${t.id})" title="Supprimer">✕</button>
+    </div>`;
+  }).join('');
+
+  const emptyMsg=filtered.length===0
+    ?`<div class="todo-empty">${TODO_FILTER==='done'?'Aucune tâche terminée.':TODO_FILTER==='active'?'Aucune tâche en cours — tout est à jour !':'Aucune tâche pour l\'instant.'}</div>`
+    :'';
+
+  return`<div class="secttl"><span class="orn">✦</span><h2>Tâches de l'équipe${activeCount>0?' <span class="todo-count-badge">'+activeCount+'</span>':''}</h2><div class="rule"></div></div>
+  <div class="todo-section">
+    <div class="todo-toolbar">
+      <div class="filter-group" style="margin:0">
+        <span class="fpill${TODO_FILTER==='active'?' active':''}" onclick="setTodoFilter('active')">À faire${activeCount>0?' ('+activeCount+')':''}</span>
+        <span class="fpill${TODO_FILTER==='done'?' active':''}" onclick="setTodoFilter('done')">Terminées${doneCount>0?' ('+doneCount+')':''}</span>
+        <span class="fpill${TODO_FILTER==='all'?' active':''}" onclick="setTodoFilter('all')">Toutes</span>
+      </div>
+      ${doneCount>0?`<button class="btn sm ghost" onclick="clearDoneTodos()" title="Supprimer toutes les tâches terminées" style="font-size:12.5px">Vider terminées</button>`:''}
+    </div>
+    <div class="todo-add-row">
+      <input id="td_texte" class="todo-input" placeholder="Nouvelle tâche pour l'équipe…" onkeydown="if(event.key==='Enter')addTodo()">
+      <select id="td_prio" class="todo-prio-select">
+        <option value="urgent">🔴 Urgent</option>
+        <option value="normal" selected>🟡 Normal</option>
+        <option value="info">🟢 Info</option>
+      </select>
+      <button class="btn sm" onclick="addTodo()" style="white-space:nowrap">+ Ajouter</button>
+    </div>
+    <div class="todo-list">${items}${emptyMsg}</div>
+  </div>`;
+}
+function setTodoFilter(f){ TODO_FILTER=f; renderDash(); }
+async function addTodo(){
+  const texte=$('#td_texte')?.value.trim();
+  if(!texte){toast('Texte requis','err');return;}
+  const prio=$('#td_prio')?.value||'normal';
+  const session=(await sb.auth.getSession()).data.session;
+  const by=session?session.user.email:null;
+  const{error}=await sb.from('todos').insert({texte,priorite:prio,done:false,created_by:by});
+  if(error){toast('Erreur : '+error.message,'err');return;}
+  toast('Tâche ajoutée');TODOS_DATA=undefined;renderDash();
+}
+async function toggleTodoDone(id){
+  if(!TODOS_DATA)return;
+  const t=TODOS_DATA.find(x=>x.id===id); if(!t)return;
+  const{error}=await sb.from('todos').update({done:!t.done}).eq('id',id);
+  if(error){toast('Erreur : '+error.message,'err');return;}
+  TODOS_DATA=undefined;renderDash();
+}
+async function deleteTodo(id){
+  askConfirm('Supprimer cette tâche ?','🗑️',async()=>{
+    const{error}=await sb.from('todos').delete().eq('id',id);
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast('Tâche supprimée');TODOS_DATA=undefined;renderDash();
+  });
+}
+async function clearDoneTodos(){
+  const ids=(TODOS_DATA||[]).filter(t=>t.done).map(t=>t.id);
+  if(!ids.length)return;
+  askConfirm(`Supprimer les ${ids.length} tâches terminées ?`,'🗑️',async()=>{
+    const{error}=await sb.from('todos').delete().in('id',ids);
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast(`${ids.length} tâche${ids.length>1?'s':''} supprimée${ids.length>1?'s':''}`);
+    TODOS_DATA=undefined;renderDash();
+  });
 }
 
 // ══════════════════════════════════
