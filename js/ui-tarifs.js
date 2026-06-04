@@ -51,7 +51,26 @@ function renderTarifs(){
       <p class="note" style="margin:0">Cliquez <b>✎</b> pour modifier un prix · <b>+</b> pour enregistrer une vente rapide.</p>
       <button class="btn sm gold" onclick="window.print()">🖨 Imprimer</button>
     </div>
-    <div class="tarifs-grid">${grid}</div>`;
+    <div class="tarifs-grid">${grid}</div>
+    <div class="card" style="margin-top:18px">
+      <div class="addbar">
+        <label>Nouvel article<input id="tf_nom" style="width:180px" placeholder="ex. Whisky maison"></label>
+        <label>Catégorie<select id="tf_cat">${['Boisson','Nourriture','Cigarette'].map(c=>`<option>${c}</option>`).join('')}</select></label>
+        <label>Prix vente<input type="number" step="0.01" id="tf_prix" value="0" style="width:90px"></label>
+        <button class="btn sm" onclick="addTarifProduit(this)">+ Ajouter à la carte</button>
+      </div>
+      <p class="note" style="margin:8px 16px 4px">L'article ajouté devient un produit. Crée une recette du même nom dans l'onglet Recettes pour calculer son coût automatiquement.</p>
+    </div>`;
+}
+async function addTarifProduit(btn){
+  const nom=$('#tf_nom').value.trim(); if(!nom){toast('Nom requis','err');return;}
+  if(PRD.some(p=>p.nom.toLowerCase()===nom.toLowerCase())){toast(`Un produit « ${nom} » existe déjà`,'err');return;}
+  await runOnce(btn,async()=>{
+    const{error}=await sb.from('produits').insert({nom,categorie:$('#tf_cat').value,prix_vente:Number($('#tf_prix').value)||0});
+    if(error){toast('Erreur : '+error.message,'err');return;}
+    toast(`« ${nom} » ajouté à la carte`);
+    await refresh(); if(VIEW==='tarifs')renderTarifs();
+  });
 }
 async function saveTarifPrix(id){
   const val=$(`#te_${id}`)?.value;

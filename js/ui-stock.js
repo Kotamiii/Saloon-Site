@@ -27,7 +27,7 @@ CREATE POLICY "auth_only" ON stock
   }
   const stockMap={};
   STOCK_DATA.forEach(s=>stockMap[s.produit]=s);
-  const prods=PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'));
+  const prods=stockItems();
   function badge(qty){
     if(qty===0) return'<span class="stock-badge s-empty">Épuisé</span>';
     if(qty<=3) return'<span class="stock-badge s-low">Faible</span>';
@@ -43,22 +43,39 @@ CREATE POLICY "auth_only" ON stock
       const s=stockMap[p.nom],qty=s?s.quantite:0;
       const when=s&&s.updated_at?new Date(s.updated_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
       const who=s?(s.updated_by||''):'';
+      const tag=`<span class="stock-type-tag stock-type-${p.type==='Produit'?'prod':p.type==='Recette'?'rec':'mat'}">${esc(p.type)}</span>`;
+      const courseBtn=`<button class="btn sm ghost" data-prod="${esc(p.nom)}" onclick="addToCourses(this.dataset.prod)" title="Ajouter à la liste de courses" style="padding:4px 10px;font-size:12.5px">🛒</button>`;
       return`<tr>
-        <td><b>${esc(p.nom)}</b></td>
+        <td><b>${esc(p.nom)}</b> ${tag}</td>
         <td class="num"><input type="number" min="0" value="${qty}" data-prod="${esc(p.nom)}" onchange="updStock(this.dataset.prod,this.value)" style="width:75px;text-align:right"></td>
         <td>${badge(qty)}</td>
         <td style="font-size:13px;color:var(--ink2)">${when}${who?' · '+esc(who):''}</td>
-        <td><button class="btn sm gold" data-prod="${esc(p.nom)}" data-qty="${qty}" onclick="productionToStock(this.dataset.prod,Number(this.dataset.qty))" title="Ajouter une production au stock" style="padding:4px 10px;font-size:12.5px">+ Production</button></td>
+        <td><div class="row-actions"><button class="btn sm gold" data-prod="${esc(p.nom)}" data-qty="${qty}" onclick="productionToStock(this.dataset.prod,Number(this.dataset.qty))" title="Ajouter une production au stock" style="padding:4px 10px;font-size:12.5px">+ Production</button>${courseBtn}</div></td>
       </tr>`;
     }).join('');
     html+=`<div class="cat-group-title">${esc(cat)}</div>
       <div class="card" style="margin-bottom:4px"><div style="overflow-x:auto"><table>
-        <thead><tr><th>Produit</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th><th>Production</th></tr></thead>
+        <thead><tr><th>Article</th><th>Quantité</th><th>État</th><th>Dernière mise à jour</th><th>Actions</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div></div>`;
   }
   $('#view').innerHTML=head('Stock')+
-    `<p class="note">Épuisé = 0 · Faible ≤ 3 · Modifie les quantités en direct · <b>+ Production</b> = ajouter des unités craftées au stock.</p>`+html;
+    `<p class="note">Épuisé = 0 · Faible ≤ 3 · Modifie les quantités en direct · <b>+ Production</b> = ajouter des unités craftées au stock · 🛒 = ajouter à la liste de courses. Tous les produits, recettes et matières premières sont stockables.</p>`+html;
+}
+// Liste unifiée de tous les items stockables : produits, recettes et matières
+// premières, dédoublonnés par nom (priorité produit › recette › matière).
+function stockItems(){
+  const map={};
+  const add=(nom,categorie,type)=>{
+    if(!nom) return;
+    const k=String(nom).toLowerCase();
+    if(!map[k]) map[k]={nom,categorie:categorie||'Autre',type};
+  };
+  PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'))
+     .forEach(p=>add(p.nom,p.categorie,'Produit'));
+  REC.forEach(r=>add(r.nom,r.categorie,'Recette'));
+  MAT.forEach(m=>add(m.nom,m.categorie,'Matière'));
+  return Object.values(map);
 }
 function askInput(msg,placeholder,onConfirm,confirmLabel='Confirmer'){
   const el=document.createElement('div');

@@ -37,6 +37,25 @@ CREATE POLICY "auth_only" ON stock
   WITH CHECK (auth.uid() IS NOT NULL);
 
 -- ────────────────────────────────────────────────────────────────
+-- Nouvelle table : courses (liste de courses partagée — tableau de bord)
+-- ────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS courses (
+  id         BIGSERIAL PRIMARY KEY,
+  article    TEXT NOT NULL,
+  quantite   TEXT,
+  done       BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by TEXT
+);
+
+ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "auth_only" ON courses
+  USING  (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+-- ────────────────────────────────────────────────────────────────
 -- Nouvelle table : parties (onglet Jeux — Puissance 4 temps réel)
 -- ────────────────────────────────────────────────────────────────
 

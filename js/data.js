@@ -32,6 +32,12 @@ async function loadTodos(){
     TODOS_DATA=error?null:(data||[]);
   }catch{ TODOS_DATA=null; }
 }
+async function loadCourses(){
+  try{
+    const{data,error}=await sb.from('courses').select('*').order('done').order('created_at',{ascending:false});
+    COURSES_DATA=error?null:(data||[]);
+  }catch{ COURSES_DATA=null; }
+}
 async function dbUpd(table,id,patch){
   const{error}=await sb.from(table).update(patch).eq('id',id);
   if(error){toast('Erreur : '+error.message,'err');return false;}

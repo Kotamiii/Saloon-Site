@@ -25,6 +25,7 @@ js/
   ui-contacts.js  → onglet Contacts
   ui-tarifs.js    → onglet Tarifs (carte menu + vente rapide)
   ui-todos.js     → tâches + alertes (affichées sur le tableau de bord)
+  ui-courses.js   → liste de courses partagée (bannière en haut du tableau de bord)
   ui-journees.js  → onglet Journées (ventes, prix unit/total, déduction stock)
   ui-produits.js  → onglet Produits & marges
   ui-recettes.js  → onglet Recettes (formulaire d'ingrédients)
@@ -57,7 +58,7 @@ Déploiement : **Vercel** branché sur GitHub. `git push` sur `main` → redépl
 - **`produits`** — `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût via recette homonyme ; valeur = coût fixe, ex. « Ajustement »), `notes`.
 - **`ventes`** — 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes : coût sans CA), `prix_unit` (NULL = prix de base ; valeur = prix de cette vente), `canal`, `note`, `created_by`.
 - **`stock`** — `produit` (unique), `quantite`, `updated_at`, `updated_by`.
-- **`contacts`** et **`todos`** — tables utilisées par les onglets Contacts et par la liste de tâches (ajoutées via Claude Code). Si une table manque, l'onglet concerné peut afficher un `CREATE TABLE` à coller dans Supabase. Voir `schema.sql` et les fonctions `loadContacts` / `loadTodos` dans `data.js`.
+- **`contacts`**, **`todos`** et **`courses`** — tables utilisées par l'onglet Contacts, la liste de tâches et la liste de courses partagée (ajoutées via Claude Code). `courses` : `article`, `quantite` (texte libre), `done` (bool), `created_at`, `created_by`. Si une table manque, l'onglet concerné peut afficher un `CREATE TABLE` à coller dans Supabase. Voir `schema.sql` et les fonctions `loadContacts` / `loadTodos` / `loadCourses` dans `data.js`.
 
 ## Logique métier (le cœur — ne pas casser, dans `calculs.js`)
 Coûts **en cascade** :

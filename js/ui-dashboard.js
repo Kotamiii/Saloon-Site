@@ -310,12 +310,19 @@ function renderDash(){
   }
   const todosSection = buildTodosSection();
 
+  // Liste de courses (en haut du tableau de bord)
+  if(COURSES_DATA===undefined){
+    loadCourses().then(()=>{ if(VIEW==='dash') renderDash(); });
+  }
+  const coursesSection = buildCoursesSection();
+
   // ── Onglets graphiques (état mémorisé entre navigations) ────────
   const pTab = p => `<button class="ctab${CHART_PERIOD===p?' active':''}" data-p="${p}" onclick="setChartPeriod('${p}')">${p==='7j'?'7 jours':p==='30j'?'30 jours':'Tout'}</button>`;
   const mTab = (m, label) => `<button class="ctab${CHART_METRIC===m?' active':''}" data-m="${m}" onclick="setSecChart('${m}')">${label}</button>`;
 
   // ── Mise en page ─────────────────────────────────────────────────
   $('#view').innerHTML =
+    coursesSection +
     todayHtml +
     head('Résultats globaux') +
     `<div class="kpis">${kpiHtml}</div>` +
