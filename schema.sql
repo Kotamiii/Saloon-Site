@@ -16,7 +16,10 @@
 
 -- ventes
 --   id, date DATE, produit TEXT, qte_vendue INTEGER, offerts INTEGER,
---   prix_unit NUMERIC, canal TEXT, note TEXT, created_by TEXT
+--   prix_unit NUMERIC, canal TEXT, vendeur TEXT, note TEXT, created_by TEXT
+
+-- Ajout de la colonne « vendeur » (qui a réalisé la vente) sur la table ventes :
+ALTER TABLE ventes ADD COLUMN IF NOT EXISTS vendeur TEXT;
 
 -- ────────────────────────────────────────────────────────────────
 -- Nouvelle table : stock (à créer si elle n'existe pas encore)
@@ -81,3 +84,22 @@ CREATE POLICY "auth_only" ON parties
 -- Temps réel : diffuser les changements + inclure toutes les colonnes (DELETE/UPDATE)
 ALTER PUBLICATION supabase_realtime ADD TABLE parties;
 ALTER TABLE parties REPLICA IDENTITY FULL;
+
+-- ────────────────────────────────────────────────────────────────
+-- Nouvelle table : acces (panel Admin — gestion des onglets par personne)
+--   email = compte Supabase ; onglets = liste des onglets autorisés.
+--   Une personne sans ligne ici voit TOUS les onglets (aucune restriction).
+-- ────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS acces (
+  id         BIGSERIAL PRIMARY KEY,
+  email      TEXT NOT NULL UNIQUE,
+  onglets    JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE acces ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "auth_only" ON acces
+  USING  (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);

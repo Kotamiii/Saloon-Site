@@ -2144,3 +2144,23 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 @media (prefers-reduced-motion: reduce) {
   .jeton.drop, .jeton.win, .p4-player.actif { animation: none; }
 }
+
+/* ── Panel Admin (gestion des accès) ──────────────────── */
+.adm-user { margin-bottom: 12px; }
+.adm-user-head {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(168,124,32,.28);
+}
+.adm-user-head b { color: var(--wine); font-size: 15px; }
+.adm-chks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 6px 14px;
+}
+.adm-chk {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 14px; color: var(--ink); cursor: pointer;
+  padding: 3px 0;
+}
+.adm-chk input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold2); }

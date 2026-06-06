@@ -7,7 +7,7 @@ function render(){
   v.classList.remove('view-fade');
   void v.offsetWidth; // force reflow pour re-déclencher l'animation
   const fns={dash:renderDash,journees:renderJournees,produits:renderProduits,
-    recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tarifs:renderTarifs,contacts:renderContacts,jeux:renderJeux,tuto:renderTuto};
+    recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tarifs:renderTarifs,contacts:renderContacts,jeux:renderJeux,tuto:renderTuto,admin:renderAdmin};
   (fns[VIEW]||renderDash)();
   v.classList.add('view-fade');
 }
@@ -22,6 +22,34 @@ function goTab(view){
 }
 function head(t){
   return `<div class="secttl"><span class="orn">✦</span><h2>${t}</h2><div class="rule"></div></div>`;
+}
+
+// ══════════════════════════════════
+//  ACCÈS PAR ONGLET (panel Admin)
+// ══════════════════════════════════
+// Renvoie la liste des onglets autorisés pour un e-mail, ou null = aucune
+// restriction (table absente, pas chargée, ou personne sans réglage → tout voir).
+function accesPourEmail(email){
+  if(!Array.isArray(ACCES_DATA)) return null;
+  const row=ACCES_DATA.find(a=>(a.email||'').toLowerCase()===(email||'').toLowerCase());
+  return row?(Array.isArray(row.onglets)?row.onglets:[]):null;
+}
+// Masque les onglets non autorisés pour l'utilisateur connecté. L'onglet Admin
+// reste toujours visible (protégé par son mot de passe intégré).
+function applyPermissions(){
+  const allowed=accesPourEmail(ME); // null = tout
+  document.querySelectorAll('.tab').forEach(t=>{
+    const v=t.dataset.v;
+    const show = v==='admin' ? true : (allowed===null || allowed.includes(v));
+    t.classList.toggle('hidden',!show);
+  });
+  // Si l'onglet courant est devenu invisible, basculer vers le premier visible.
+  const cur=document.querySelector(`.tab[data-v="${VIEW}"]`);
+  if(cur && cur.classList.contains('hidden')){
+    const first=document.querySelector('.tab:not(.hidden)');
+    if(first) VIEW=first.dataset.v;
+  }
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.v===VIEW));
 }
 function indicateur(nom){
   const p=PRD.find(x=>x.nom===nom); if(!p) return '';
@@ -47,10 +75,10 @@ function chartOpts(){
 function exportCSV(){
   const ventes = PERIODE==='all' ? VEN : VEN.filter(v=>inPeriode(v.date));
   if(!ventes.length){toast('Aucune vente à exporter','err');return;}
-  const h=['Date','Produit','Qté vendue','Offerts','Prix unitaire','CA','Coût','Marge','Canal','Note'];
+  const h=['Date','Produit','Qté vendue','Offerts','Prix unitaire','CA','Coût','Marge','Canal','Vendeur','Note'];
   const rows=ventes.map(v=>{
     const c=venteCalc(v);
-    return[v.date,v.produit,v.qte_vendue,v.offerts,c.prix,c.ca.toFixed(2),c.cout.toFixed(2),c.marge.toFixed(2),v.canal||'',v.note||''];
+    return[v.date,v.produit,v.qte_vendue,v.offerts,c.prix,c.ca.toFixed(2),c.cout.toFixed(2),c.marge.toFixed(2),v.canal||'',v.vendeur||'',v.note||''];
   });
   const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});

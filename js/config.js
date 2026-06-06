@@ -12,6 +12,23 @@ const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'
 const today = () => new Date().toISOString().slice(0,10);
 
 let MAT=[], REC=[], PRD=[], VEN=[], STOCK_DATA=undefined, CONTACTS_DATA=undefined, TODOS_DATA=undefined, COURSES_DATA=undefined;
+let ACCES_DATA=undefined;    // undefined = à charger, null = table absente, [] = aucune restriction enregistrée
+let ADMIN_UNLOCKED=false;    // panel Admin déverrouillé pour cette session (mot de passe intégré)
+
+// Onglets dont l'accès peut être géré depuis le panel Admin (l'onglet Admin lui-même
+// reste toujours visible : il est protégé par son propre mot de passe).
+const ONGLETS_GERABLES=[
+  {v:'dash',     label:'Tableau de bord'},
+  {v:'journees', label:'Journées'},
+  {v:'produits', label:'Produits & marges'},
+  {v:'recettes', label:'Recettes'},
+  {v:'matieres', label:'Matières premières'},
+  {v:'stock',    label:'Stock'},
+  {v:'tarifs',   label:'Tarifs'},
+  {v:'contacts', label:'Contacts'},
+  {v:'jeux',     label:'Jeux'},
+  {v:'tuto',     label:'Aide'},
+];
 let TARIF_EDIT_ID=null;
 let TODO_FILTER='active';
 let ALERTS_COLLAPSED=localStorage.getItem('sp_alerts_coll')==='1';

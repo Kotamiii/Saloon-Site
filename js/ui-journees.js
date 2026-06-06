@@ -63,6 +63,7 @@ function buildDayPanel(date,sales){
   const marge=ca-cout;
   const prodOpts=PRD.map(p=>`<option>${esc(p.nom)}</option>`).join('');
   const canalOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(c=>`<option>${c}</option>`).join('');
+  const vendeurDatalist=`<datalist id="vendeursList">${vendeursConnus().map(v=>`<option value="${esc(v)}">`).join('')}</datalist>`;
 
   const rows=sales.map(v=>{
     const c=venteCalc(v);
@@ -78,6 +79,7 @@ function buildDayPanel(date,sales){
         <td><input type="number" step="0.01" id="ev_prix" value="${evPrixVal}" placeholder="base" style="width:75px" oninput="syncEvFromUnit()"></td>
         <td><input type="number" step="0.01" id="ev_total" value="${evTotVal}" placeholder="total" style="width:75px" oninput="syncEvFromTotal()" title="Prix total = prix unit × qté"></td>
         <td><select id="ev_canal">${cOpts}</select></td>
+        <td><input id="ev_vendeur" value="${esc(v.vendeur||'')}" list="vendeursList" placeholder="Vendeur" style="min-width:90px"></td>
         <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:80px"></td>
         <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
         <td><div class="row-actions">
@@ -97,6 +99,7 @@ function buildDayPanel(date,sales){
       <td class="num">${fmt(c.prix)}</td>
       <td class="num">${fmt(c.ca)}</td>
       <td>${esc(v.canal||'')}</td>
+      <td style="font-size:13px">${v.vendeur?esc(v.vendeur):'<span style="color:var(--ink2)">—</span>'}</td>
       <td style="font-size:13px;color:var(--ink2)">${esc(v.note||'')}</td>
       <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
       <td><div class="row-actions">
@@ -127,6 +130,36 @@ function buildDayPanel(date,sales){
       <td class="num">${fmt(d.cout)}</td>
       <td class="num" style="color:${d.marge<0?'var(--red)':'var(--green)'}">${fmt(d.marge)}</td>
     </tr>`).join('');
+  // Récapitulatif par vendeur — qui a fait quelles ventes
+  const byVend={};
+  sales.forEach(v=>{
+    const c=venteCalc(v);
+    const key=v.vendeur||'(non renseigné)';
+    if(!byVend[key]) byVend[key]={nb:0,qte:0,ca:0,marge:0};
+    byVend[key].nb+=1;
+    byVend[key].qte+=Number(v.qte_vendue)||0;
+    byVend[key].ca+=c.ca;
+    byVend[key].marge+=c.marge;
+  });
+  const vendRows=Object.entries(byVend).sort((a,b)=>b[1].ca-a[1].ca).map(([nom,d])=>`
+    <tr>
+      <td><b>${esc(nom)}</b></td>
+      <td class="num">${d.nb}</td>
+      <td class="num">${d.qte}</td>
+      <td class="num" style="color:var(--wine)">${fmt(d.ca)}</td>
+      <td class="num" style="color:${d.marge<0?'var(--red)':'var(--green)'}">${fmt(d.marge)}</td>
+    </tr>`).join('');
+  const recapVendHtml=sales.length?`
+    <div class="recap-section">
+      <div class="recap-title"><span>✦ Récapitulatif par vendeur</span></div>
+      <div class="card"><div style="overflow-x:auto">
+      <table class="recap-table">
+        <thead><tr><th>Vendeur</th><th>Ventes</th><th>Qté</th><th>CA</th><th>Marge</th></tr></thead>
+        <tbody>${vendRows}</tbody>
+      </table>
+      </div></div>
+    </div>`:'';
+
   const recapHtml=sales.length?`
     <div class="recap-section">
       <div class="recap-title">
@@ -149,7 +182,7 @@ function buildDayPanel(date,sales){
       </div></div>
     </div>`:'';
 
-  return`<div class="day-panel" id="dayPanel">
+  return`${vendeurDatalist}<div class="day-panel" id="dayPanel">
     <div class="day-panel-head">
       <div>
         <div class="day-panel-title">${fmtDate(date)}</div>
@@ -163,11 +196,12 @@ function buildDayPanel(date,sales){
     </div>
     <div class="card" style="margin-bottom:14px"><div style="overflow-x:auto">
       <table>
-        <thead><tr><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>Total</th><th>Canal</th><th>Note</th><th>Marge</th><th></th></tr></thead>
-        <tbody>${rows||`<tr><td colspan="9" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">Aucune vente enregistrée ce jour.</td></tr>`}</tbody>
+        <thead><tr><th>Produit</th><th>Qté</th><th>Off.</th><th>Prix u.</th><th>Total</th><th>Canal</th><th>Vendeur</th><th>Note</th><th>Marge</th><th></th></tr></thead>
+        <tbody>${rows||`<tr><td colspan="10" style="text-align:center;font-style:italic;padding:16px;color:var(--ink2)">Aucune vente enregistrée ce jour.</td></tr>`}</tbody>
       </table>
     </div></div>
     ${recapHtml}
+    ${recapVendHtml}
     <div class="addform">
       <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
       <div class="addform-row">
@@ -177,12 +211,22 @@ function buildDayPanel(date,sales){
         <label title="Laisser vide = prix de base du produit">Prix unit.<input type="number" step="0.01" id="nv_prix" placeholder="base" style="width:85px" oninput="syncNvFromUnit()"></label>
         <label title="Remplis ce champ pour calculer le prix unitaire automatiquement">Prix total<input type="number" step="0.01" id="nv_total" placeholder="calc." style="width:85px" oninput="syncNvFromTotal()"></label>
         <label>Canal<select id="nv_canal">${canalOpts}</select></label>
+        <label title="Qui a réalisé cette vente">Vendeur<input id="nv_vendeur" list="vendeursList" value="${esc(ME||'')}" placeholder="Qui ?" style="width:120px"></label>
         <label>Note<input id="nv_note" style="width:130px"></label>
         <button class="btn sm" onclick="addVenteDay(this,'${date}')">+ Ajouter</button>
       </div>
       <div id="ventePreview" class="vente-preview"></div>
     </div>
   </div>`;
+}
+
+// Vendeurs déjà connus : ventes existantes + personnes réglées dans l'Admin + soi-même.
+function vendeursConnus(){
+  const set=new Set();
+  VEN.forEach(v=>{if(v.vendeur)set.add(v.vendeur);});
+  if(Array.isArray(ACCES_DATA)) ACCES_DATA.forEach(a=>{if(a.email)set.add(a.email);});
+  if(ME) set.add(ME);
+  return [...set].sort((a,b)=>String(a).localeCompare(String(b),'fr'));
 }
 
 function selectDay(date){
@@ -201,7 +245,7 @@ async function saveVente(btn,id){
   await runOnce(btn,async()=>{
     const ok=await dbUpd('ventes',id,{produit:$('#ev_prod').value,qte_vendue:Math.max(0,Number($('#ev_qte').value)||0),
       offerts:Math.max(0,Number($('#ev_off').value)||0),prix_unit:prix===''?null:Number(prix),
-      canal:$('#ev_canal').value,note:$('#ev_note').value});
+      canal:$('#ev_canal').value,vendeur:($('#ev_vendeur').value||'').trim()||null,note:$('#ev_note').value});
     if(ok){toast('Vente modifiée');EDIT_VENTE=null;await refresh();}
   });
 }
@@ -222,7 +266,8 @@ async function addVenteDay(btn,date){
   await runOnce(btn,async()=>{
     const{error}=await sb.from('ventes').insert({date,produit,
       qte_vendue:qte,offerts:off,
-      prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,note:$('#nv_note').value});
+      prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,
+      vendeur:($('#nv_vendeur').value||'').trim()||null,note:$('#nv_note').value});
     if(error){toast('Erreur : '+error.message,'err');return;}
     toast('Vente ajoutée'); await refresh();
   });

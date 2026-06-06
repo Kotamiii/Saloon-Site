@@ -32,6 +32,7 @@ js/
   ui-matieres.js  → onglet Matières premières
   ui-stock.js     → onglet Stock
   ui-tuto.js      → onglet Aide
+  ui-admin.js     → onglet Admin (mot de passe intégré) : gère les onglets accessibles par personne (table `acces`)
   main.js         → connexion (auth), navigation, initialisation — CHARGÉ EN DERNIER
 ```
 
@@ -56,7 +57,8 @@ Déploiement : **Vercel** branché sur GitHub. `git push` sur `main` → redépl
 - **`matieres_premieres`** — `nom`, `categorie`, `prix`, `recolte_gratuite` (bool), `notes`.
 - **`recettes`** — `nom`, `categorie`, `qte_produite` (NULL = à définir), `ingredients` (JSONB : `[{"nom":"Orge","qte":2}]`), `notes`.
 - **`produits`** — `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût via recette homonyme ; valeur = coût fixe, ex. « Ajustement »), `notes`.
-- **`ventes`** — 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes : coût sans CA), `prix_unit` (NULL = prix de base ; valeur = prix de cette vente), `canal`, `note`, `created_by`.
+- **`ventes`** — 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes : coût sans CA), `prix_unit` (NULL = prix de base ; valeur = prix de cette vente), `canal`, `vendeur` (qui a réalisé la vente), `note`, `created_by`.
+- **`acces`** — panel Admin. `email` (compte Supabase, unique), `onglets` (JSONB : liste des onglets autorisés). **Une personne sans ligne voit tous les onglets.** Onglet Admin protégé par mot de passe intégré (`js/ui-admin.js`). `applyPermissions()` (dans `core.js`) masque les onglets non autorisés à la connexion.
 - **`stock`** — `produit` (unique), `quantite`, `updated_at`, `updated_by`.
 - **`contacts`**, **`todos`** et **`courses`** — tables utilisées par l'onglet Contacts, la liste de tâches et la liste de courses partagée (ajoutées via Claude Code). `courses` : `article`, `quantite` (texte libre), `done` (bool), `created_at`, `created_by`. Si une table manque, l'onglet concerné peut afficher un `CREATE TABLE` à coller dans Supabase. Voir `schema.sql` et les fonctions `loadContacts` / `loadTodos` / `loadCourses` dans `data.js`.
 

@@ -37,7 +37,7 @@ document.addEventListener('keydown',e=>{
 });
 
 sb.auth.onAuthStateChange((event,session)=>{
-  if(!session){$('#app').classList.add('hidden');$('#login').classList.remove('hidden');return;}
+  if(!session){ADMIN_UNLOCKED=false;$('#app').classList.add('hidden');$('#login').classList.remove('hidden');return;}
   if(event==='SIGNED_IN'){
     ME=session.user.email;
     $('#userEmail').textContent=session.user.email;
