@@ -1,6 +1,21 @@
 // ══════════════════════════════════
 //  JOURNÉES
 // ══════════════════════════════════
+// Le vendeur est rangé DANS le champ `note` (pas de colonne dédiée en base),
+// au format « Vendeur: Nom | reste de la note ». Ces deux helpers le
+// séparent (lecture) et le recombinent (écriture).
+function parseVente(note){
+  const s=note||'';
+  const m=s.match(/^Vendeur:\s*([^|]*?)\s*(?:\|\s*([\s\S]*))?$/);
+  if(m) return {vendeur:(m[1]||'').trim(), note:(m[2]||'').trim()};
+  return {vendeur:'', note:s};
+}
+function buildNote(vendeur,note){
+  const v=(vendeur||'').trim(), n=(note||'').trim();
+  if(!v) return n;
+  return n ? `Vendeur: ${v} | ${n}` : `Vendeur: ${v}`;
+}
+
 function renderJournees(){
   const byDate={};
   VEN.forEach(v=>{const d=v.date||'?';if(!byDate[d])byDate[d]=[];byDate[d].push(v);});
@@ -67,6 +82,7 @@ function buildDayPanel(date,sales){
 
   const rows=sales.map(v=>{
     const c=venteCalc(v);
+    const pv=parseVente(v.note);
     const qvd=Number(v.qte_vendue)||0, off=Number(v.offerts)||0;
     if(EDIT_VENTE===v.id){
       const cOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(x=>`<option${x===v.canal?' selected':''}>${x}</option>`).join('');
@@ -79,8 +95,8 @@ function buildDayPanel(date,sales){
         <td><input type="number" step="0.01" id="ev_prix" value="${evPrixVal}" placeholder="base" style="width:75px" oninput="syncEvFromUnit()"></td>
         <td><input type="number" step="0.01" id="ev_total" value="${evTotVal}" placeholder="total" style="width:75px" oninput="syncEvFromTotal()" title="Prix total = prix unit × qté"></td>
         <td><select id="ev_canal">${cOpts}</select></td>
-        <td><input id="ev_vendeur" value="${esc(v.vendeur||'')}" list="vendeursList" placeholder="Vendeur" style="min-width:90px"></td>
-        <td><input id="ev_note" value="${esc(v.note||'')}" style="min-width:80px"></td>
+        <td><input id="ev_vendeur" value="${esc(pv.vendeur)}" list="vendeursList" placeholder="Vendeur" style="min-width:90px"></td>
+        <td><input id="ev_note" value="${esc(pv.note)}" style="min-width:80px"></td>
         <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
         <td><div class="row-actions">
           <button class="btn sm" onclick="saveVente(this,${v.id})">✓</button>
@@ -99,8 +115,8 @@ function buildDayPanel(date,sales){
       <td class="num">${fmt(c.prix)}</td>
       <td class="num">${fmt(c.ca)}</td>
       <td>${esc(v.canal||'')}</td>
-      <td style="font-size:13px">${v.vendeur?esc(v.vendeur):'<span style="color:var(--ink2)">—</span>'}</td>
-      <td style="font-size:13px;color:var(--ink2)">${esc(v.note||'')}</td>
+      <td style="font-size:13px">${pv.vendeur?esc(pv.vendeur):'<span style="color:var(--ink2)">—</span>'}</td>
+      <td style="font-size:13px;color:var(--ink2)">${esc(pv.note)}</td>
       <td class="num" style="color:${c.marge<0?'var(--red)':'var(--green)'}"><b>${fmt(c.marge)}</b></td>
       <td><div class="row-actions">
         <button class="icobtn" onclick="editVente(${v.id})" title="Modifier">✎</button>
@@ -134,7 +150,7 @@ function buildDayPanel(date,sales){
   const byVend={};
   sales.forEach(v=>{
     const c=venteCalc(v);
-    const key=v.vendeur||'(non renseigné)';
+    const key=parseVente(v.note).vendeur||'(non renseigné)';
     if(!byVend[key]) byVend[key]={nb:0,qte:0,ca:0,marge:0};
     byVend[key].nb+=1;
     byVend[key].qte+=Number(v.qte_vendue)||0;
@@ -223,7 +239,7 @@ function buildDayPanel(date,sales){
 // Vendeurs déjà connus : ventes existantes + personnes réglées dans l'Admin + soi-même.
 function vendeursConnus(){
   const set=new Set();
-  VEN.forEach(v=>{if(v.vendeur)set.add(v.vendeur);});
+  VEN.forEach(v=>{const nom=parseVente(v.note).vendeur;if(nom)set.add(nom);});
   if(Array.isArray(ACCES_DATA)) ACCES_DATA.forEach(a=>{if(a.email)set.add(a.email);});
   if(ME) set.add(ME);
   return [...set].sort((a,b)=>String(a).localeCompare(String(b),'fr'));
@@ -245,7 +261,7 @@ async function saveVente(btn,id){
   await runOnce(btn,async()=>{
     const ok=await dbUpd('ventes',id,{produit:$('#ev_prod').value,qte_vendue:Math.max(0,Number($('#ev_qte').value)||0),
       offerts:Math.max(0,Number($('#ev_off').value)||0),prix_unit:prix===''?null:Number(prix),
-      canal:$('#ev_canal').value,vendeur:($('#ev_vendeur').value||'').trim()||null,note:$('#ev_note').value});
+      canal:$('#ev_canal').value,note:buildNote($('#ev_vendeur').value,$('#ev_note').value)});
     if(ok){toast('Vente modifiée');EDIT_VENTE=null;await refresh();}
   });
 }
@@ -267,7 +283,7 @@ async function addVenteDay(btn,date){
     const{error}=await sb.from('ventes').insert({date,produit,
       qte_vendue:qte,offerts:off,
       prix_unit:prix===''?null:Number(prix),canal:$('#nv_canal').value,
-      vendeur:($('#nv_vendeur').value||'').trim()||null,note:$('#nv_note').value});
+      note:buildNote($('#nv_vendeur').value,$('#nv_note').value)});
     if(error){toast('Erreur : '+error.message,'err');return;}
     toast('Vente ajoutée'); await refresh();
   });

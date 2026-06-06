@@ -16,10 +16,8 @@
 
 -- ventes
 --   id, date DATE, produit TEXT, qte_vendue INTEGER, offerts INTEGER,
---   prix_unit NUMERIC, canal TEXT, vendeur TEXT, note TEXT, created_by TEXT
-
--- Ajout de la colonne « vendeur » (qui a réalisé la vente) sur la table ventes :
-ALTER TABLE ventes ADD COLUMN IF NOT EXISTS vendeur TEXT;
+--   prix_unit NUMERIC, canal TEXT, note TEXT, created_by TEXT
+--   (le vendeur est rangé dans `note` au format « Vendeur: Nom | reste » — pas de colonne dédiée)
 
 -- ────────────────────────────────────────────────────────────────
 -- Nouvelle table : stock (à créer si elle n'existe pas encore)

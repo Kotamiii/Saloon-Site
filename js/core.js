@@ -78,7 +78,8 @@ function exportCSV(){
   const h=['Date','Produit','Qté vendue','Offerts','Prix unitaire','CA','Coût','Marge','Canal','Vendeur','Note'];
   const rows=ventes.map(v=>{
     const c=venteCalc(v);
-    return[v.date,v.produit,v.qte_vendue,v.offerts,c.prix,c.ca.toFixed(2),c.cout.toFixed(2),c.marge.toFixed(2),v.canal||'',v.vendeur||'',v.note||''];
+    const pv=parseVente(v.note);
+    return[v.date,v.produit,v.qte_vendue,v.offerts,c.prix,c.ca.toFixed(2),c.cout.toFixed(2),c.marge.toFixed(2),v.canal||'',pv.vendeur,pv.note];
   });
   const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
