@@ -12,12 +12,23 @@
 --   id, nom TEXT, categorie TEXT, qte_produite NUMERIC, ingredients JSONB, notes TEXT
 
 -- produits
---   id, nom TEXT, categorie TEXT, prix_vente NUMERIC, cout_manuel NUMERIC, notes TEXT
+--   id, nom TEXT, categorie TEXT, prix_vente NUMERIC, cout_manuel NUMERIC, notes TEXT,
+--   composition JSONB  (NULL/[] = produit simple ; sinon = FORMULE/menu :
+--                        liste d'articles [{"nom":"Whisky","qte":2},{"nom":"Jerky","qte":1}].
+--                        Coût = Σ coût des articles × qté ; prix_vente = prix fixe de la formule.)
 
 -- ventes
 --   id, date DATE, produit TEXT, qte_vendue INTEGER, offerts INTEGER,
 --   prix_unit NUMERIC, canal TEXT, note TEXT, created_by TEXT
 --   (le vendeur est rangé dans `note` au format « Vendeur: Nom | reste » — pas de colonne dédiée)
+
+-- ────────────────────────────────────────────────────────────────
+-- Formules / menus : colonne `composition` sur la table produits
+--   Une formule est un produit dont la composition liste les articles inclus.
+--   À exécuter une fois (sans danger si la colonne existe déjà).
+-- ────────────────────────────────────────────────────────────────
+
+ALTER TABLE produits ADD COLUMN IF NOT EXISTS composition JSONB;
 
 -- ────────────────────────────────────────────────────────────────
 -- Nouvelle table : stock (à créer si elle n'existe pas encore)

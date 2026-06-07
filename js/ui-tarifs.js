@@ -2,7 +2,7 @@
 //  TARIFS (carte menu + édition + vente rapide)
 // ══════════════════════════════════
 function renderTarifs(){
-  const catIcons={Boisson:'🥃',Nourriture:'🍖',Cigarette:'🚬'};
+  const catIcons={Boisson:'🥃',Nourriture:'🍖',Cigarette:'🚬',Formule:'🍽️'};
   const cats=[...new Set(
     PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'))
        .map(p=>p.categorie||'Autre')

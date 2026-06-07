@@ -15,6 +15,23 @@ function buildNote(vendeur,note){
   if(!v) return n;
   return n ? `Vendeur: ${v} | ${n}` : `Vendeur: ${v}`;
 }
+// Options du sélecteur de produit : formules regroupées à part (menus).
+function produitOptions(selected){
+  const opt=p=>`<option${p.nom===selected?' selected':''}>${esc(p.nom)}</option>`;
+  const forms=PRD.filter(p=>estFormule(p));
+  const autres=PRD.filter(p=>!estFormule(p));
+  let h='';
+  if(autres.length) h+=`<optgroup label="Produits">${autres.map(opt).join('')}</optgroup>`;
+  if(forms.length)  h+=`<optgroup label="🍽️ Formules">${forms.map(opt).join('')}</optgroup>`;
+  return h;
+}
+// Détail d'une formule (« 🍽️ menu : Whisky ×2 · Jerky ×1 ») pour l'afficher sous une vente.
+function formuleDetail(produit){
+  const p=PRD.find(x=>x.nom===produit);
+  if(!estFormule(p)) return '';
+  const items=p.composition.map(c=>`${esc(c.nom)} ×${c.qte}`).join(' · ');
+  return `<div class="vente-offert-note">🍽️ menu : ${items}</div>`;
+}
 
 function renderJournees(){
   const byDate={};
@@ -76,7 +93,7 @@ function buildDayPanel(date,sales){
   let ca=0,cout=0;
   sales.forEach(v=>{const c=venteCalc(v);ca+=c.ca;cout+=c.cout;});
   const marge=ca-cout;
-  const prodOpts=PRD.map(p=>`<option>${esc(p.nom)}</option>`).join('');
+  const prodOpts=produitOptions('');
   const canalOpts=['Comptoir','Exportateur','Promo 2+1','Ajustement','Autre'].map(c=>`<option>${c}</option>`).join('');
   const vendeurDatalist=`<datalist id="vendeursList">${vendeursConnus().map(v=>`<option value="${esc(v)}">`).join('')}</datalist>`;
 
@@ -89,7 +106,7 @@ function buildDayPanel(date,sales){
       const evPrixVal=v.prix_unit!=null?v.prix_unit:'';
       const evTotVal=evPrixVal!==''?(Number(evPrixVal)*qvd).toFixed(2):'';
       return`<tr class="editing">
-        <td><select id="ev_prod" style="min-width:110px">${PRD.map(p=>`<option${p.nom===v.produit?' selected':''}>${esc(p.nom)}</option>`).join('')}</select></td>
+        <td><select id="ev_prod" style="min-width:110px">${produitOptions(v.produit)}</select></td>
         <td><input type="number" min="0" id="ev_qte" value="${qvd}" style="width:55px" oninput="syncEvFromUnit()"></td>
         <td><input type="number" min="0" id="ev_off" value="${off}" style="width:50px"></td>
         <td><input type="number" step="0.01" id="ev_prix" value="${evPrixVal}" placeholder="base" style="width:75px" oninput="syncEvFromUnit()"></td>
@@ -109,7 +126,7 @@ function buildDayPanel(date,sales){
       ?`<div class="vente-offert-note">${qvd} vendu${qvd>1?'s':''} + ${off} offert${off>1?'s':''} = ${qvd+off} sortie${qvd+off>1?'s':''}</div>`
       :'';
     return`<tr>
-      <td><b>${esc(v.produit)}</b>${offNote}</td>
+      <td><b>${esc(v.produit)}</b>${formuleDetail(v.produit)}${offNote}</td>
       <td class="num">${qvd}</td>
       <td class="num">${off||'—'}</td>
       <td class="num">${fmt(c.prix)}</td>
@@ -139,7 +156,7 @@ function buildDayPanel(date,sales){
   const totalOff=Object.values(byProd).reduce((s,d)=>s+d.offerts,0);
   const recapRows=Object.entries(byProd).sort((a,b)=>b[1].qte-a[1].qte).map(([nom,d])=>`
     <tr>
-      <td><b>${esc(nom)}</b></td>
+      <td><b>${esc(nom)}</b>${formuleDetail(nom)}</td>
       <td class="num">${d.qte}</td>
       <td class="num">${d.offerts?`<span style="color:var(--ink2)">${d.offerts}</span>`:'—'}</td>
       <td class="num" style="color:var(--wine)">${fmt(d.ca)}</td>
@@ -353,6 +370,13 @@ function previewVente(){
     <span class="vp-item" style="color:${marge<0?'var(--red)':'var(--green)'}">Marge&nbsp;<b>${fmt(marge)}</b>${ca?` (${pct(marge/ca)})`:''}${marge<0?' ⚠ perte':''}</span>`;
   // Détail offerts si besoin
   if(off>0) html+=`<span class="vp-offert">${qte} vendu${qte>1?'s':''} + ${off} offert${off>1?'s':''} = ${qte+off} sortie${qte+off>1?'s':''} · coût offerts : −${fmt(off*cout)}</span>`;
+  // Détail formule : articles qui seront déduits du stock
+  const pf=PRD.find(x=>x.nom===produit);
+  if(estFormule(pf)){
+    const tot=qte+off;
+    const items=pf.composition.map(c=>`${esc(c.nom)} ×${(Number(c.qte)||0)*tot}`).join(' · ');
+    html+=`<span class="vp-offert">🍽️ menu — déduit du stock : ${items}</span>`;
+  }
   prev.innerHTML=html;
 }
 
@@ -368,7 +392,17 @@ async function deductStockFromDay(date){
   const totals={};
   daySales.forEach(v=>{
     const t=(Number(v.qte_vendue)||0)+(Number(v.offerts)||0);
-    if(t>0) totals[v.produit]=(totals[v.produit]||0)+t;
+    if(t<=0) return;
+    const p=PRD.find(x=>x.nom===v.produit);
+    if(estFormule(p)){
+      // Une formule n'a pas de stock propre : on déduit ses articles composants.
+      p.composition.forEach(c=>{
+        const q=t*(Number(c.qte)||0);
+        if(q>0) totals[c.nom]=(totals[c.nom]||0)+q;
+      });
+    }else{
+      totals[v.produit]=(totals[v.produit]||0)+t;
+    }
   });
   const nb=Object.keys(totals).length;
   askConfirm(

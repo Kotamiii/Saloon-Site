@@ -12,19 +12,22 @@ function renderProduits(){
   const rows=filtered.map(p=>{
     const cout=coutProduit(p.nom),prix=Number(p.prix_vente)||0,marge=prix-cout;
     const isInter=(p.categorie||'').startsWith('Inter')||String(p.nom).startsWith('Ajustement');
+    const isForm=estFormule(p);
     const hasRec=REC.some(r=>r.nom===p.nom);
     const manual=p.cout_manuel!=null;
     // Source du coût, sous le montant
     let src='';
-    if(manual) src=`<div class="cost-src">coût manuel</div>`;
+    if(isForm) src=`<div class="cost-src">↳ formule · ${p.composition.length} article${p.composition.length>1?'s':''}</div>`;
+    else if(manual) src=`<div class="cost-src">coût manuel</div>`;
     else if(hasRec) src=`<div class="cost-src">↳ via recette</div>`;
     else if(!isInter) src=`<div class="cost-src warn">aucune recette</div>`;
     // Action recette (créer ou modifier) — évite de retaper le nom dans l'onglet Recettes
     let recBtn='';
-    if(hasRec) recBtn=`<button class="icobtn" title="Voir / modifier la recette" data-nom="${esc(p.nom)}" onclick="openRecetteDeProduit(this.dataset.nom)">🍳</button>`;
+    if(isForm) recBtn=`<button class="icobtn" title="Modifier la formule" data-id="${p.id}" onclick="editFormule(Number(this.dataset.id))">🍽️</button>`;
+    else if(hasRec) recBtn=`<button class="icobtn" title="Voir / modifier la recette" data-nom="${esc(p.nom)}" onclick="openRecetteDeProduit(this.dataset.nom)">🍳</button>`;
     else if(!isInter&&!manual) recBtn=`<button class="icobtn" title="Créer la recette de ce produit" data-nom="${esc(p.nom)}" data-cat="${esc(p.categorie||'')}" onclick="creerRecettePourProduit(this.dataset.nom,this.dataset.cat)">🍳＋</button>`;
     return`<tr>
-      <td><b>${esc(p.nom)}</b></td><td>${esc(p.categorie||'')}</td>
+      <td><b>${esc(p.nom)}</b>${isForm?' <span class="pill" style="background:#5a4130;color:#f0e3c0">🍽️ formule</span>':''}</td><td>${esc(p.categorie||'')}</td>
       <td class="num">${fmt(cout)}${src}</td>
       <td class="num"><input type="number" step="0.01" value="${prix}" onchange="updProduit(${p.id},'prix_vente',this.value)" style="width:90px;text-align:right"></td>
       <td class="num" style="color:${marge<0?'var(--red)':'var(--green)'}">${fmt(marge)}</td>

@@ -21,6 +21,7 @@ const ONGLETS_GERABLES=[
   {v:'dash',     label:'Tableau de bord'},
   {v:'journees', label:'Journées'},
   {v:'produits', label:'Produits & marges'},
+  {v:'formules', label:'Formules'},
   {v:'recettes', label:'Recettes'},
   {v:'matieres', label:'Matières premières'},
   {v:'stock',    label:'Stock'},
@@ -30,6 +31,7 @@ const ONGLETS_GERABLES=[
   {v:'tuto',     label:'Aide'},
 ];
 let TARIF_EDIT_ID=null;
+let EDIT_FORMULE=null, FORM_COMP=[]; // édition de formule (onglet Formules) + sa composition en cours
 let TODO_FILTER='active';
 let ALERTS_COLLAPSED=localStorage.getItem('sp_alerts_coll')==='1';
 let CHARTS=[];

@@ -71,7 +71,7 @@ function stockItems(){
     const k=String(nom).toLowerCase();
     if(!map[k]) map[k]={nom,categorie:categorie||'Autre',type};
   };
-  PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement'))
+  PRD.filter(p=>!(p.categorie||'').startsWith('Inter')&&!String(p.nom).startsWith('Ajustement')&&!estFormule(p))
      .forEach(p=>add(p.nom,p.categorie,'Produit'));
   REC.forEach(r=>add(r.nom,r.categorie,'Recette'));
   MAT.forEach(m=>add(m.nom,m.categorie,'Matière'));

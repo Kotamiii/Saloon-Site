@@ -28,6 +28,7 @@ js/
   ui-courses.js   → liste de courses partagée (bannière en haut du tableau de bord)
   ui-journees.js  → onglet Journées (ventes, prix unit/total, déduction stock)
   ui-produits.js  → onglet Produits & marges
+  ui-formules.js  → onglet Formules (menus : plusieurs articles à prix fixe)
   ui-recettes.js  → onglet Recettes (formulaire d'ingrédients)
   ui-matieres.js  → onglet Matières premières
   ui-stock.js     → onglet Stock
@@ -56,7 +57,7 @@ Déploiement : **Vercel** branché sur GitHub. `git push` sur `main` → redépl
 ## Modèle de données (tables Supabase)
 - **`matieres_premieres`** — `nom`, `categorie`, `prix`, `recolte_gratuite` (bool), `notes`.
 - **`recettes`** — `nom`, `categorie`, `qte_produite` (NULL = à définir), `ingredients` (JSONB : `[{"nom":"Orge","qte":2}]`), `notes`.
-- **`produits`** — `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût via recette homonyme ; valeur = coût fixe, ex. « Ajustement »), `notes`.
+- **`produits`** — `nom`, `categorie`, `prix_vente`, `cout_manuel` (NULL = coût via recette homonyme ; valeur = coût fixe, ex. « Ajustement »), `notes`, `composition` (JSONB). **Formule/menu** = produit dont `composition` liste des articles `[{"nom":"Whisky","qte":2}]` avec `categorie='Formule'` ; son coût = Σ coût des articles × qté, son `prix_vente` est le prix fixe du menu. Géré dans l'onglet Formules (`ui-formules.js`), helpers `estFormule` / `coutFormule` dans `calculs.js`. Étant un produit, une formule circule partout (ventes, marges, récap, tableau de bord, tarifs) ; à la déduction de stock elle est éclatée en ses articles composants.
 - **`ventes`** — 1 ligne = 1 vente. `date`, `produit`, `qte_vendue`, `offerts` (unités offertes : coût sans CA), `prix_unit` (NULL = prix de base ; valeur = prix de cette vente), `canal`, `note`, `created_by`. Le **vendeur** (qui a fait la vente) est rangé dans `note` au format `Vendeur: Nom | reste` — pas de colonne dédiée. Helpers `parseVente` / `buildNote` dans `ui-journees.js`.
 - **`acces`** — panel Admin. `email` (compte Supabase, unique), `onglets` (JSONB : liste des onglets autorisés). **Une personne sans ligne voit tous les onglets.** Onglet Admin protégé par mot de passe intégré (`js/ui-admin.js`). `applyPermissions()` (dans `core.js`) masque les onglets non autorisés à la connexion.
 - **`stock`** — `produit` (unique), `quantite`, `updated_at`, `updated_by`.

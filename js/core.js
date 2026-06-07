@@ -6,7 +6,7 @@ function render(){
   const v=$('#view');
   v.classList.remove('view-fade');
   void v.offsetWidth; // force reflow pour re-déclencher l'animation
-  const fns={dash:renderDash,journees:renderJournees,produits:renderProduits,
+  const fns={dash:renderDash,journees:renderJournees,produits:renderProduits,formules:renderFormules,
     recettes:renderRecettes,matieres:renderMatieres,stock:renderStock,tarifs:renderTarifs,contacts:renderContacts,jeux:renderJeux,tuto:renderTuto,admin:renderAdmin};
   (fns[VIEW]||renderDash)();
   v.classList.add('view-fade');
@@ -16,7 +16,7 @@ function destroyCharts(){ CHARTS.forEach(c=>c.destroy()); CHARTS=[]; }
 function goTab(view){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.v===view));
   VIEW=view;
-  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;PARTIE_ACTIVE=null;
+  EDIT_REC=null;ING_LIST=[];EDIT_VENTE=null;FILTER_CAT=null;TARIF_EDIT_ID=null;PARTIE_ACTIVE=null;EDIT_FORMULE=null;FORM_COMP=[];
   window.scrollTo({top:0,behavior:'smooth'});
   render();
 }

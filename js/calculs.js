@@ -18,10 +18,26 @@ function coutTotalRecette(r){
   for(const ing of(r.ingredients||[])) tot+=coutIngredient(ing.nom,[r.nom])*(Number(ing.qte)||0);
   return tot;
 }
-function coutProduit(nom){
+// Une formule (= menu) est un produit doté d'une composition : une liste
+// d'articles {nom,qte}. Accepte un nom OU un objet produit.
+function estFormule(p){
+  const prod = (typeof p==='string') ? PRD.find(x=>x.nom===p) : p;
+  return !!(prod && Array.isArray(prod.composition) && prod.composition.length>0);
+}
+// Coût d'une formule = Σ coût de chaque article × quantité (anti-boucle par pile).
+function coutFormule(prod,stack=[]){
+  if(!prod||!Array.isArray(prod.composition)) return 0;
+  if(stack.includes(prod.nom)) return 0;
+  const ns=[...stack,prod.nom];
+  let tot=0;
+  for(const c of prod.composition) tot+=coutProduit(c.nom,ns)*(Number(c.qte)||0);
+  return tot;
+}
+function coutProduit(nom,stack=[]){
   const p=PRD.find(x=>x.nom===nom);
+  if(p&&Array.isArray(p.composition)&&p.composition.length) return coutFormule(p,stack);
   if(p&&p.cout_manuel!=null) return Number(p.cout_manuel);
-  return coutRecetteUnit(nom);
+  return coutRecetteUnit(nom,stack);
 }
 function prixBase(nom){ const p=PRD.find(x=>x.nom===nom); return p?Number(p.prix_vente)||0:0; }
 function catProduit(nom){ const p=PRD.find(x=>x.nom===nom); return p?p.categorie:''; }
