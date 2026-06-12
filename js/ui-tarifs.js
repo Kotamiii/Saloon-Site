@@ -29,7 +29,7 @@ function renderTarifs() {
   if (!POS_CAT || !cats.includes(POS_CAT)) POS_CAT = cats[0];
   
   const catTabs = cats.map(cat => 
-    `<button class="pos-cat-btn ${cat === POS_CAT ? 'active' : ''}" onclick="POS_CAT='${esc(cat)}'; renderTarifs()">${esc(cat)}</button>`
+    `<button class="pos-cat-btn ${cat === POS_CAT ? 'active' : ''}" onclick="POS_CAT=${esc(JSON.stringify(cat))}; renderTarifs()">${esc(cat)}</button>`
   ).join('');
   
   let items = vendables.filter(p => (p.categorie || 'Autre') === POS_CAT);
@@ -54,7 +54,8 @@ function renderTarifs() {
     const textShadow = conf.color ? 'text-shadow: 0 1px 3px rgba(0,0,0,0.4);' : '';
     const priceColor = conf.color ? 'color: rgba(255,255,255,0.9);' : '';
     
-    const action = POS_EDIT_MODE ? `openPosItemConfig('${esc(p.nom)}')` : `calcAddNom('${esc(p.nom)}')`;
+    const arg = esc(JSON.stringify(p.nom));
+    const action = POS_EDIT_MODE ? `openPosItemConfig(${arg})` : `calcAddNom(${arg})`;
     const editClass = POS_EDIT_MODE ? 'pos-item-edit-mode' : '';
     const hiddenClass = conf.hidden ? 'pos-item-hidden' : '';
     const ndClass = prix === 0 && !customBg ? 'nd' : '';
