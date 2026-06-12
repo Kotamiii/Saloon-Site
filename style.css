@@ -3482,3 +3482,143 @@ tfoot td {
   margin-bottom: 10px;
   box-shadow: none;
 }
+
+/* NOUVEAUX WIDGETS DASHBOARD */
+.db-widget {
+  background: #fff;
+  border: 1px solid rgba(168, 124, 32, 0.2);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.db-widget h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-family: 'Rye', serif;
+  color: var(--wine);
+  font-size: 16px;
+}
+
+/* Répartition par Catégorie */
+.cat-bar-wrap {
+  display: flex;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.cat-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  transition: width 0.5s ease;
+}
+.cat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--ink2);
+}
+.cat-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Barres de progression (Top Volumes / Marges) */
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bar-item-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--ink);
+}
+.bar-item-bg {
+  background: rgba(168, 124, 32, 0.1);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+.bar-item-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Graphique en barres CSS (Trend 7 jours) */
+.css-chart {
+  display: flex;
+  align-items: flex-end;
+  height: 140px;
+  gap: 8px;
+  padding-bottom: 24px;
+  position: relative;
+  border-bottom: 1px solid rgba(168,124,32,0.2);
+}
+.css-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+.css-bar {
+  width: 100%;
+  max-width: 32px;
+  background: rgba(168, 124, 32, 0.6);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+  position: relative;
+}
+.css-bar.marge {
+  background: var(--green);
+  width: 60%;
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+}
+.css-bar-lbl {
+  position: absolute;
+  bottom: -20px;
+  font-size: 11px;
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.css-val-tooltip {
+  position: absolute;
+  top: -24px;
+  font-size: 11px;
+  background: var(--ink);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 10;
+}
+.css-bar-wrap:hover .css-val-tooltip {
+  opacity: 1;
+}

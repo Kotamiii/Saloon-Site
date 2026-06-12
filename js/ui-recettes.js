@@ -43,14 +43,14 @@ function buildProdSimCard() {
   if (!recs.length) return '';
   const opts = recs.map((r) => `<option>${esc(r.nom)}</option>`).join('');
   return `<section style="margin-top:22px">
-    <div class="secttl"><span class="orn">✦</span><h2>Planifier une production</h2><div class="rule"></div></div>
-    <div class="card" style="padding:14px 16px">
-      <div class="addbar" style="border:0;background:none;padding:0 0 6px">
-        <label>Craft à produire<select id="sim_rec" onchange="renderProdSim()">${opts}</select></label>
-        <label>Fournées<input type="number" id="sim_four" value="1" min="1" style="width:74px" oninput="renderProdSim()"></label>
+    <div class="secttl"><span class="orn">✦</span><h2>Liste de courses (Production détaillée)</h2><div class="rule"></div></div>
+    <div class="card" style="padding:18px 20px; border-left: 4px solid var(--gold);">
+      <div class="addbar" style="border:0;background:none;padding:0 0 16px">
+        <label>Que voulez-vous produire ?<select id="sim_rec" onchange="renderProdSim()">${opts}</select></label>
+        <label>Unités souhaitées<input type="number" id="sim_unites" value="20" min="1" style="width:100px" oninput="renderProdSim()"></label>
       </div>
       <div id="simResult"></div>
-      <p class="note" style="margin:10px 2px 0">Liste tout ce qu'il faut <b>acheter / récolter</b> et <b>crafter en cascade</b>. Les crafts intermédiaires se produisent par fournées entières — un léger surplus est possible.</p>
+      <p class="note" style="margin:16px 0 0; font-size: 13px;">Cette liste calcule <b>absolument tout</b> en cascade. S'il faut faire du Moût pour faire du Whisky, l'orge nécessaire au Moût est déjà incluse dans la liste d'achats !</p>
     </div>
   </section>`;
 }
@@ -63,10 +63,16 @@ function renderProdSim() {
     el.innerHTML = '';
     return;
   }
-  const f = Math.max(1, Number($('#sim_four')?.value) || 1);
+  
+  const targetUnites = Math.max(1, Number($('#sim_unites')?.value) || 1);
+  const baseQte = Number(r.qte_produite) || 1;
+  const f = Math.ceil(targetUnites / baseQte); // Nombre de fournées racine nécessaires
+  
+  const actualUnites = f * baseQte;
+  
   const b = besoinsProduction(nom, f);
-  const unites = (Number(r.qte_produite) || 0) * f;
   let cout = 0;
+  
   const rows = Object.entries(b.bases)
     .map(([n, q]) => {
       const m = MAT.find((x) => x.nom === n);
@@ -74,30 +80,56 @@ function renderProdSim() {
         tot = pu * q;
       cout += tot;
       const free = m && m.recolte_gratuite;
-      return `<tr><td>${esc(n)}${free ? ' <span class="pill ok" style="font-size:11px">récolte</span>' : ''}</td>
-      <td class="num">${Math.ceil(q)}</td><td class="num">${fmt(pu)}</td><td class="num"><b>${fmt(tot)}</b></td></tr>`;
+      return `<tr><td><b>${esc(n)}</b>${free ? ' <span class="pill ok" style="font-size:11px">récolte</span>' : ''}</td>
+      <td class="num" style="font-size: 15px; font-weight: bold; color: var(--wine);">${Math.ceil(q)}</td><td class="num">${fmt(pu)}</td><td class="num"><b>${fmt(tot)}</b></td></tr>`;
     })
     .join('');
-  const inters = Object.entries(b.fournees)
+    
+  let inters = Object.entries(b.fournees)
     .map(([n, fn]) => {
       const s = REC.find((x) => x.nom === n);
       const u = (Number(s && s.qte_produite) || 0) * fn;
-      return `<span class="sal-chip">⚗️ ${esc(n)} : ${fn} fournée${fn > 1 ? 's' : ''}${u ? ` (${u} u.)` : ''}</span>`;
+      return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; background: rgba(168,124,32,0.1); margin-bottom: 4px; border-radius: 4px;">
+        <span>⚗️ <b>${esc(n)}</b></span>
+        <span style="font-size: 13px; color: var(--ink2);">${fn} fournée${fn > 1 ? 's' : ''} nécessaires (donne ${u} u.)</span>
+      </div>`;
     })
-    .join(' ');
-  el.innerHTML = `<div class="vente-preview" style="margin:0 0 10px">
-      <span class="vp-item">Produit : <b>${unites || '?'} unité${unites > 1 ? 's' : ''}</b> de ${esc(nom)}</span>
-      <span class="vp-item">Coût matières : <b>${fmt(cout)}</b></span>
-      ${unites ? `<span class="vp-item">Soit <b>${fmt(cout / unites)}</b> / unité</span>` : ''}
+    .join('');
+    
+  if (inters) {
+    inters = `<div style="margin-top: 16px; margin-bottom: 20px;">
+      <h3 style="font-family: 'EB Garamond', serif; font-size: 16px; color: var(--ink); margin: 0 0 8px 0;">Étapes intermédiaires de craft</h3>
+      ${inters}
+    </div>`;
+  }
+    
+  el.innerHTML = `
+    <div style="display: flex; gap: 16px; align-items: stretch; margin-bottom: 20px; flex-wrap: wrap;">
+      <div style="flex: 1; background: var(--paper); border: 1px solid rgba(168,124,32,0.3); border-radius: 6px; padding: 12px; text-align: center;">
+        <div style="font-size: 12px; text-transform: uppercase; color: var(--ink2); font-weight: bold;">Production Finale</div>
+        <div style="font-size: 18px; color: var(--wine); font-family: 'EB Garamond', serif;"><b>${actualUnites} u.</b> de ${esc(nom)}</div>
+        <div style="font-size: 12px; color: var(--ink2); margin-top: 4px;">(soit ${f} fournée${f>1?'s':''} de ${baseQte} u.)</div>
+      </div>
+      <div style="flex: 1; background: var(--paper); border: 1px solid rgba(168,124,32,0.3); border-radius: 6px; padding: 12px; text-align: center;">
+        <div style="font-size: 12px; text-transform: uppercase; color: var(--ink2); font-weight: bold;">Coût des Matières</div>
+        <div style="font-size: 18px; color: var(--green); font-weight: bold; font-family: 'EB Garamond', serif;">${fmt(cout)}</div>
+        <div style="font-size: 12px; color: var(--ink2); margin-top: 4px;">soit ${fmt(cout / actualUnites)} / unité produite</div>
+      </div>
     </div>
-    ${inters ? `<div style="margin:0 0 10px">${inters}</div>` : ''}
-    ${
-      rows
-        ? `<div style="overflow-x:auto"><table>
-      <thead><tr><th>Matière à prévoir</th><th>Qté</th><th>Prix u.</th><th>Total</th></tr></thead>
-      <tbody>${rows}</tbody></table></div>`
+    
+    ${inters}
+    
+    <h3 style="font-family: 'EB Garamond', serif; font-size: 16px; color: var(--wine); margin: 0 0 8px 0;">🛒 Liste d'achats brute</h3>
+    ${rows
+        ? `<div style="overflow-x:auto; border: 1px solid rgba(168,124,32,0.2); border-radius: 4px;">
+           <table style="margin: 0;">
+             <thead style="background: rgba(168,124,32,0.05);"><tr><th style="text-align: left;">Matière première</th><th>Qté totale</th><th>Prix u.</th><th>Total</th></tr></thead>
+             <tbody>${rows}</tbody>
+           </table>
+           </div>`
         : '<p class="note">Recette sans ingrédients renseignés.</p>'
-    }`;
+    }
+  `;
 }
 function allIngNames() {
   return [...MAT.map((m) => m.nom), ...REC.map((r) => r.nom)];
