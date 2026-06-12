@@ -204,6 +204,40 @@ function buildDayPanel(date, sales) {
     </div>`
     : '';
 
+  // Récapitulatif par vendeur
+  const byVendeur = {};
+  sales.forEach(v => {
+    if (!v.vendeur) return;
+    const c = venteCalc(v);
+    if (!byVendeur[v.vendeur]) byVendeur[v.vendeur] = { ca: 0, marge: 0, qte: 0 };
+    byVendeur[v.vendeur].ca += c.ca;
+    byVendeur[v.vendeur].marge += c.marge;
+    byVendeur[v.vendeur].qte += (Number(v.qte_vendue) || 0);
+  });
+  
+  const vendRows = Object.entries(byVendeur)
+    .sort((a, b) => b[1].ca - a[1].ca)
+    .map(([nom, d]) => `
+      <tr>
+        <td><b>${esc(nom)}</b></td>
+        <td class="num">${d.qte}</td>
+        <td class="num" style="color:var(--wine)">${fmt(d.ca)}</td>
+        <td class="num" style="color:${d.marge < 0 ? 'var(--red)' : 'var(--green)'}">${fmt(d.marge)}</td>
+      </tr>
+    `).join('');
+    
+  const vendeurHtml = Object.keys(byVendeur).length ? `
+    <div class="recap-section">
+      <div class="recap-title"><span>✦ Ventes par employé</span></div>
+      <div class="card"><div style="overflow-x:auto">
+      <table class="recap-table">
+        <thead><tr><th>Vendeur</th><th>Unités</th><th>CA Généré</th><th>Marge Générée</th></tr></thead>
+        <tbody>${vendRows}</tbody>
+      </table>
+      </div></div>
+    </div>
+  ` : '';
+
   return `<div class="day-panel" id="dayPanel">
     <div class="day-panel-head">
       <div>
@@ -226,6 +260,7 @@ function buildDayPanel(date, sales) {
       </table>
     </div></div>
     ${recapHtml}
+    ${vendeurHtml}
     <div class="addform">
       <div class="addform-title">+ Nouvelle vente — ${fmtDate(date)}</div>
       <div class="addform-row">

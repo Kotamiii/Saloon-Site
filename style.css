@@ -2329,6 +2329,75 @@ tr.editing td {
   color: var(--ink2);
 }
 
+/* Mode Édition POS */
+@keyframes posJiggle {
+  0% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+  100% { transform: rotate(-1.5deg); }
+}
+.pos-item-edit-mode {
+  animation: posJiggle 0.3s infinite;
+  box-shadow: 0 0 0 2px var(--gold3), 0 4px 12px rgba(0,0,0,0.2) !important;
+  z-index: 10;
+}
+.pos-item-edit-mode:hover {
+  animation-play-state: paused;
+  transform: scale(1.05) !important;
+}
+.pos-edit-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.pos-item-edit-mode:hover .pos-edit-overlay {
+  opacity: 1;
+}
+.pos-hidden-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.pos-item-hidden {
+  opacity: 0.4 !important;
+  filter: grayscale(0.5);
+}
+.pos-color-preset {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+}
+.pos-color-preset:hover {
+  transform: scale(1.15);
+}
+.pos-item-emoji {
+  font-size: 32px;
+  margin-bottom: 2px;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+}
+
 /* ━━ RÉCAPITULATIF JOURNÉE ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .recap-section {
   margin-top: 20px;
