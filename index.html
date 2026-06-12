@@ -1,84 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Silver Pine — Registre du Saloon</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rye&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="toastZone"></div>
-<div id="loader" class="hidden"></div>
-<button id="backTop" title="Retour en haut">↑</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Silver Pine — Registre du Saloon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rye&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="toastZone"></div>
+    <div id="loader" class="hidden"></div>
+    <button id="backTop" title="Retour en haut">↑</button>
 
-<!-- ═══════════ LOGIN ═══════════ -->
-<div id="login">
-  <div class="lcard">
-    <span class="lcard-ornament">✦ ✦ ✦</span>
-    <h1>The Silver Pine</h1>
-    <div class="sub">Saloon · Strawberry · 1899</div>
-    <div class="sub2">Accès réservé au personnel</div>
-    <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username">
-    <input id="pass" type="password" placeholder="Mot de passe" autocomplete="current-password">
-    <button class="lbtn" id="loginBtn">Entrer dans le saloon</button>
-    <div class="err" id="loginErr"></div>
-  </div>
-</div>
-
-<!-- ═══════════ APP ═══════════ -->
-<div id="app" class="hidden">
-  <header>
-    <div class="htop">
-      <div class="htop-brand">
-        <h1>🥃 The Silver Pine</h1>
-        <div class="sub">Registre du saloon — Strawberry, 1899</div>
-      </div>
-      <div class="who">
-        <span id="userEmail"></span>
-        <button class="btn sm ghost" id="logoutBtn" style="color:#d8c6a0;border-color:rgba(200,168,76,.4)">Sortir</button>
+    <!-- ═══════════ LOGIN ═══════════ -->
+    <div id="login">
+      <div class="lcard">
+        <span class="lcard-ornament">✦ ✦ ✦</span>
+        <h1>The Silver Pine</h1>
+        <div class="sub">Saloon · Strawberry · 1899</div>
+        <div class="sub2">Accès réservé au personnel</div>
+        <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username" />
+        <input id="pass" type="password" placeholder="Mot de passe" autocomplete="current-password" />
+        <button class="lbtn" id="loginBtn">Entrer dans le saloon</button>
+        <div class="err" id="loginErr"></div>
       </div>
     </div>
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-v="dash">Tableau de bord</button>
-      <button class="tab" data-v="journees">Journées</button>
-      <button class="tab" data-v="produits">Produits &amp; marges</button>
-      <button class="tab" data-v="formules">Formules</button>
-      <button class="tab" data-v="recettes">Recettes</button>
-      <button class="tab" data-v="matieres">Matières premières</button>
-      <button class="tab" data-v="stock">Stock</button>
-      <button class="tab" data-v="tarifs">Tarifs</button>
-      <button class="tab" data-v="contacts">Contacts</button>
-      <button class="tab" data-v="jeux">Jeux</button>
-      <button class="tab" data-v="tuto">Aide</button>
-      <button class="tab" data-v="admin">⚙ Admin</button>
-    </div>
-  </header>
-  <div class="wrap" id="view"></div>
-</div>
 
-<script src="js/config.js"></script>
-<script src="js/ui-helpers.js"></script>
-<script src="js/calculs.js"></script>
-<script src="js/data.js"></script>
-<script src="js/core.js"></script>
-<script src="js/ui-dashboard.js"></script>
-<script src="js/ui-contacts.js"></script>
-<script src="js/ui-tarifs.js"></script>
-<script src="js/ui-todos.js"></script>
-<script src="js/ui-courses.js"></script>
-<script src="js/ui-journees.js"></script>
-<script src="js/ui-produits.js"></script>
-<script src="js/ui-formules.js"></script>
-<script src="js/ui-recettes.js"></script>
-<script src="js/ui-matieres.js"></script>
-<script src="js/ui-stock.js"></script>
-<script src="js/ui-jeux.js"></script>
-<script src="js/ui-tuto.js"></script>
-<script src="js/ui-admin.js"></script>
-<script src="js/main.js"></script>
-</body>
+    <!-- ═══════════ APP ═══════════ -->
+    <div id="app" class="hidden">
+      <header>
+        <div class="htop">
+          <div class="htop-brand">
+            <h1>🥃 The Silver Pine</h1>
+            <div class="sub">Registre du saloon — Strawberry, 1899</div>
+          </div>
+          <div class="who">
+            <span id="userEmail"></span>
+            <button
+              class="btn sm ghost"
+              id="logoutBtn"
+              style="color: #d8c6a0; border-color: rgba(200, 168, 76, 0.4)"
+            >
+              Sortir
+            </button>
+          </div>
+        </div>
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-v="dash">Tableau de bord</button>
+          <button class="tab" data-v="journees">Journées</button>
+          <button class="tab" data-v="produits">Produits &amp; marges</button>
+          <button class="tab" data-v="recettes">Recettes</button>
+          <button class="tab" data-v="matieres">Matières premières</button>
+          <button class="tab" data-v="stock">Stock</button>
+          <button class="tab" data-v="tarifs">Tarifs</button>
+          <button class="tab" data-v="salaires">Salaires</button>
+          <button class="tab" data-v="objectifs">Objectifs</button>
+          <button class="tab" data-v="contacts">Contacts</button>
+          <button class="tab" data-v="tuto">Aide</button>
+        </div>
+      </header>
+      <div class="wrap" id="view"></div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/ui-helpers.js"></script>
+    <script src="js/calculs.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/core.js"></script>
+    <script src="js/ui-dashboard.js"></script>
+    <script src="js/ui-contacts.js"></script>
+    <script src="js/ui-tarifs.js"></script>
+    <script src="js/ui-salaires.js"></script>
+    <script src="js/ui-objectifs.js"></script>
+    <script src="js/ui-todos.js"></script>
+    <script src="js/ui-journees.js"></script>
+    <script src="js/ui-produits.js"></script>
+    <script src="js/ui-recettes.js"></script>
+    <script src="js/ui-matieres.js"></script>
+    <script src="js/ui-stock.js"></script>
+    <script src="js/ui-tuto.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>

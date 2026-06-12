@@ -1,17 +1,18 @@
 // ══════════════════════════════════
 //  AIDE / TUTORIEL
 // ══════════════════════════════════
-function renderTuto(){
-  const ind=[
-    ['✅ OK','ok','Marge ≥ 20 % — produit rentable'],
-    ['⚠ Marge faible','warn','Entre 0 et 20 % de marge — à surveiller'],
-    ['❌ Perte','bad','Coûte plus cher à produire qu\'il ne se vend'],
-    ['⚠ Prix à définir','warn','Prix de vente encore à 0 dans la base'],
-    ['⚠ Coût à définir','warn','Aucune recette ou ingrédient sans prix'],
-    ['—','muted','Intermédiaire ou Ajustement — hors alertes'],
+function renderTuto() {
+  const ind = [
+    ['✅ OK', 'ok', 'Marge ≥ 20 % — produit rentable'],
+    ['⚠ Marge faible', 'warn', 'Entre 0 et 20 % de marge — à surveiller'],
+    ['❌ Perte', 'bad', "Coûte plus cher à produire qu'il ne se vend"],
+    ['⚠ Prix à définir', 'warn', 'Prix de vente encore à 0 dans la base'],
+    ['⚠ Coût à définir', 'warn', 'Aucune recette ou ingrédient sans prix'],
+    ['—', 'muted', 'Intermédiaire ou Ajustement — hors alertes'],
   ];
-  $('#view').innerHTML=head('Guide du registre')+
-  `<div class="tuto-section">
+  $('#view').innerHTML =
+    head('Guide du registre') +
+    `<div class="tuto-section">
     <h3>✦ Bienvenue au Silver Pine</h3>
     <p>Ce registre permet à toute l'équipe de suivre les ventes, les marges et le stock du saloon en temps réel.
     Toute personne connectée peut consulter et modifier les données — les changements sont visibles par tous instantanément.</p>
@@ -22,7 +23,6 @@ function renderTuto(){
       <div class="tuto-item"><strong>Tableau de bord</strong><p>Résumé du jour, comparaison semaine, objectif CA, alertes produits, top 5, graphiques. Point de départ.</p></div>
       <div class="tuto-item"><strong>Journées</strong><p>Une carte par journée. Filtrer par période, consulter/modifier les ventes, exporter en CSV.</p></div>
       <div class="tuto-item"><strong>Produits & marges</strong><p>Liste complète avec coût auto et prix de vente éditable. Filtres par catégorie.</p></div>
-      <div class="tuto-item"><strong>Formules</strong><p>Les menus : plusieurs articles vendus ensemble à un prix fixe. Coût et marge calculés automatiquement.</p></div>
       <div class="tuto-item"><strong>Recettes</strong><p>Les crafts : ingrédients dynamiques et coût en cascade. Modifier ici recalcule toutes les marges.</p></div>
       <div class="tuto-item"><strong>Matières premières</strong><p>Ingrédients de base avec prix d'achat. Regroupés par catégorie.</p></div>
       <div class="tuto-item"><strong>Stock</strong><p>Quantités disponibles par produit fini. Mise à jour manuelle avec suivi de qui a modifié quoi.</p></div>
@@ -39,18 +39,6 @@ function renderTuto(){
     </ol>
   </div>
   <div class="tuto-section">
-    <h3>Les formules (menus)</h3>
-    <p>Une <b>formule</b> regroupe plusieurs articles vendus ensemble à un <b>prix fixe</b> (ex. « Menu du cowboy » = 1 whisky + 1 jerky pour 5 $). Son coût est la somme des coûts de ses articles ; sa marge apparaît partout, comme un produit normal.</p>
-    <ol style="margin:0;padding-left:20px;line-height:2;font-size:15px">
-      <li>Aller dans l'onglet <b>Formules</b> → formulaire <b>Nouvelle formule</b></li>
-      <li>Donner un <b>nom</b> et le <b>prix de vente</b> du menu</li>
-      <li><b>+ Ajouter un article</b> pour chaque produit inclus, avec sa quantité</li>
-      <li>L'aperçu affiche le coût, la marge et la comparaison au prix « à la carte » (remise client)</li>
-      <li><b>+ Créer la formule</b> — elle apparaît ensuite dans la carte des <b>Tarifs</b> et dans le menu de vente</li>
-    </ol>
-    <p style="margin-top:10px">Pour la <b>vendre</b> : <b>Journées → + Vente</b>, la formule se trouve dans le groupe <b>🍽️ Formules</b> du sélecteur de produit. À la déduction de stock en fin de journée, ce sont les <b>articles composants</b> qui sont retirés du stock (la formule n'a pas de stock propre).</p>
-  </div>
-  <div class="tuto-section">
     <h3>La logique des coûts (cascade)</h3>
     <div class="tuto-formula">
 Coût ingrédient  = prix dans « Matières premières »
@@ -62,18 +50,20 @@ Coût unitaire    = Coût total ÷ Qté produite par craft
 Coût produit     = cout_manuel si défini
                    SINON coût unitaire de la recette du même nom
 
-Coût formule     = Σ (qté × coût de chaque article inclus)
-
 Marge vente      = (qté × prix) − (qté + offerts) × coût
     </div>
   </div>
   <div class="tuto-section">
     <h3>Les indicateurs de marge</h3>
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-      ${ind.map(([l,c,d])=>`<div style="display:flex;align-items:center;gap:12px;font-size:14px">
+      ${ind
+        .map(
+          ([l, c, d]) => `<div style="display:flex;align-items:center;gap:12px;font-size:14px">
         <span class="pill ${c}" style="min-width:135px;text-align:center">${l}</span>
         <span style="color:var(--ink2)">${d}</span>
-      </div>`).join('')}
+      </div>`,
+        )
+        .join('')}
     </div>
   </div>
   <div class="tuto-section">
@@ -91,7 +81,6 @@ Marge vente      = (qté × prix) − (qté + offerts) × coût
       <li>Saisir les ventes <b>au fil de la journée</b> — moins d'oublis en fin de soirée.</li>
       <li>Vérifier le <b>Tableau de bord → Alertes</b> régulièrement.</li>
       <li>Pour un nouveau craft : créer d'abord la <b>Recette</b>, puis le <b>Produit</b> du même nom.</li>
-      <li>Une <b>Formule</b> ne se compose que de produits déjà sur la carte : crée-les avant de monter le menu.</li>
       <li>Le champ <b>Qté produite</b> d'une recette est crucial : sans lui, le coût unitaire reste à 0.</li>
       <li>Ingrédients de récolte : mettre le prix à 0 $ et cocher « Récolte gratuite ».</li>
       <li>Utiliser le champ <b>Note</b> sur les ventes pour tracer les événements spéciaux.</li>

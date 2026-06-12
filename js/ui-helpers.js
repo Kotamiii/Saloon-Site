@@ -1,38 +1,30 @@
 // ══════════════════════════════════
 //  TOAST & LOADER
 // ══════════════════════════════════
-function toast(msg, type='ok') {
-  const z=$('#toastZone'), t=document.createElement('div');
-  t.className='toast t-'+type; t.textContent=msg;
+function toast(msg, type = 'ok') {
+  const z = $('#toastZone'),
+    t = document.createElement('div');
+  t.className = 'toast t-' + type;
+  t.textContent = msg;
   z.appendChild(t);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
-  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3200);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
 }
-function loading(on){ $('#loader').classList.toggle('hidden',!on); }
-
-// Anti double-envoi : désactive le bouton déclencheur pendant l'action async.
-// Évite les doublons en base si on clique deux fois (ou Entrée + clic).
-// `btn` peut être null (appel sans bouton) — l'action s'exécute alors normalement.
-async function runOnce(btn, fn){
-  if(btn){
-    if(btn.disabled) return;            // déjà en cours → on ignore
-    btn.disabled=true; btn.classList.add('is-busy');
-  }
-  try{ await fn(); }
-  finally{
-    // La vue a pu être re-rendue (refresh) → le bouton n'existe plus, rien à faire.
-    if(btn&&document.body.contains(btn)){ btn.disabled=false; btn.classList.remove('is-busy'); }
-  }
+function loading(on) {
+  $('#loader').classList.toggle('hidden', !on);
 }
 
 // ══════════════════════════════════
 //  CONFIRMATION PERSONNALISÉE
 // ══════════════════════════════════
-function askConfirm(msg, icon, onYes, yesLabel='Supprimer') {
-  const el=document.createElement('div');
-  el.className='confirm-overlay';
-  el.innerHTML=`<div class="confirm-box">
-    <span class="confirm-icon">${icon||'⚠️'}</span>
+function askConfirm(msg, icon, onYes, yesLabel = 'Supprimer') {
+  const el = document.createElement('div');
+  el.className = 'confirm-overlay';
+  el.innerHTML = `<div class="confirm-box">
+    <span class="confirm-icon">${icon || '⚠️'}</span>
     <div class="confirm-msg">${esc(msg)}</div>
     <div class="confirm-btns">
       <button class="btn sm" id="_cfmY">${esc(yesLabel)}</button>
@@ -40,11 +32,35 @@ function askConfirm(msg, icon, onYes, yesLabel='Supprimer') {
     </div>
   </div>`;
   document.body.appendChild(el);
-  const close=()=>{ el.style.opacity='0'; el.style.transition='opacity .12s'; setTimeout(()=>el.remove(),130); };
-  el.querySelector('#_cfmY').onclick=()=>{ close(); onYes(); };
-  el.querySelector('#_cfmN').onclick=close;
-  el.onclick=e=>{ if(e.target===el) close(); };
-  const kh=e=>{ if(e.key==='Escape'){ close(); document.removeEventListener('keydown',kh); } };
-  document.addEventListener('keydown',kh);
-  setTimeout(()=>el.querySelector('#_cfmN').focus(),40);
+  const close = () => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .12s';
+    setTimeout(() => el.remove(), 130);
+  };
+  el.querySelector('#_cfmY').onclick = () => {
+    close();
+    onYes();
+  };
+  el.querySelector('#_cfmN').onclick = close;
+  el.onclick = (e) => {
+    if (e.target === el) close();
+  };
+  const kh = (e) => {
+    if (e.key === 'Escape') {
+      close();
+      document.removeEventListener('keydown', kh);
+    }
+  };
+  document.addEventListener('keydown', kh);
+  setTimeout(() => el.querySelector('#_cfmN').focus(), 40);
+}
+
+// ── Menu déroulant « Vendeur » (employés actifs) ──
+function vendeurOptions(current) {
+  const list = (EMPLOYES || []).filter((e) => e.actif !== false).map((e) => e.nom);
+  if (current && !list.includes(current)) list.push(current);
+  return (
+    '<option value="">—</option>' +
+    list.map((n) => `<option${n === current ? ' selected' : ''}>${esc(n)}</option>`).join('')
+  );
 }
