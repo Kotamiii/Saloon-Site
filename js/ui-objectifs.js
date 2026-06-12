@@ -232,3 +232,36 @@ async function delObjectif(id) {
   await sb.from('objectifs').delete().eq('id', id);
   await refresh();
 }
+
+// ── Onglet "Mes défis" (Lecture seule pour l'employé) ──
+window.renderMesDefis = function() {
+  if (OBJECTIFS === null || EMPLOYES === null || !CURRENT_EMAIL) {
+    $('#view').innerHTML = head('Mes défis') + "<div class='card'><p class='note' style='padding: 20px;'>Aucun système d'objectifs actif ou vous n'êtes pas connecté.</p></div>";
+    return;
+  }
+  const moi = (EMPLOYES || []).find(e => (e.email || '').trim().toLowerCase() === CURRENT_EMAIL.trim().toLowerCase());
+  if (!moi) {
+    $('#view').innerHTML = head('Mes défis') + "<div class='card'><p class='note' style='padding: 20px;'>Ton adresse e-mail n'est pas associée à un profil dans l'onglet Salaires. Demande à un administrateur de l'ajouter.</p></div>";
+    return;
+  }
+  
+  const miens = OBJECTIFS.filter(o => o.employe === moi.nom && o.statut === 'en_cours');
+  const finis = OBJECTIFS.filter(o => o.employe === moi.nom && o.statut === 'accompli');
+  
+  $('#view').innerHTML = head('Mes défis') + 
+    `<div style="margin-bottom: 20px;">
+      <div class="card" style="padding: 20px;">
+        <h2 style="margin-bottom: 10px; color: var(--ink);">Salut <b>${esc(moi.nom)}</b> ! 🤠</h2>
+        <p style="color: var(--ink2); margin-bottom: 20px;">Voici les défis en cours qui te sont assignés. Réalise tes ventes normalement, la progression se mettra à jour toute seule !</p>
+        
+        ${miens.length 
+          ? `<div class="obj-grid" style="margin-top: 15px;">${miens.map(o => objCard(o, true)).join('')}</div>` 
+          : "<div class='empty' style='margin-top: 15px;'>Tu n'as aucun défi en cours pour le moment.</div>"}
+      </div>
+      
+      ${finis.length ? `
+      <div class="secttl" style="margin-top: 30px;"><span class="orn">✦</span><h2>Défis accomplis</h2><div class="rule"></div></div>
+      <div class="obj-grid">${finis.map(o => objCard(o, true)).join('')}</div>
+      ` : ''}
+    </div>`;
+};

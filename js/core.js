@@ -16,6 +16,7 @@ function render() {
     tarifs: renderTarifs,
     salaires: renderSalaires,
     objectifs: renderObjectifs,
+    mes_defis: window.renderMesDefis || (() => {}),
     contacts: renderContacts,
     tuto: renderTuto,
     admin: window.renderAdmin || (() => $('#view').innerHTML = 'Erreur Admin'),

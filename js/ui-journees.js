@@ -307,7 +307,11 @@ async function addVenteDay(date) {
     canal: $('#nv_canal').value,
     note: $('#nv_note').value,
   };
-  if (EMPLOYES !== null) row.vendeur = $('#nv_vendeur')?.value || null;
+  if (EMPLOYES !== null) {
+    const vendeur = $('#nv_vendeur')?.value || null;
+    row.vendeur = vendeur;
+    localStorage.setItem('last_vendeur', vendeur || '');
+  }
   const { error } = await sb.from('ventes').insert(row);
   if (error) {
     toast('Erreur : ' + error.message, 'err');

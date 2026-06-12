@@ -58,6 +58,11 @@ function askConfirm(msg, icon, onYes, yesLabel = 'Supprimer') {
 // ── Menu déroulant « Vendeur » (employés actifs) ──
 function vendeurOptions(current) {
   const list = (EMPLOYES || []).filter((e) => e.actif !== false).map((e) => e.nom);
+  if (current === undefined) {
+    current = localStorage.getItem('last_vendeur') || '';
+  } else if (current === null) {
+    current = '';
+  }
   if (current && !list.includes(current)) list.push(current);
   return (
     '<option value="">—</option>' +

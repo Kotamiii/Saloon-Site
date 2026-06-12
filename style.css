@@ -2060,95 +2060,273 @@ tr.editing td {
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
-/* ━━ TARIFS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.tarif-toolbar {
+/* ━━ CAISSE / POS (TARIFS) ━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pos-layout {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.tarifs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 20px;
+  align-items: flex-start;
+  margin-top: 10px;
 }
-.tarif-cat {
-  background:
-    radial-gradient(ellipse 50% 25% at 6% 5%, rgba(255, 248, 210, 0.34), transparent 42%),
-    linear-gradient(160deg, #f8f2e0 0%, #f0e4c8 65%, #e8d8ae 100%);
-  border: 1px solid rgba(168, 124, 32, 0.5);
-  border-radius: 2px;
-  padding: 22px 24px;
-  box-shadow:
-    0 8px 28px var(--shadow-med),
-    0 2px 4px var(--shadow),
-    inset 0 1px 0 rgba(255, 248, 210, 0.5);
-  position: relative;
+@media (max-width: 900px) {
+  .pos-layout {
+    flex-direction: column;
+  }
+  .pos-left, .pos-right {
+    width: 100% !important;
+  }
 }
-.tarif-cat::before,
-.tarif-cat::after {
-  content: '✦';
-  position: absolute;
-  color: rgba(168, 124, 32, 0.3);
-  font-size: 10px;
+.pos-left {
+  width: 360px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 70px;
 }
-.tarif-cat::before {
-  top: 7px;
-  left: 9px;
+.pos-right {
+  flex: 1;
 }
-.tarif-cat::after {
-  bottom: 7px;
-  right: 9px;
-}
-.tarif-cat-title {
-  font-family: 'Rye', serif;
-  font-size: 20px;
-  color: var(--wine);
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--gold3);
+
+/* Barre des catégories */
+.pos-cats-bar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  letter-spacing: 0.6px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  gap: 12px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
-.tarif-cat-icon {
-  font-size: 22px;
-  filter: grayscale(0.15);
+.pos-cats-bar::-webkit-scrollbar {
+  height: 4px;
 }
-.tarif-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(168, 124, 32, 0.14);
-}
-.tarif-row:last-child {
-  border-bottom: none;
-}
-.tarif-nom {
-  font-size: 15.5px;
+.pos-cat-btn {
+  background: rgba(168, 124, 32, 0.1);
+  border: 1px solid rgba(168, 124, 32, 0.3);
   color: var(--ink);
-  letter-spacing: 0.2px;
-}
-.tarif-prix {
+  padding: 14px 28px;
+  border-radius: 6px;
   font-family: 'Rye', serif;
-  font-size: 23px;
-  color: var(--wine);
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  font-size: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
 }
-.tarif-row.tarif-nd {
-  opacity: 0.52;
+.pos-cat-btn:hover {
+  background: rgba(168, 124, 32, 0.2);
 }
-.tarif-row.tarif-nd .tarif-prix {
+.pos-cat-btn.active {
+  background: var(--wine);
+  color: #fff;
+  border-color: var(--wine2);
+  box-shadow: 0 4px 12px rgba(80, 16, 12, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Grille de produits */
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+}
+.pos-item-btn {
+  background: linear-gradient(145deg, #f8f2e0, #e8d8ae);
+  border: 1px solid rgba(168, 124, 32, 0.4);
+  border-radius: 8px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  aspect-ratio: 1;
+}
+.pos-item-btn:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+.pos-item-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.pos-item-btn.nd {
+  opacity: 0.6;
+  background: #e2dcd0;
+}
+.pos-item-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.pos-item-price {
   font-family: 'EB Garamond', serif;
-  font-size: 13px;
-  font-style: italic;
+  font-size: 17px;
+  color: var(--wine);
+  font-weight: bold;
+}
+.pos-item-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--wine);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  animation: vpFade 0.2s ease;
+}
+
+/* Ticket de caisse */
+.pos-ticket {
+  background: #fff;
+  border: 1px solid rgba(168, 124, 32, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 100px);
+}
+.pt-header {
+  background: var(--wood);
+  color: #fff;
+  padding: 18px;
+  font-family: 'Rye', serif;
+  font-size: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.pt-lines {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: #fdfaf3;
+  min-height: 200px;
+}
+.pt-empty {
+  text-align: center;
   color: var(--ink3);
+  font-style: italic;
+  padding: 50px 0;
+}
+.pos-ticket-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(168, 124, 32, 0.3);
+}
+.pt-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.pt-qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(168, 124, 32, 0.08);
+  border-radius: 20px;
+  padding: 4px;
+  margin: 0 10px;
+}
+.pt-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(168, 124, 32, 0.2);
+  background: #fff;
+  color: var(--wine);
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+}
+.pt-btn:active {
+  transform: scale(0.9);
+  background: #f0e4c8;
+}
+.pt-qte {
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+}
+.pt-sub {
+  width: 65px;
+  text-align: right;
+  font-weight: bold;
+  font-size: 15px;
+  color: var(--wine);
+}
+.pt-footer {
+  padding: 18px;
+  background: #fff;
+  border-top: 2px dashed rgba(168, 124, 32, 0.4);
+}
+.pt-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26px;
+  font-weight: bold;
+  font-family: 'Rye', serif;
+  color: var(--wine);
+  margin-bottom: 18px;
+}
+.pt-checkout-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(180deg, #3f6b3a, #264223);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(38, 66, 35, 0.4);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.pt-checkout-btn:hover {
+  background: linear-gradient(180deg, #487942, #2d4f29);
+}
+.pt-checkout-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(38, 66, 35, 0.4);
+}
+.pt-checkout-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  background: var(--ink3);
+}
+.pt-clear-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  background: transparent;
+  color: var(--ink3);
+  border: 1px solid rgba(168, 124, 32, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.1s;
+}
+.pt-clear-btn:hover {
+  background: rgba(168, 124, 32, 0.05);
+  color: var(--ink2);
 }
 
 /* ━━ RÉCAPITULATIF JOURNÉE ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
