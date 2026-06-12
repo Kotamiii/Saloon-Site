@@ -23,8 +23,8 @@ const fmt = (n) =>
 const pct = (n) => (Number(n) || 0).toLocaleString('fr-FR', { style: 'percent', minimumFractionDigits: 1 });
 const esc = (s) =>
   (s == null ? '' : String(s)).replace(
-    /[&<>"]/g,
-    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c],
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
   );
 const today = () => new Date().toISOString().slice(0, 10);
 
