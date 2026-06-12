@@ -114,22 +114,34 @@ window.applyPermissions = function() {
   const tabs = document.querySelectorAll('.tab');
   
   if (IS_ADMIN) {
-    tabs.forEach(t => t.style.display = ''); // Montre tout
+    tabs.forEach(t => { t.style.display = ''; t.classList.remove('active'); if(t.dataset.v === VIEW) t.classList.add('active'); });
     return;
   }
 
   const userPerm = (PERMISSIONS || []).find(p => p.email === CURRENT_EMAIL);
   const hiddenTabs = userPerm && Array.isArray(userPerm.onglets_masques) ? userPerm.onglets_masques : [];
 
+  const availableTabs = Array.from(tabs)
+    .filter(t => t.dataset.v !== 'admin' && !hiddenTabs.includes(t.dataset.v))
+    .map(t => t.dataset.v);
+
   tabs.forEach(t => {
     const v = t.dataset.v;
     if (v === 'admin') {
-      t.style.display = 'none'; // Utilisateur normal = pas d'Admin
+      t.style.display = 'none'; 
     } else if (hiddenTabs.includes(v)) {
       t.style.display = 'none';
-      if (VIEW === v) VIEW = 'dash';
+      if (VIEW === v) {
+        VIEW = availableTabs.length > 0 ? availableTabs[0] : 'dash';
+      }
     } else {
       t.style.display = '';
     }
+  });
+
+  // Mettre à jour l'onglet actif visuellement
+  tabs.forEach(t => {
+    if (t.dataset.v === VIEW) t.classList.add('active');
+    else t.classList.remove('active');
   });
 };
