@@ -120,7 +120,8 @@ function buildCalcCard() {
          </label>`
       : '';
       
-  return `<div class="pos-ticket">
+  const isEmpty = !CALC_LINES.length;
+  return `<div class="pos-ticket ${isEmpty ? 'is-empty' : ''}">
     <div class="pt-header">🧾 Ticket en cours</div>
     <div class="pt-lines">
       ${lines || '<div class="pt-empty">Ticket vide.<br>Cliquez sur un produit.</div>'}
@@ -128,7 +129,7 @@ function buildCalcCard() {
     <div class="pt-footer">
       <div class="pt-total-row"><span>Total</span><span>${fmt(total)}</span></div>
       ${vendSel}
-      <button class="pt-checkout-btn ${!CALC_LINES.length ? 'disabled' : ''}" onclick="calcEncaisser()">💰 Encaisser</button>
+      <button class="pt-checkout-btn ${isEmpty ? 'disabled' : ''}" onclick="calcEncaisser()">💰 Encaisser</button>
       <button class="pt-clear-btn" onclick="calcClear()">Vider le ticket</button>
     </div>
   </div>`;
