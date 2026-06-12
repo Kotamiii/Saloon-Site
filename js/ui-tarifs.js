@@ -70,7 +70,7 @@ function renderTarifs() {
   }).join('');
   
   const editToggleBtn = `<button class="btn sm ${POS_EDIT_MODE ? 'gold' : 'ghost'}" onclick="POS_EDIT_MODE=!POS_EDIT_MODE; renderTarifs()" style="margin-left:auto;">
-    ${POS_EDIT_MODE ? '✓ Terminer l\\'édition' : '⚙️ Modifier l\\'affichage'}
+    ${POS_EDIT_MODE ? "✓ Terminer l'édition" : "⚙️ Modifier l'affichage"}
   </button>`;
   
   const gridHtml = `
