@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS permissions_onglets (
   email TEXT NOT NULL UNIQUE,
   onglets_masques JSONB NOT NULL DEFAULT '[]'::jsonb
 );
-ALTER TABLE permissions_onglets DISABLE ROW LEVEL SECURITY;
+ALTER TABLE permissions_onglets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Autoriser tout" ON permissions_onglets FOR ALL USING (true) WITH CHECK (true);
         </pre>
         <p style="margin-top: 15px; font-size: 13px; color: #666;">Après l'avoir exécuté, rechargez simplement la page.</p>
       </div>`;

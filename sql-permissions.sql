@@ -9,5 +9,10 @@ CREATE TABLE IF NOT EXISTS permissions_onglets (
   onglets_masques JSONB NOT NULL DEFAULT '[]'::jsonb
 );
 
--- Désactiver le RLS pour permettre une lecture simple par l'application
-ALTER TABLE permissions_onglets DISABLE ROW LEVEL SECURITY;
+-- Activer le RLS mais autoriser toutes les opérations (car l'Admin utilise une session locale sans identifiant Supabase)
+ALTER TABLE permissions_onglets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Autoriser tout" ON permissions_onglets
+  FOR ALL
+  USING (true)
+  WITH CHECK (true);
