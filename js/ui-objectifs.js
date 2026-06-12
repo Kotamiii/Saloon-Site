@@ -233,30 +233,75 @@ async function delObjectif(id) {
   await refresh();
 }
 
-// ── Onglet "Mes défis" (Lecture seule pour l'employé) ──
+// ── Onglet "Mon espace" (Lecture seule pour l'employé) ──
 window.renderMesDefis = function() {
   if (OBJECTIFS === null || EMPLOYES === null || !CURRENT_EMAIL) {
-    $('#view').innerHTML = head('Mes défis') + "<div class='card'><p class='note' style='padding: 20px;'>Aucun système d'objectifs actif ou vous n'êtes pas connecté.</p></div>";
+    $('#view').innerHTML = head('Mon espace') + "<div class='card'><p class='note' style='padding: 20px;'>Aucun système d'objectifs actif ou vous n'êtes pas connecté.</p></div>";
     return;
   }
   const moi = (EMPLOYES || []).find(e => (e.email || '').trim().toLowerCase() === CURRENT_EMAIL.trim().toLowerCase());
   if (!moi) {
-    $('#view').innerHTML = head('Mes défis') + "<div class='card'><p class='note' style='padding: 20px;'>Ton adresse e-mail n'est pas associée à un profil dans l'onglet Salaires. Demande à un administrateur de l'ajouter.</p></div>";
+    $('#view').innerHTML = head('Mon espace') + "<div class='card'><p class='note' style='padding: 20px;'>Ton adresse e-mail n'est pas associée à un profil dans l'onglet Salaires. Demande à un administrateur de l'ajouter.</p></div>";
     return;
   }
+  
+  // Calculs Salaire
+  let mDay = 0, mWeek = 0, mMonth = 0;
+  const dDay = today();
+  const bWeek = weekBounds(0);
+  const bMonth = monthBounds(0);
+  
+  VEN.forEach(v => {
+    if (v.vendeur !== moi.nom) return;
+    const m = venteCalc(v).marge;
+    if (v.date === dDay) mDay += m;
+    if (v.date >= bWeek[0] && v.date <= bWeek[1]) mWeek += m;
+    if (v.date >= bMonth[0] && v.date <= bMonth[1]) mMonth += m;
+  });
+  
+  const part = typeof salPartDe === 'function' ? salPartDe(moi.nom) : 50;
+  
+  const salDay = mDay > 0 ? (mDay * part) / 100 : 0;
+  const salWeek = mWeek > 0 ? (mWeek * part) / 100 : 0;
+  const salMonth = mMonth > 0 ? (mMonth * part) / 100 : 0;
+  
+  const salHtml = `
+    <div class="card" style="padding: 20px; margin-bottom: 24px; background: linear-gradient(145deg, #fdfaf3, #f5ecd6); border: 1px solid rgba(168,124,32,0.3); border-radius: 6px;">
+      <h3 style="margin-top: 0; color: var(--wine); font-family: 'Rye', serif; font-size: 20px;">💰 Mon Salaire Estimé</h3>
+      <div style="display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 120px; text-align: center; padding: 16px; background: rgba(255,255,255,0.7); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid rgba(168,124,32,0.1);">
+          <div style="font-size: 13px; color: var(--ink2); text-transform: uppercase; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">Aujourd'hui</div>
+          <div style="font-size: 26px; color: var(--wine); font-weight: bold; font-family: 'EB Garamond', serif;">${fmt(salDay)}</div>
+        </div>
+        <div style="flex: 1; min-width: 120px; text-align: center; padding: 16px; background: rgba(255,255,255,0.7); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid rgba(168,124,32,0.1);">
+          <div style="font-size: 13px; color: var(--ink2); text-transform: uppercase; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">Cette semaine</div>
+          <div style="font-size: 26px; color: var(--wine); font-weight: bold; font-family: 'EB Garamond', serif;">${fmt(salWeek)}</div>
+        </div>
+        <div style="flex: 1; min-width: 120px; text-align: center; padding: 16px; background: rgba(255,255,255,0.7); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid rgba(168,124,32,0.1);">
+          <div style="font-size: 13px; color: var(--ink2); text-transform: uppercase; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">Ce mois</div>
+          <div style="font-size: 26px; color: var(--wine); font-weight: bold; font-family: 'EB Garamond', serif;">${fmt(salMonth)}</div>
+        </div>
+      </div>
+      <div style="text-align: right; margin-top: 12px; font-size: 12px; color: var(--ink3);">Basé sur ta part de ${part} % de la marge.</div>
+    </div>
+  `;
   
   const miens = OBJECTIFS.filter(o => o.employe === moi.nom && o.statut === 'en_cours');
   const finis = OBJECTIFS.filter(o => o.employe === moi.nom && o.statut === 'accompli');
   
-  $('#view').innerHTML = head('Mes défis') + 
+  $('#view').innerHTML = head('Mon espace') + 
     `<div style="margin-bottom: 20px;">
+      <h2 style="margin-bottom: 16px; color: var(--ink); font-size: 24px;">Salut <b>${esc(moi.nom)}</b> ! 🤠</h2>
+      
+      ${salHtml}
+      
       <div class="card" style="padding: 20px;">
-        <h2 style="margin-bottom: 10px; color: var(--ink);">Salut <b>${esc(moi.nom)}</b> ! 🤠</h2>
-        <p style="color: var(--ink2); margin-bottom: 20px;">Voici les défis en cours qui te sont assignés. Réalise tes ventes normalement, la progression se mettra à jour toute seule !</p>
+        <h3 style="margin-top: 0; color: var(--wine); font-family: 'Rye', serif; font-size: 20px;">🎯 Mes défis en cours</h3>
+        <p style="color: var(--ink2); margin-bottom: 20px; margin-top: 8px;">Réalise tes ventes normalement, la progression se mettra à jour toute seule !</p>
         
         ${miens.length 
-          ? `<div class="obj-grid" style="margin-top: 15px;">${miens.map(o => objCard(o, true)).join('')}</div>` 
-          : "<div class='empty' style='margin-top: 15px;'>Tu n'as aucun défi en cours pour le moment.</div>"}
+          ? `<div class="obj-grid">${miens.map(o => objCard(o, true)).join('')}</div>` 
+          : "<div class='empty'>Tu n'as aucun défi en cours pour le moment.</div>"}
       </div>
       
       ${finis.length ? `
