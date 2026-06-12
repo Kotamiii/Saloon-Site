@@ -18,6 +18,7 @@ function render() {
     objectifs: renderObjectifs,
     contacts: renderContacts,
     tuto: renderTuto,
+    admin: window.renderAdmin || (() => $('#view').innerHTML = 'Erreur Admin'),
   };
   (fns[VIEW] || renderDash)();
   v.classList.add('view-fade');

@@ -54,3 +54,5 @@ let HISTO_MAT = null; // matière dont l'historique de prix est ouvert
 let OBJECTIFS = [],
   OBJ_FILTRE = null; // objectifs (null = SQL pas exécuté)
 let CURRENT_EMAIL = ''; // email de la personne connectée
+let IS_ADMIN = false; // Mode Admin (vrai si identifiants locaux)
+let PERMISSIONS = null; // permissions des onglets par email

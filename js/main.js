@@ -3,16 +3,42 @@
 // ══════════════════════════════════
 $('#loginBtn').onclick = async () => {
   $('#loginErr').textContent = '';
+  const emailVal = $('#email').value.trim();
+  const passVal = $('#pass').value;
+
+  if (emailVal === 'Admin' && passVal === 'Admin_Saloon') {
+    IS_ADMIN = true;
+    CURRENT_EMAIL = 'Admin';
+    $('#userEmail').textContent = 'Admin';
+    $('#login').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    VIEW = 'admin';
+    refresh();
+    return;
+  }
+
   const { error } = await sb.auth.signInWithPassword({
-    email: $('#email').value.trim(),
-    password: $('#pass').value,
+    email: emailVal,
+    password: passVal,
   });
   if (error) $('#loginErr').textContent = "Connexion impossible — vérifie l'e-mail / mot de passe.";
 };
 $('#pass').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') $('#loginBtn').click();
 });
-$('#logoutBtn').onclick = () => sb.auth.signOut();
+$('#logoutBtn').onclick = () => {
+  if (IS_ADMIN) {
+    IS_ADMIN = false;
+    CURRENT_EMAIL = '';
+    $('#app').classList.add('hidden');
+    $('#login').classList.remove('hidden');
+    $('#email').value = '';
+    $('#pass').value = '';
+    VIEW = 'dash';
+  } else {
+    sb.auth.signOut();
+  }
+};
 
 document.querySelectorAll('.tab').forEach(
   (t) =>
@@ -83,3 +109,27 @@ sb.auth.onAuthStateChange((event, session) => {
     $('#login').classList.remove('hidden');
   }
 })();
+
+window.applyPermissions = function() {
+  const tabs = document.querySelectorAll('.tab');
+  
+  if (IS_ADMIN) {
+    tabs.forEach(t => t.style.display = ''); // Montre tout
+    return;
+  }
+
+  const userPerm = (PERMISSIONS || []).find(p => p.email === CURRENT_EMAIL);
+  const hiddenTabs = userPerm && Array.isArray(userPerm.onglets_masques) ? userPerm.onglets_masques : [];
+
+  tabs.forEach(t => {
+    const v = t.dataset.v;
+    if (v === 'admin') {
+      t.style.display = 'none'; // Utilisateur normal = pas d'Admin
+    } else if (hiddenTabs.includes(v)) {
+      t.style.display = 'none';
+      if (VIEW === v) VIEW = 'dash';
+    } else {
+      t.style.display = '';
+    }
+  });
+};

@@ -7,7 +7,7 @@
 async function loadAll() {
   try {
     loading(true);
-    const [m, r, p, v, e, pa, ob] = await Promise.all([
+    const [m, r, p, v, e, pa, ob, perm] = await Promise.all([
       sb.from('matieres_premieres').select('*').order('id'),
       sb.from('recettes').select('*').order('id'),
       sb.from('produits').select('*').order('id'),
@@ -15,6 +15,7 @@ async function loadAll() {
       sb.from('employes').select('*').order('nom'),
       sb.from('parametres').select('*'),
       sb.from('objectifs').select('*').order('created_at', { ascending: false }),
+      sb.from('permissions_onglets').select('*'),
     ]);
     MAT = m.data || [];
     REC = r.data || [];
@@ -23,6 +24,7 @@ async function loadAll() {
     EMPLOYES = e.error ? null : e.data || [];
     OBJECTIFS = ob.error ? null : ob.data || [];
     PARAMS = pa.error ? null : Object.fromEntries((pa.data || []).map((x) => [x.cle, x.valeur]));
+    PERMISSIONS = perm.error ? null : perm.data || [];
   } catch (e) {
     console.error('loadAll:', e);
   } finally {
@@ -75,5 +77,6 @@ async function dbDel(table, id) {
 async function refresh() {
   STOCK_DATA = undefined;
   await loadAll();
+  if (window.applyPermissions) applyPermissions();
   render();
 }
