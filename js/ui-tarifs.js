@@ -4,13 +4,34 @@
 
 let POS_CAT = null;
 let POS_EDIT_MODE = false;
-let POS_CONFIG = JSON.parse(localStorage.getItem('pos_config')) || {};
+let POS_CONFIG = {};
 
-function savePosConfig() {
-  localStorage.setItem('pos_config', JSON.stringify(POS_CONFIG));
+function initPosConfig() {
+  if (typeof PARAMS !== 'undefined' && PARAMS && PARAMS.pos_config) {
+    try {
+      POS_CONFIG = JSON.parse(PARAMS.pos_config);
+    } catch {
+      POS_CONFIG = {};
+    }
+  } else {
+    POS_CONFIG = JSON.parse(localStorage.getItem('pos_config')) || {};
+  }
+}
+
+async function savePosConfig() {
+  const str = JSON.stringify(POS_CONFIG);
+  localStorage.setItem('pos_config', str);
+  if (typeof PARAMS !== 'undefined' && PARAMS) PARAMS.pos_config = str;
+  if (typeof sb !== 'undefined') {
+    const { error } = await sb.from('parametres').upsert({ cle: 'pos_config', valeur: str });
+    if (error && typeof toast !== 'undefined') {
+      toast('Erreur synchro : ' + error.message, 'err');
+    }
+  }
 }
 
 function renderTarifs() {
+  initPosConfig();
   const allVendables = PRD.filter(
     (p) => !(p.categorie || '').startsWith('Inter') && !String(p.nom).startsWith('Ajustement'),
   );
