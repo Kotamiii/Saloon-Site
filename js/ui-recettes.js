@@ -263,6 +263,15 @@ async function saveRecette() {
       return;
     }
     toast('Recette créée');
+    
+    if (data.categorie !== 'Intermédiaire') {
+      const existing = PRD.find(p => p.nom === nom);
+      if (!existing) {
+        await sb.from('produits').insert({ nom: nom, categorie: data.categorie, prix_vente: 0 });
+        toast(`Produit "${nom}" ajouté automatiquement aux ventes.`);
+      }
+    }
+
     ING_LIST = [];
     await refresh();
   }
