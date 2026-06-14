@@ -109,6 +109,13 @@ function buildDayPanel(date, sales) {
   let sortedSales = [...sales];
   if (DAY_SORT === 'name_asc') {
     sortedSales.sort((a, b) => a.produit.localeCompare(b.produit));
+  } else if (DAY_SORT === 'vendeur_asc') {
+    sortedSales.sort((a, b) => {
+      const vA = a.vendeur || '';
+      const vB = b.vendeur || '';
+      if (vA === vB) return b.id - a.id;
+      return vA.localeCompare(vB);
+    });
   } else if (DAY_SORT === 'time_asc') {
     sortedSales.sort((a, b) => a.id - b.id);
   } else {
@@ -264,15 +271,13 @@ function buildDayPanel(date, sales) {
         <button class="day-panel-close" onclick="SELECTED_DAY=null;renderJournees()" title="Fermer">✕</button>
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:flex-end;">
-       <div style="font-size:14px; color:var(--ink2); font-weight:600;">Détail des transactions</div>
-       <div style="font-size:13px; display:flex; gap:6px; align-items:center;">
-         <span style="color:var(--ink3);">Trier par :</span>
-         <select onchange="DAY_SORT=this.value; renderJournees()" style="padding:4px 8px; font-size:13px; border-radius:4px; border:1px solid rgba(168,124,32,0.3); background:var(--paper); cursor:pointer;">
-           <option value="time_desc" ${DAY_SORT === 'time_desc' ? 'selected' : ''}>Heure (plus récent)</option>
-           <option value="time_asc" ${DAY_SORT === 'time_asc' ? 'selected' : ''}>Heure (plus ancien)</option>
-           <option value="name_asc" ${DAY_SORT === 'name_asc' ? 'selected' : ''}>Nom du produit</option>
-         </select>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+       <div style="font-size:15px; color:var(--wine); font-family:'Rye',serif; letter-spacing:0.5px;">Détail des transactions</div>
+       <div class="filter-group" style="margin:0;">
+         <span class="fpill${DAY_SORT === 'time_desc' ? ' active' : ''}" onclick="DAY_SORT='time_desc'; renderJournees()" title="Plus récent en premier">Récents</span>
+         <span class="fpill${DAY_SORT === 'time_asc' ? ' active' : ''}" onclick="DAY_SORT='time_asc'; renderJournees()" title="Plus ancien en premier">Anciens</span>
+         <span class="fpill${DAY_SORT === 'name_asc' ? ' active' : ''}" onclick="DAY_SORT='name_asc'; renderJournees()" title="Par produit de A à Z">Produit</span>
+         <span class="fpill${DAY_SORT === 'vendeur_asc' ? ' active' : ''}" onclick="DAY_SORT='vendeur_asc'; renderJournees()" title="Par vendeur de A à Z">Vendeur</span>
        </div>
     </div>
     <div class="card" style="margin-bottom:14px"><div style="overflow-x:auto">
