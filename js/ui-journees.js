@@ -1,6 +1,8 @@
 // ══════════════════════════════════
 //  JOURNÉES
 // ══════════════════════════════════
+let DAY_SORT = 'time_desc';
+
 function renderJournees() {
   const byDate = {};
   VEN.forEach((v) => {
@@ -104,7 +106,16 @@ function buildDayPanel(date, sales) {
     .map((c) => `<option>${c}</option>`)
     .join('');
 
-  const rows = sales
+  let sortedSales = [...sales];
+  if (DAY_SORT === 'name_asc') {
+    sortedSales.sort((a, b) => a.produit.localeCompare(b.produit));
+  } else if (DAY_SORT === 'time_asc') {
+    sortedSales.sort((a, b) => a.id - b.id);
+  } else {
+    sortedSales.sort((a, b) => b.id - a.id);
+  }
+
+  const rows = sortedSales
     .map((v) => {
       const c = venteCalc(v);
       const qvd = Number(v.qte_vendue) || 0,
@@ -252,6 +263,17 @@ function buildDayPanel(date, sales) {
         <button class="btn sm gold" onclick="copyRapportJour('${date}')" title="Copie un résumé prêt à coller sur Discord">📋 Rapport</button>
         <button class="day-panel-close" onclick="SELECTED_DAY=null;renderJournees()" title="Fermer">✕</button>
       </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:flex-end;">
+       <div style="font-size:14px; color:var(--ink2); font-weight:600;">Détail des transactions</div>
+       <div style="font-size:13px; display:flex; gap:6px; align-items:center;">
+         <span style="color:var(--ink3);">Trier par :</span>
+         <select onchange="DAY_SORT=this.value; renderJournees()" style="padding:4px 8px; font-size:13px; border-radius:4px; border:1px solid rgba(168,124,32,0.3); background:var(--paper); cursor:pointer;">
+           <option value="time_desc" ${DAY_SORT === 'time_desc' ? 'selected' : ''}>Heure (plus récent)</option>
+           <option value="time_asc" ${DAY_SORT === 'time_asc' ? 'selected' : ''}>Heure (plus ancien)</option>
+           <option value="name_asc" ${DAY_SORT === 'name_asc' ? 'selected' : ''}>Nom du produit</option>
+         </select>
+       </div>
     </div>
     <div class="card" style="margin-bottom:14px"><div style="overflow-x:auto">
       <table>
