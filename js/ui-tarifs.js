@@ -150,7 +150,7 @@ function buildCalcCard() {
     <div class="pt-footer">
       <div class="pt-total-row"><span>Total</span><span>${fmt(total)}</span></div>
       ${vendSel}
-      <button class="pt-checkout-btn ${isEmpty ? 'disabled' : ''}" onclick="calcEncaisser()">💰 Encaisser</button>
+      <button class="pt-checkout-btn ${isEmpty ? 'disabled' : ''}" onclick="confirmEncaisser()">💰 Encaisser</button>
       <button class="pt-clear-btn" onclick="calcClear()">Vider le ticket</button>
     </div>
   </div>`;
@@ -175,16 +175,71 @@ function calcClear() {
   renderTarifs();
 }
 
-async function calcEncaisser() {
+function confirmEncaisser() {
   if (!CALC_LINES.length) return;
+  const total = CALC_LINES.reduce((s, l) => s + prixBase(l.nom) * l.qte, 0);
+  
+  const html = `
+    <div class="confirm-box" style="max-width:400px; text-align:left;">
+      <h3 style="margin-top:0; color:var(--wine); font-family:'Rye',serif;">Confirmer l'encaissement</h3>
+      <div style="margin:20px 0;">
+        <label>
+          <span style="display:block; font-size:14px; color:var(--ink2); font-weight:bold; margin-bottom:8px;">Total payé par le client :</span>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input type="number" step="0.01" id="checkoutTotalPaid" value="${total.toFixed(2)}" style="width:100%; padding:10px; font-size:18px; border-radius:4px; border:1px solid rgba(168,124,32,0.4); text-align:right;">
+            <span style="font-size:18px; color:var(--ink); font-weight:bold;">$</span>
+          </div>
+        </label>
+        <p style="font-size:13px; color:var(--ink3); margin-top:10px;">Si vous changez ce total (ex: remise ou pourboire), le prix des articles sera ajusté proportionnellement dans l'historique.</p>
+      </div>
+      <div class="confirm-btns">
+        <button class="btn sm gold" id="_btnEncaisser" style="flex:1; padding:12px; font-size:16px;">✓ Valider l'encaissement</button>
+        <button class="btn sm ghost" id="_btnCancel" style="padding:12px; font-size:16px;">Annuler</button>
+      </div>
+    </div>
+  `;
+  
+  const el = document.createElement('div');
+  el.className = 'confirm-overlay';
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  
+  const close = () => {
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 150);
+  };
+  
+  el.querySelector('#_btnCancel').onclick = close;
+  el.onclick = (e) => { if (e.target === el) close(); };
+  
+  el.querySelector('#_btnEncaisser').onclick = () => {
+    const paid = parseFloat(document.getElementById('checkoutTotalPaid').value);
+    close();
+    calcEncaisser(paid);
+  };
+}
+
+async function calcEncaisser(paidTotal) {
+  if (!CALC_LINES.length) return;
+  const originalTotal = CALC_LINES.reduce((s, l) => s + prixBase(l.nom) * l.qte, 0);
   const vendeur = $('#calc_vendeur')?.value || null;
+  
+  // Coeff pour répartir le nouveau total sur les articles
+  const coeff = (originalTotal > 0 && paidTotal !== undefined && !isNaN(paidTotal)) ? paidTotal / originalTotal : 1;
+  
   const rows = CALC_LINES.map((l) => {
+    let prixUnit = null;
+    if (coeff !== 1) {
+       prixUnit = Number((prixBase(l.nom) * coeff).toFixed(2));
+    }
+    
     const r = {
       date: today(),
       produit: l.nom,
       qte_vendue: l.qte,
       offerts: 0,
-      prix_unit: null,
+      prix_unit: prixUnit,
+      cout_unit: Number(coutProduit(l.nom).toFixed(2)),
       canal: 'Comptoir',
       note: 'Caisse',
     };

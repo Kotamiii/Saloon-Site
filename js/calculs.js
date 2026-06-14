@@ -47,7 +47,8 @@ function catProduit(nom) {
 function venteCalc(v) {
   const prix = v.prix_unit != null && v.prix_unit !== '' ? Number(v.prix_unit) : prixBase(v.produit);
   const ca = (Number(v.qte_vendue) || 0) * prix;
-  const cout = ((Number(v.qte_vendue) || 0) + (Number(v.offerts) || 0)) * coutProduit(v.produit);
+  const costPerUnit = v.cout_unit != null ? Number(v.cout_unit) : coutProduit(v.produit);
+  const cout = ((Number(v.qte_vendue) || 0) + (Number(v.offerts) || 0)) * costPerUnit;
   return { prix, ca, cout, marge: ca - cout };
 }
 

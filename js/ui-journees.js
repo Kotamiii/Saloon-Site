@@ -304,11 +304,14 @@ function editVente(id) {
 }
 async function saveVente(id) {
   const prix = $('#ev_prix').value;
+  const produit = $('#ev_prod').value;
+  const v = VEN.find(x => x.id === id);
   const patch = {
-    produit: $('#ev_prod').value,
+    produit: produit,
     qte_vendue: Number($('#ev_qte').value) || 0,
     offerts: Number($('#ev_off').value) || 0,
-    prix_unit: prix === '' ? null : Number(prix),
+    prix_unit: prix === '' ? prixBase(produit) : Number(prix),
+    cout_unit: (v && v.produit === produit && v.cout_unit != null) ? v.cout_unit : Number(coutProduit(produit).toFixed(2)),
     canal: $('#ev_canal').value,
     note: $('#ev_note').value,
   };
@@ -333,12 +336,14 @@ async function delVente(id) {
 }
 async function addVenteDay(date) {
   const prix = $('#nv_prix').value;
+  const produit = $('#nv_prod').value;
   const row = {
     date,
-    produit: $('#nv_prod').value,
+    produit: produit,
     qte_vendue: Number($('#nv_qte').value) || 0,
     offerts: Number($('#nv_off').value) || 0,
-    prix_unit: prix === '' ? null : Number(prix),
+    prix_unit: prix === '' ? prixBase(produit) : Number(prix),
+    cout_unit: Number(coutProduit(produit).toFixed(2)),
     canal: $('#nv_canal').value,
     note: $('#nv_note').value,
   };
