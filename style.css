@@ -407,7 +407,12 @@ header::after {
   margin: 0 auto;
   display: flex;
   padding: 0 10px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 .tab {
   background: transparent;
@@ -422,6 +427,7 @@ header::after {
     border-color 0.18s;
   position: relative;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .tab:hover {
   color: rgba(240, 214, 155, 0.96);

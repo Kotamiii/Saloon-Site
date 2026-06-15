@@ -104,38 +104,40 @@ CREATE POLICY "equipe" ON evenement_tombola_tickets FOR ALL TO authenticated USI
   const tombolaHtml = `
     <div style="margin-top:40px;">
       <h3 style="color:var(--wine); border-bottom:1px solid var(--gold2); padding-bottom:8px;">Lots et Fournisseurs de Tombola</h3>
-      <div class="card" style="margin-bottom:14px;"><div style="overflow-x:auto">
-        <table>
-          <thead><tr><th>Fournisseur gain</th><th>Gains</th><th>Avancement</th><th style="text-align:right;">Valeur est.</th><th style="text-align:center;">Spécial/Unique</th><th></th></tr></thead>
-          <tbody>
-            ${lotRows || `<tr><td colspan="6" style="text-align:center;font-style:italic;color:var(--ink2)">Aucun lot enregistré pour le moment.</td></tr>`}
-          </tbody>
-        </table>
-      </div></div>
-      <div class="addbar">
-        <div>
-          <label>Fournisseur</label>
-          <input type="text" id="nl_fournisseur" placeholder="Ex: Farm Davis">
+      <div class="card" style="margin-bottom:14px;">
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Fournisseur gain</th><th>Gains</th><th>Avancement</th><th style="text-align:right;">Valeur est.</th><th style="text-align:center;">Spécial/Unique</th><th></th></tr></thead>
+            <tbody>
+              ${lotRows || `<tr><td colspan="6" style="text-align:center;font-style:italic;color:var(--ink2)">Aucun lot enregistré pour le moment.</td></tr>`}
+            </tbody>
+          </table>
         </div>
-        <div style="flex:2">
-          <label>Gain</label>
-          <input type="text" id="nl_gain" placeholder="Ex: Panier garni">
+        <div class="addbar">
+          <div>
+            <label>Fournisseur</label>
+            <input type="text" id="nl_fournisseur" placeholder="Ex: Farm Davis">
+          </div>
+          <div style="flex:2">
+            <label>Gain</label>
+            <input type="text" id="nl_gain" placeholder="Ex: Panier garni">
+          </div>
+          <div>
+            <label>Avancement</label>
+            <select id="nl_avancement">
+              ${avancementOpts.map(o => `<option value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div style="width:100px">
+            <label>Valeur ($)</label>
+            <input type="number" id="nl_valeur" value="0">
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding-bottom:8px;">
+            <input type="checkbox" id="nl_special" style="width:auto;margin:0">
+            <label style="margin:0;cursor:pointer;" for="nl_special">Spécial</label>
+          </div>
+          <button class="btn sm" onclick="addTombolaLot()">Ajouter</button>
         </div>
-        <div>
-          <label>Avancement</label>
-          <select id="nl_avancement">
-            ${avancementOpts.map(o => `<option value="${o}">${o}</option>`).join('')}
-          </select>
-        </div>
-        <div style="width:100px">
-          <label>Valeur ($)</label>
-          <input type="number" id="nl_valeur" value="0">
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding-bottom:8px;">
-          <input type="checkbox" id="nl_special" style="width:auto;margin:0">
-          <label style="margin:0;cursor:pointer;" for="nl_special">Spécial</label>
-        </div>
-        <button class="btn sm" onclick="addTombolaLot()">Ajouter</button>
       </div>
     </div>
   `;
@@ -180,30 +182,31 @@ CREATE POLICY "equipe" ON evenement_tombola_tickets FOR ALL TO authenticated USI
         </div>
       </div>
 
-      <div class="addbar" style="margin-bottom:14px; background:rgba(255,255,255,0.02);">
-        <div style="flex:2">
-          <label>Acheteur</label>
-          <input type="text" id="nt_acheteur" placeholder="Nom du client / groupe">
+      <div class="card">
+        <div class="addbar" style="border-bottom:1px solid rgba(168,124,32,0.2); border-top:none;">
+          <div style="flex:2">
+            <label>Acheteur</label>
+            <input type="text" id="nt_acheteur" placeholder="Nom du client / groupe">
+          </div>
+          <div style="width:120px">
+            <label>Quantité</label>
+            <input type="number" id="nt_qte" value="1">
+          </div>
+          <div style="width:120px">
+            <label>Prix Spécifique</label>
+            <input type="number" id="nt_prix" value="${pxTicket}" title="Modifiez ici si prix de gros différent">
+          </div>
+          <button class="btn sm gold" onclick="addTombolaTicket()">Encaisser</button>
         </div>
-        <div style="width:120px">
-          <label>Quantité</label>
-          <input type="number" id="nt_qte" value="1">
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Acheteur</th><th style="text-align:right">Quantité</th><th style="text-align:right">Prix U.</th><th style="text-align:right">Total</th><th></th></tr></thead>
+            <tbody>
+              ${tickRows || `<tr><td colspan="5" style="text-align:center;font-style:italic;color:var(--ink2)">Aucun ticket vendu.</td></tr>`}
+            </tbody>
+          </table>
         </div>
-        <div style="width:120px">
-          <label>Prix Spécifique</label>
-          <input type="number" id="nt_prix" value="${pxTicket}" title="Modifiez ici si prix de gros différent">
-        </div>
-        <button class="btn sm gold" onclick="addTombolaTicket()">Encaisser</button>
       </div>
-
-      <div class="card"><div style="overflow-x:auto">
-        <table>
-          <thead><tr><th>Acheteur</th><th style="text-align:right">Quantité</th><th style="text-align:right">Prix U.</th><th style="text-align:right">Total</th><th></th></tr></thead>
-          <tbody>
-            ${tickRows || `<tr><td colspan="5" style="text-align:center;font-style:italic;color:var(--ink2)">Aucun ticket vendu.</td></tr>`}
-          </tbody>
-        </table>
-      </div></div>
     </div>
   `;
 
