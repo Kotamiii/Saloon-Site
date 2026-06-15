@@ -55,6 +55,22 @@ async function loadTodos() {
     TODOS_DATA = null;
   }
 }
+async function loadTombolaLots() {
+  try {
+    const { data, error } = await sb.from('evenement_tombola_lots').select('*').order('id');
+    TOMBOLA_LOTS = error ? null : data || [];
+  } catch {
+    TOMBOLA_LOTS = null;
+  }
+}
+async function loadTombolaTickets() {
+  try {
+    const { data, error } = await sb.from('evenement_tombola_tickets').select('*').order('created_at', { ascending: false });
+    TOMBOLA_TICKETS = error ? null : data || [];
+  } catch {
+    TOMBOLA_TICKETS = null;
+  }
+}
 async function dbUpd(table, id, patch) {
   const { error } = await sb.from(table).update(patch).eq('id', id);
   if (error) {
@@ -76,6 +92,8 @@ async function dbDel(table, id) {
 }
 async function refresh() {
   STOCK_DATA = undefined;
+  TOMBOLA_LOTS = undefined;
+  TOMBOLA_TICKETS = undefined;
   await loadAll();
   if (window.applyPermissions) applyPermissions();
   render();

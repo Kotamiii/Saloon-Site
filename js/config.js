@@ -34,7 +34,9 @@ let MAT = [],
   VEN = [],
   STOCK_DATA = undefined,
   CONTACTS_DATA = undefined,
-  TODOS_DATA = undefined;
+  TODOS_DATA = undefined,
+  TOMBOLA_LOTS = undefined,
+  TOMBOLA_TICKETS = undefined;
 let TARIF_EDIT_ID = null;
 let TODO_FILTER = 'active';
 let ALERTS_COLLAPSED = localStorage.getItem('sp_alerts_coll') === '1';

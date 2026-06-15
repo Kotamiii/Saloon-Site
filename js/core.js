@@ -18,6 +18,7 @@ function render() {
     objectifs: renderObjectifs,
     mes_defis: window.renderMesDefis || (() => {}),
     contacts: renderContacts,
+    evenements: window.renderEvenements || (() => {}),
     tuto: renderTuto,
     admin: window.renderAdmin || (() => $('#view').innerHTML = 'Erreur Admin'),
   };
